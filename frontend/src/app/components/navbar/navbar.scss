@@ -28,12 +28,11 @@
 .brand {
   cursor: pointer;
   
-  .brand-name {
-    font-family: var(--font-ui);
-    color: var(--cream);
-    letter-spacing: 0.25em;
-    font-size: 0.9rem;
-    font-weight: 700;
+  .brand-logo {
+    height: 36px;
+    width: auto;
+    object-fit: contain;
+    display: block;
   }
 }
 
