@@ -1,0 +1,22 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="logo" routerLink="/">
+      <img src="assets/images/logobondin.png" alt="Bondin Logo" />
+      <span>BONDIN</span>
+    </div>
+    
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Accueil</a>
+      
+      <ng-container *ngIf="!auth.isLoggedIn()">
+        <a routerLink="/login" routerLinkActive="active" class="login-link">Se connecter</a>
+        <a routerLink="/register" class="register-cta">Rejoindre</a>
+      </ng-container>
+
+      <ng-container *ngIf="auth.isLoggedIn()">
+        <a routerLink="/dashboard" routerLinkActive="active">Tableau de bord</a>
+        <button (click)="logout()" class="logout-btn">Se déconnecter</button>
+      </ng-container>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,45 @@
+<div class="page-container">
+  <div class="bondin-card" style="max-width: 600px;">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #da1c1c; padding-bottom: 15px; margin-bottom:20px;">
+       <h1 style="color:#fff; margin:0;">📝 Nouveau Profil</h1>
+       <a routerLink="/dashboard" class="btn-bondin-secondary">← Annuler</a>
+    </div>
+
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 12px;">
+      
+      <div style="margin-bottom:15px;">
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Nom complet</label>
+        <input class="bondin-input" formControlName="nomComplet" placeholder="Ex: Ali Ben Salem" />
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Email</label>
+        <input type="email" class="bondin-input" formControlName="email" placeholder="Ex: jean.dupont@bondin.com" />
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Département</label>
+        <input class="bondin-input" formControlName="department" placeholder="Ex: Ressources Humaines" />
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Poste Administratif</label>
+        <input class="bondin-input" formControlName="poste" placeholder="Ex: Ingénieur IT" />
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Téléphone</label>
+        <input class="bondin-input" formControlName="telephone" placeholder="Ex: +216..." />
+      </div>
+
+      <div style="margin-bottom:25px;">
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Récapitulatif Expérience</label>
+        <textarea class="bondin-textarea" formControlName="experience" placeholder="Décrivez votre parcours..." rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn-bondin" style="width:100%;">Finaliser l'inscription</button>
+    </form>
+    
+  </div>
+</div>

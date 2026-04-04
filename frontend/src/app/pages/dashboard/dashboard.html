@@ -1,0 +1,70 @@
+<div class="page-container">
+  <div class="bondin-card">
+    <h1 class="bondin-title">
+      ☕ Espace {{ userRole }}
+      <img src="assets/images/logobondin.png" style="height: 60px; margin-left: auto;" alt="Bondin Logo" />
+    </h1>
+
+    <p class="welcome-msg">
+      Bienvenue sur votre portail BONDIN, l'excellence du café depuis 1910.
+    </p>
+
+    <!-- Menu Dynamique selon le Rôle -->
+    <div class="menu-grid">
+      <!-- Actions EMPLOYÉ -->
+      <ng-container *ngIf="userRole === 'EMPLOYE'">
+        <a routerLink="/afficherprofil" class="btn-bondin">
+          <span class="btn-icon">👤</span> Gérer Profil
+        </a>
+        <a routerLink="/poser-question" class="btn-bondin">
+          <span class="btn-icon">❓</span> Poser Question
+        </a>
+        <a routerLink="/repondre-question" class="btn-bondin">
+          <span class="btn-icon">💬</span> Répondre Question
+        </a>
+        <a routerLink="/reclamation" class="btn-bondin">
+          <span class="btn-icon">📋</span> Soumettre Réclamation
+        </a>
+      </ng-container>
+
+      <!-- Actions ADMIN -->
+      <ng-container *ngIf="userRole === 'ADMIN'">
+        <a routerLink="/gerer-utilisateurs" class="btn-bondin">
+          <span class="btn-icon">👥</span> Gérer Utilisateurs
+        </a>
+        <a routerLink="/gerer-permissions" class="btn-bondin">
+          <span class="btn-icon">🔐</span> Gérer Permissions
+        </a>
+        <a routerLink="/reclamation" class="btn-bondin">
+          <span class="btn-icon">📊</span> Consulter Réclamations
+        </a>
+      </ng-container>
+
+      <!-- Actions SERVICE IT -->
+      <ng-container *ngIf="userRole === 'SERVICE_IT'">
+        <a routerLink="/reclamation" class="btn-bondin">
+          <span class="btn-icon">📊</span> Consulter Réclamations
+        </a>
+        <a routerLink="/maintenance" class="btn-bondin">
+          <span class="btn-icon">🛠️</span> Maintenance App
+        </a>
+        <a routerLink="/bugs" class="btn-bondin">
+          <span class="btn-icon">🐛</span> Correction Bug
+        </a>
+        <a routerLink="/supervision" class="btn-bondin">
+          <span class="btn-icon">👁️</span> Supervision
+        </a>
+      </ng-container>
+
+      <!-- Actions RH -->
+      <ng-container *ngIf="userRole === 'RH'">
+        <a routerLink="/evaluer-user" class="btn-bondin">
+          <span class="btn-icon">📋</span> Évaluer utilisateur
+        </a>
+        <a routerLink="/consulter-questions" class="btn-bondin">
+          <span class="btn-icon">🔍</span> Consulter Questions
+        </a>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+<div class="page-container">
+  <div class="bondin-card" style="max-width: 1000px;">
+    
+    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #da1c1c; padding-bottom: 15px; margin-bottom:20px;">
+       <h1 style="color:#fff; margin:0; display:flex; align-items:center; gap:10px;">📋 {{ userRole === 'EMPLOYE' ? 'Mes Réclamations' : 'Consulter Réclamations' }}</h1>
+       <a routerLink="/dashboard" class="btn-bondin-secondary">← Retour Menu</a>
+    </div>
+
+    <!-- Formulaire d'ajout (Visible uniquement pour l'EMPLOYÉ) -->
+    <div *ngIf="userRole === 'EMPLOYE'" style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 12px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05);">
+       <h3 style="margin-top:0; color:#ffcccc;">Soumettre une nouvelle Réclamation</h3>
+       <input type="text" class="bondin-input" [(ngModel)]="newReclamation.sujet" placeholder="Sujet de la réclamation..." required>
+       <textarea class="bondin-textarea" [(ngModel)]="newReclamation.description" placeholder="Description détaillée..." rows="4" required></textarea>
+       <button (click)="addReclamation()" class="btn-bondin">Envoyer au service RH/IT</button>
+    </div>
+
+    <!-- Message pour les roles qui consultent uniquement -->
+    <div *ngIf="userRole !== 'EMPLOYE'" style="margin-bottom: 20px; color:#ccc;">
+       <p>📌 Vous consultez actuellement la liste complète des réclamations déposées par les employés.</p>
+    </div>
+
+    <!-- Table -->
+    <h3 style="color:#ffcccc;">Historique des Réclamations</h3>
+    <table class="bondin-table">
+      <tr>
+        <th>ID</th>
+        <th>Sujet</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th *ngIf="userRole === 'ADMIN'">Action</th>
+      </tr>
+      <tr *ngFor="let r of reclamations">
+        <td>#{{r.id}}</td>
+        <td><strong>{{r.sujet}}</strong></td>
+        <td>{{r.description}}</td>
+        <td>
+          <span [style.background]="r.status === 'VALIDE' ? '#2e7d32' : '#424242'" 
+                style="padding:4px 8px; border-radius:4px; font-size:0.8em; font-weight:bold;">
+            {{r.status}}
+          </span>
+        </td>
+        <td>{{ r.dateCreation | date:'dd/MM/yyyy' }}</td>
+        <td *ngIf="userRole === 'ADMIN'">
+          <button (click)="deleteReclamation(r.id!)" style="background:#da1c1c; color:white; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:0.8em;">🗑️</button>
+        </td>
+      </tr>
+      <tr *ngIf="reclamations.length === 0">
+        <td colspan="6" style="text-align:center; padding:20px; color:#aaa;">Aucune donnée disponible.</td>
+      </tr>
+    </table>
+
+  </div>
+</div>

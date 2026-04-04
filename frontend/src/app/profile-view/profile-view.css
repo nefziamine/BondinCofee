@@ -1,0 +1,65 @@
+
+div {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Titre */
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Texte profil */
+p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+/* Image profil */
+img {
+  display: block;
+  margin: 10px auto;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+}
+
+/* Inputs et textarea */
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0 15px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* Bouton */
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* Hover bouton */
+button:hover {
+  background-color: #45a049;
+}
+
+/* Upload image */
+#fileUpload {
+  margin-top: 10px;
+}
+

@@ -1,0 +1,38 @@
+import { Routes } from '@angular/router';
+import { Login } from './pages/login/login';
+import { Register } from './pages/register/register';
+import { Dashboard } from './pages/dashboard/dashboard';
+import { ReclamationComponent } from './reclamation-component/reclamation-component';
+import { ProfileViewComponent } from './profile-view/profile-view';
+import { CreateProfileComponent } from './create-profile/create-profile';
+import { ManageUsers } from './pages/admin/manage-users/manage-users';
+import { ManagePermissions } from './pages/admin/manage-permissions/manage-permissions';
+import { AskQuestion } from './pages/questions/ask/ask-question';
+import { AnswerQuestion } from './pages/questions/answer/answer-question';
+import { MaintenanceComponent } from './pages/it/maintenance/maintenance';
+import { BugsComponent } from './pages/it/bugs/bugs';
+import { SupervisionComponent } from './pages/it/supervision/supervision';
+import { EvalUserComponent } from './pages/rh/eval/eval-user';
+import { QuestionsViewComponent } from './pages/rh/questions-view/questions-view';
+import { LandingPage } from './pages/landing/landing';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
+
+export const routes: Routes = [
+  { path: '', component: LandingPage },
+  { path: 'login', component: Login },
+  { path: 'register', component: Register },
+  { path: 'forgot-password', component: ForgotPassword },
+  { path: 'dashboard', component: Dashboard },
+  { path: 'reclamation', component: ReclamationComponent },
+  { path: 'creerprofil', component: CreateProfileComponent },
+  { path: 'afficherprofil', component: ProfileViewComponent },
+  { path: 'gerer-utilisateurs', component: ManageUsers },
+  { path: 'gerer-permissions', component: ManagePermissions },
+  { path: 'poser-question', component: AskQuestion },
+  { path: 'repondre-question', component: AnswerQuestion },
+  { path: 'maintenance', component: MaintenanceComponent },
+  { path: 'bugs', component: BugsComponent },
+  { path: 'supervision', component: SupervisionComponent },
+  { path: 'evaluer-user', component: EvalUserComponent },
+  { path: 'consulter-questions', component: QuestionsViewComponent }
+];

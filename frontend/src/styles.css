@@ -1,0 +1,138 @@
+/* Global Bondin Coffee Vibe Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #fff;
+}
+
+.page-container {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background: url('/assets/images/bnt.jpeg') center/cover no-repeat fixed;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.page-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(35, 20, 20, 0.80);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.bondin-card {
+  position: relative;
+  z-index: 2;
+  background: rgba(20, 15, 15, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 900px;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.bondin-title {
+  color: #fff;
+  border-bottom: 2px solid #da1c1c;
+  padding-bottom: 15px;
+  margin-top: 0;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-bondin {
+  background: linear-gradient(135deg, #da1c1c, #8a0606);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(218, 28, 28, 0.2);
+}
+
+.btn-bondin:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+  box-shadow: 0 8px 20px rgba(218, 28, 28, 0.4);
+}
+
+.btn-bondin-secondary {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.btn-bondin-secondary:hover {
+  background: rgba(255,255,255,0.2);
+  color: #da1c1c;
+  border-color: #da1c1c;
+}
+
+.bondin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bondin-table th, .bondin-table td {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  text-align: left;
+}
+
+.bondin-table th {
+  background: rgba(218, 28, 28, 0.15);
+  color: #ffcccc;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.bondin-table tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.bondin-input, .bondin-textarea {
+  width: 100%;
+  padding: 14px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  transition: 0.2s;
+}
+
+.bondin-input:focus, .bondin-textarea:focus {
+  outline: none;
+  border-color: #da1c1c;
+  box-shadow: 0 0 0 3px rgba(218, 28, 28, 0.15);
+}
