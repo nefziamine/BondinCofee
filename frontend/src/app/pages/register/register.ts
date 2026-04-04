@@ -13,7 +13,7 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class Register {
     registerForm: FormGroup;
-  submitted = false;
+  loading = false;
   errorMessage = '';
 
   constructor(
@@ -22,26 +22,38 @@ export class Register {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      nomUtlisateur: ['', Validators.required],
+      fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      motDePasse: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['', Validators.required]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      role: ['EMPLOYEE', Validators.required] // Default for new registrations
     });
   }
 
   onSubmit() {
-    this.submitted = true;
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
 
-    if (this.registerForm.invalid) return;
+    this.loading = true;
+    this.errorMessage = '';
 
-    this.http.post<any>('http://localhost:8080/api/auth/register', this.registerForm.value)
+    // Map frontend 'fullName' to backend 'nomUtilisateur'
+    const payload = {
+      ...this.registerForm.value,
+      nomUtilisateur: this.registerForm.value.fullName
+    };
+
+    this.http.post<any>('http://localhost:8080/api/auth/register', payload)
       .subscribe({
         next: (res) => {
-          alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+          this.loading = false;
+          alert('Inscription réussie ! Torréfaction en cours... Vous pouvez maintenant entrer dans la maison.');
           this.router.navigate(['/login']);
         },
         error: (err) => {
-          this.errorMessage = err.error?.message || "Erreur d'inscription";
+          this.loading = false;
+          this.errorMessage = err.error?.message || "Erreur lors de l'accès à la maison.";
         }
       });
   }
