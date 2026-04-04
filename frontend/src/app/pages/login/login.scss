@@ -4,7 +4,9 @@
 
 .login-page {
   min-height: 100vh;
-  background: var(--bg-dark);
+  background-image: url('/assets/images/hero_bondin_updated.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,7 +17,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, rgba(140, 58, 30, 0.1) 0%, transparent 70%);
+    background: linear-gradient(135deg, rgba(8, 6, 4, 0.98) 0%, rgba(14, 10, 7, 0.85) 100%);
     pointer-events: none;
   }
 }
