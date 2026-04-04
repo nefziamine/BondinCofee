@@ -1,37 +1,89 @@
 <div class="landing-page">
   <header class="hero">
     <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <h1>Bienvenue sur le portail BONDIN</h1>
-      <p>Optimisez la gestion de vos ressources et facilitez la collaboration interne avec notre plateforme intuitive.</p>
-      <div class="hero-actions">
-        <a routerLink="/register" class="cta-btn">Commencer l'aventure</a>
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-meta entrance-top">
+          <span class="label">DEPUIS 1910</span>
+        </div>
+        <h1 class="entrance-headline">L'Art <br>du Café</h1>
+        <p class="entrance-subheadline">Torréfié à Tunis, savouré partout.</p>
+        <div class="hero-actions entrance-button">
+          <a routerLink="/login" class="btn-bondin-red">Découvrir nos cafés →</a>
+        </div>
       </div>
     </div>
   </header>
 
-  <main class="features">
-    <div class="feature-card">
-      <div class="icon-wrapper">📊</div>
-      <h3>Dashboard Intuitif</h3>
-      <p>Visualisez vos performances et vos tâches en un coup d'œil pour une efficacité maximale.</p>
-    </div>
-    <div class="feature-card">
-      <div class="icon-wrapper">🔍</div>
-      <h3>Supervision IT</h3>
-      <p>Contrôlez et maintenez vos systèmes en temps réel avec nos outils de diagnostic avancés.</p>
-    </div>
-    <div class="feature-card">
-      <div class="icon-wrapper">👥</div>
-      <h3>Gestion RH</h3>
-      <p>Simplifiez les processus d'évaluation et de recrutement pour bâtir l'équipe de demain.</p>
-    </div>
-  </main>
+  <section class="products-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">NOS CAFÉS</span>
+      </div>
+      
+      <div class="product-grid">
+        <div class="product-card">
+          <div class="product-info">
+            <h3>Intense</h3>
+            <div class="roast-level">
+              <span class="level-label">L'Arôme Puissant</span>
+              <div class="progress-container">
+                <div class="progress-bar" style="width: 85%;"></div>
+              </div>
+            </div>
+            <p>Notes de cacao sombre et d'épices d'Orient.</p>
+          </div>
+        </div>
 
-  <section class="about">
-    <div class="about-content">
-      <h2>BONDIN Tunisie — Tradition & Innovation</h2>
-      <p>Depuis 1910, BONDIN Tunisie s'engage à offrir l'excellence. Notre portail interne est le reflet de notre volonté d'innover pour nos collaborateurs.</p>
+        <div class="product-card">
+          <div class="product-info">
+            <h3>Tradition</h3>
+            <div class="roast-level">
+              <span class="level-label">L'Héritage Tunisien</span>
+              <div class="progress-container">
+                <div class="progress-bar" style="width: 65%;"></div>
+              </div>
+            </div>
+            <p>Un équilibre parfait, torréfié selon la méthode ancestrale.</p>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-info">
+            <h3>Moka</h3>
+            <div class="roast-level">
+              <span class="level-label">Finesse d'Éthiopie</span>
+              <div class="progress-container">
+                <div class="progress-bar" style="width: 45%;"></div>
+              </div>
+            </div>
+            <p>Fraîcheur florale et acidité délicate.</p>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-info">
+            <h3>Arabica</h3>
+            <div class="roast-level">
+              <span class="level-label">Sélection de Grands Crus</span>
+              <div class="progress-container">
+                <div class="progress-bar" style="width: 55%;"></div>
+              </div>
+            </div>
+            <p>L'élégance du 100% Arabica, suave et parfumé.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="heritage">
+    <div class="heritage-container">
+      <div class="heritage-text">
+        <span class="section-label">DEPUIS 1910</span>
+        <h2>Une Histoire de Famille</h2>
+        <p>BONDIN Tunisie, c’est plus d’un siècle de passion partagée. Chaque grain est sélectionné avec soin et torréfié au cœur de Tunis pour révéler l’âme même du café.</p>
+      </div>
     </div>
   </section>
 </div>

@@ -1,45 +1,45 @@
-<div class="login-container">
-  <div class="form-card">
-  <div class="brand">
-  <div class="logo-wrapper">
-    <img src="assets/images/logobondin.png" alt="logo" />
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-box">
+      <header class="login-header">
+        <span class="ui-label">Portail Interne</span>
+        <h1>Connexion</h1>
+        <p class="subtitle">BONDIN Tunisie — Maison de Torréfaction depuis 1910</p>
+      </header>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label for="email">Identifiant (Email)</label>
+          <input type="email" id="email" formControlName="email" placeholder="votre.nom@cafesbondin.tn">
+          <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error">
+            L'identifiant est requis.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" formControlName="password" placeholder="••••••••">
+          <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error">
+            Le mot de passe est obligatoire.
+          </div>
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="loading" class="btn-bondin-red">
+            {{ loading ? 'Chargement...' : 'Entrer dans la maison →' }}
+          </button>
+        </div>
+      </form>
+
+      <footer class="login-footer">
+        <a routerLink="/forgot-password">Accès oublié ?</a>
+        <span>·</span>
+        <a routerLink="/register">Demander un accès</a>
+      </footer>
+    </div>
   </div>
-  <h2>Connexion</h2>
-</div>
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
-    <div class="form-group">
-      <input type="email" placeholder="Email" formControlName="email" />
-      <small *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-        Email invalide
-      </small>
-    </div>
-
-    <div class="form-group">
-      <input type="password" placeholder="Mot de passe" formControlName="password" />
-      <small *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-        Minimum 6 caractères
-      </small>
-    </div>
-
-    <button type="submit" [disabled]="loading">
-      {{ loading ? 'Connexion...' : 'Se connecter' }}
-    </button>
-    
-    <div class="forgot-link-wrapper">
-      <a routerLink="/forgot-password" class="forgot-password">Mot de passe oublié ?</a>
-    </div>
-
-    <div class="error" *ngIf="errorMessage">
-      {{ errorMessage }}
-    </div>
-  </form>
-
-  <p class="redirect">
-    Pas de compte ? <a routerLink="/register">S'inscrire</a>
-  </p>
-  <div class="footer">
-        © 2026 BONDIN Tunisie — Système interne
-      </div>
-</div>
 </div>

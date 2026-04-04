@@ -9,7 +9,7 @@ import { Footer } from './components/footer/footer';
   standalone: true,
   imports: [RouterOutlet, Navbar, Footer],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.scss'
 })
 export class App {
   protected readonly title = signal('stage-finale');

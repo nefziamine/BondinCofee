@@ -1,0 +1,108 @@
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+}
+
+.navbar {
+  height: 64px;
+  background: rgba(14, 10, 7, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(184, 136, 42, 0.2);
+  display: flex;
+  align-items: center;
+}
+
+.nav-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  cursor: pointer;
+  
+  .brand-name {
+    font-family: var(--font-ui);
+    color: var(--cream);
+    letter-spacing: 0.25em;
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+
+  a {
+    font-family: var(--font-ui);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--text-light);
+    position: relative;
+    padding: 0.5rem 0;
+    cursor: pointer;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      background: var(--red);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+
+    &:hover::after, &.active::after {
+      transform: scaleX(1);
+    }
+    
+    &:hover {
+      color: var(--cream);
+    }
+  }
+
+  .cta-join {
+    color: var(--red);
+    border: 1px solid var(--red);
+    padding: 0.5rem 1.2rem;
+    
+    &:hover {
+      background: var(--red);
+      color: var(--cream);
+    }
+    
+    &::after { display: none; }
+  }
+}
+
+.mobile-toggle {
+  display: none; /* Desktop first as per mission */
+}
+
+@media (max-width: 768px) {
+  .nav-container { padding: 0 1.5rem; }
+  .nav-links { display: none; }
+  .mobile-toggle { 
+    display: flex; 
+    flex-direction: column;
+    gap: 4px;
+    span {
+      width: 20px;
+      height: 1.5px;
+      background: var(--cream);
+    }
+  }
+}

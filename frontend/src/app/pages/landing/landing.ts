@@ -7,6 +7,6 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, RouterLink],
   selector: 'app-landing',
   templateUrl: './landing.html',
-  styleUrl: './landing.css',
+  styleUrl: './landing.scss',
 })
 export class LandingPage {}

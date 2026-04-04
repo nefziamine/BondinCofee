@@ -1,22 +1,27 @@
 <nav class="navbar">
   <div class="nav-container">
-    <div class="logo" routerLink="/">
-      <img src="assets/images/logobondin.png" alt="Bondin Logo" />
-      <span>BONDIN</span>
+    <div class="brand" routerLink="/">
+      <span class="brand-name">BONDIN</span>
     </div>
     
     <div class="nav-links">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Accueil</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">L'Art du Café</a>
       
       <ng-container *ngIf="!auth.isLoggedIn()">
-        <a routerLink="/login" routerLinkActive="active" class="login-link">Se connecter</a>
-        <a routerLink="/register" class="register-cta">Rejoindre</a>
+        <a routerLink="/login" routerLinkActive="active">Maison de Torréfaction</a>
+        <a routerLink="/register" class="cta-join">S'abonner aux récoltes</a>
       </ng-container>
 
       <ng-container *ngIf="auth.isLoggedIn()">
-        <a routerLink="/dashboard" routerLinkActive="active">Tableau de bord</a>
-        <button (click)="logout()" class="logout-btn">Se déconnecter</button>
+        <a routerLink="/dashboard" routerLinkActive="active">Cabinet de Gestion</a>
+        <a (click)="logout()" class="logout-link">Déconnexion</a>
       </ng-container>
+    </div>
+
+    <!-- Mobile Hamburger: Conceptual as per requirements -->
+    <div class="mobile-toggle">
+      <span></span>
+      <span></span>
     </div>
   </div>
 </nav>

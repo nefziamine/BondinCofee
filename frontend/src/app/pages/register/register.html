@@ -1,60 +1,38 @@
-<div class="login-container">
-  <div class="form-card">
-    <div class="brand">
-      <div class="logo-wrapper">
-        <img src="assets/images/logobondin.png" alt="logo" />
-      </div>
-      <h2>Créer un compte</h2>
-    </div>
+<div class="register-page">
+  <div class="register-container">
+    <div class="register-box">
+      <header class="register-header">
+        <span class="ui-label">Portail Interne</span>
+        <h1>Rejoindre</h1>
+        <p class="subtitle">BONDIN Tunisie — Tradition & Excellence</p>
+      </header>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <input type="text" placeholder="Nom utilisateur" formControlName="nomUtlisateur" />
-        <small *ngIf="registerForm.get('nomUtlisateur')?.invalid && registerForm.get('nomUtlisateur')?.touched">
-          Nom utilisateur requis
-        </small>
-      </div>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <div class="form-group">
+          <label>Identité (Nom complet)</label>
+          <input type="text" formControlName="fullName" placeholder="Votre nom complet">
+        </div>
 
-      <div class="form-group">
-        <input type="email" placeholder="Email" formControlName="email" />
-        <small *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
-          Email invalide
-        </small>
-      </div>
+        <div class="form-group">
+          <label>Affectation (Email professionnel)</label>
+          <input type="email" formControlName="email" placeholder="votre.nom@cafesbondin.tn">
+        </div>
 
-      <div class="form-group">
-        <input type="password" placeholder="Mot de passe" formControlName="motDePasse" />
-        <small *ngIf="registerForm.get('motDePasse')?.invalid && registerForm.get('motDePasse')?.touched">
-          Minimum 6 caractères
-        </small>
-      </div>
+        <div class="form-group">
+          <label>Mot de passe</label>
+          <input type="password" formControlName="password" placeholder="••••••••">
+        </div>
 
-      <div class="form-group">
-        <select formControlName="role" class="bondin-select">
-          <option value="" disabled selected>-- Choisir un rôle --</option>
-          <option value="ADMIN">Admin</option>
-          <option value="EMPLOYE">Employé</option>
-          <option value="SERVICE_IT">Service IT</option>
-          <option value="RH">RH</option>
-        </select>
-        <small *ngIf="registerForm.get('role')?.invalid && registerForm.get('role')?.touched">
-          Rôle requis
-        </small>
-      </div>
+        <div class="form-actions">
+          <button type="submit" [disabled]="loading" class="btn-bondin-red">
+            {{ loading ? 'Enregistrement...' : 'Solliciter un compte →' }}
+          </button>
+        </div>
+      </form>
 
-      <button type="submit">S'inscrire</button>
-
-      <div class="error" *ngIf="errorMessage">
-        {{ errorMessage }}
-      </div>
-    </form>
-
-    <p class="redirect">
-      Déjà un compte ? <a routerLink="/login">Se connecter</a>
-    </p>
-    
-    <div class="footer">
-      © 2026 BONDIN Tunisie — Système interne
+      <footer class="register-footer">
+        <p>Déjà membre de la maison ? <a routerLink="/login">Se connecter</a></p>
+      </footer>
     </div>
   </div>
-</div>
+</div>

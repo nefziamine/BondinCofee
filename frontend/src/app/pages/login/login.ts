@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-login',
  
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrl: './login.scss',
 })
 export class Login {
 loginForm: FormGroup; // on déclare seulement
