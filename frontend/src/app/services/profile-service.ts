@@ -30,18 +30,17 @@ export class ProfileService {
     });
   }
 
-  getProfile(): Observable<ProfilUser> {
-    return this.http.get<ProfilUser>(`${this.API_URL}/me`, { headers: this.getAuthHeaders() });
+  getProfile(userId: number): Observable<ProfilUser> {
+    return this.http.get<ProfilUser>(`${this.API_URL}/me?userId=${userId}`, { headers: this.getAuthHeaders() });
   }
 
   saveProfile(profile: ProfilUser): Observable<ProfilUser> {
     return this.http.post<ProfilUser>(`${this.API_URL}/save`, profile, { headers: this.getAuthHeaders() });
   }
 
-  uploadImage(file: File): Observable<string> {
+  uploadImage(file: File, userId: number): Observable<{url: string}> {
     const formData = new FormData();
     formData.append('file', file);
-
-    return this.http.post<string>(`${this.API_URL}/upload-image`, formData, { headers: this.getAuthHeaders() });
+    return this.http.post<{url: string}>(`${this.API_URL}/upload-image?userId=${userId}`, formData, { headers: this.getAuthHeaders() });
   }
 }

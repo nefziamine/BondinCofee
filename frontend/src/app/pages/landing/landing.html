@@ -4,79 +4,193 @@
     <div class="hero-container">
       <div class="hero-content">
         <div class="hero-meta entrance-top">
-          <span class="label">MAISON BONDIN — PORTAIL COLLABORATEURS</span>
+          <span class="label">{{ 'LANDING.META' | translate }}</span>
         </div>
-        <h1 class="entrance-headline">L’Excellence <br>Opérationnelle</h1>
-        <p class="entrance-subheadline">Piloter l'héritage depuis 1910, construire le futur de la Maison Bondin.</p>
+        <h1 class="entrance-headline">{{ 'LANDING.HEADLINE' | translate }}</h1>
+        <p class="entrance-subheadline">{{ 'LANDING.SUBHEADLINE' | translate }}</p>
         <div class="hero-actions entrance-button">
-          <a routerLink="/login" class="btn-bondin-red">Accéder au Cabinet de Gestion →</a>
+          <a *ngIf="!auth.userRole()" routerLink="/login" class="btn-bondin-red">{{ 'LANDING.ACCESS_BTN' | translate }}</a>
+          <a *ngIf="auth.userRole()" routerLink="/dashboard" class="btn-bondin-red">{{ 'LANDING.RESUME_BTN' | translate }}</a>
         </div>
       </div>
     </div>
   </header>
 
-  <section class="products-section">
+  <!-- Section Instruments (Guest) -->
+  <section class="products-section" *ngIf="!auth.userRole()">
     <div class="container">
       <div class="section-header">
-        <span class="section-label">NOS INSTRUMENTS DE GESTION</span>
+        <span class="section-label">{{ 'LANDING.INSTRUMENTS_LBL' | translate }}</span>
       </div>
       
       <div class="product-grid">
         <div class="product-card" routerLink="/dashboard">
           <div class="product-info">
             <span class="icon">📊</span>
-            <h3>Dashboard</h3>
+            <h3>{{ 'LANDING.PROD_DASH_TITLE' | translate }}</h3>
             <div class="roast-level">
-              <span class="level-label">Pilotage Global</span>
+              <span class="level-label">{{ 'LANDING.PROD_DASH_LBL' | translate }}</span>
               <div class="progress-container">
                 <div class="progress-bar" style="width: 100%;"></div>
               </div>
             </div>
-            <p>Visualisez les indicateurs de performance clés de la Maison Bondin en temps réel.</p>
+            <p>{{ 'LANDING.PROD_DASH_DESC' | translate }}</p>
           </div>
         </div>
 
-        <div class="product-card" routerLink="/supervision">
+        <div class="product-card" routerLink="/dashboard-it">
           <div class="product-info">
             <span class="icon">🔍</span>
-            <h3>Supervision IT</h3>
+            <h3>{{ 'LANDING.PROD_IT_TITLE' | translate }}</h3>
             <div class="roast-level">
-              <span class="level-label">Maintenance du Réseau</span>
+              <span class="level-label">{{ 'LANDING.PROD_IT_LBL' | translate }}</span>
               <div class="progress-container">
                 <div class="progress-bar" style="width: 75%;"></div>
               </div>
             </div>
-            <p>Contrôlez l'infrastructure technique et anticipez les besoins de nos établissements.</p>
+            <p>{{ 'LANDING.PROD_IT_DESC' | translate }}</p>
           </div>
         </div>
 
-        <div class="product-card" routerLink="/evaluer-user">
+        <div class="product-card" routerLink="/dashboard-rh">
           <div class="product-info">
             <span class="icon">👥</span>
-            <h3>Gestion RH</h3>
+            <h3>{{ 'LANDING.PROD_RH_TITLE' | translate }}</h3>
             <div class="roast-level">
-              <span class="level-label">Talents & Recrutement</span>
+              <span class="level-label">{{ 'LANDING.PROD_RH_LBL' | translate }}</span>
               <div class="progress-container">
                 <div class="progress-bar" style="width: 90%;"></div>
               </div>
             </div>
-            <p>Optimisez l'évaluation et l'accompagnement de nos collaborateurs passionnés.</p>
+            <p>{{ 'LANDING.PROD_RH_DESC' | translate }}</p>
           </div>
         </div>
 
-        <div class="product-card" routerLink="/reclamation">
+        <div class="product-card" routerLink="/requests">
           <div class="product-info">
             <span class="icon">📩</span>
-            <h3>Réclamations</h3>
+            <h3>{{ 'LANDING.PROD_REQ_TITLE' | translate }}</h3>
             <div class="roast-level">
-              <span class="level-label">Écoute & Service</span>
+              <span class="level-label">{{ 'LANDING.PROD_REQ_LBL' | translate }}</span>
               <div class="progress-container">
                 <div class="progress-bar" style="width: 60%;"></div>
               </div>
             </div>
-            <p>Gérez les retours et maintenez l'excellence légendaire du service Bondin.</p>
+            <p>{{ 'LANDING.PROD_REQ_DESC' | translate }}</p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section Quick Access (Auth) -->
+  <section class="quick-access-section" *ngIf="auth.userRole()">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-label">{{ 'LANDING.ADMIN_LBL' | translate }}</span>
+        <h2 class="display-title">{{ 'LANDING.ADMIN_TITLE' | translate }}</h2>
+      </div>
+
+      <div class="access-grid">
+        <!-- ADMIN CARDS -->
+        <ng-container *ngIf="auth.userRole() === 'ADMIN'">
+          <div class="access-card" routerLink="/admin">
+            <div class="card-content">
+              <span class="num">01</span>
+              <h3>{{ 'LANDING.ADMIN_T1' | translate }}</h3>
+              <p>{{ 'LANDING.ADMIN_D1' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/dashboard">
+            <div class="card-content">
+              <span class="num">02</span>
+              <h3>{{ 'LANDING.ADMIN_T2' | translate }}</h3>
+              <p>{{ 'LANDING.ADMIN_D2' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/afficherprofil">
+            <div class="card-content">
+              <span class="num">03</span>
+              <h3>{{ 'LANDING.ADMIN_T3' | translate }}</h3>
+              <p>{{ 'LANDING.ADMIN_D3' | translate }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- RH CARDS -->
+        <ng-container *ngIf="auth.userRole() === 'RH'">
+          <div class="access-card" routerLink="/dashboard-rh">
+            <div class="card-content">
+              <span class="num">01</span>
+              <h3>{{ 'LANDING.RH_T1' | translate }}</h3>
+              <p>{{ 'LANDING.RH_D1' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/requests">
+            <div class="card-content">
+              <span class="num">02</span>
+              <h3>{{ 'LANDING.RH_T2' | translate }}</h3>
+              <p>{{ 'LANDING.RH_D2' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/afficherprofil">
+            <div class="card-content">
+              <span class="num">03</span>
+              <h3>{{ 'LANDING.RH_T3' | translate }}</h3>
+              <p>{{ 'LANDING.RH_D3' | translate }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- IT CARDS -->
+        <ng-container *ngIf="auth.userRole() === 'IT'">
+          <div class="access-card" routerLink="/dashboard-it">
+            <div class="card-content">
+              <span class="num">01</span>
+              <h3>{{ 'LANDING.IT_T1' | translate }}</h3>
+              <p>{{ 'LANDING.IT_D1' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/requests">
+            <div class="card-content">
+              <span class="num">02</span>
+              <h3>{{ 'LANDING.IT_T2' | translate }}</h3>
+              <p>{{ 'LANDING.IT_D2' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/afficherprofil">
+            <div class="card-content">
+              <span class="num">03</span>
+              <h3>{{ 'LANDING.IT_T3' | translate }}</h3>
+              <p>{{ 'LANDING.IT_D3' | translate }}</p>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- EMP CARDS -->
+        <ng-container *ngIf="auth.userRole() === 'EMPLOYE'">
+          <div class="access-card" routerLink="/dashboard">
+            <div class="card-content">
+              <span class="num">01</span>
+              <h3>{{ 'LANDING.EMP_T1' | translate }}</h3>
+              <p>{{ 'LANDING.EMP_D1' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/requests">
+            <div class="card-content">
+              <span class="num">02</span>
+              <h3>{{ 'LANDING.EMP_T2' | translate }}</h3>
+              <p>{{ 'LANDING.EMP_D2' | translate }}</p>
+            </div>
+          </div>
+          <div class="access-card" routerLink="/afficherprofil">
+            <div class="card-content">
+              <span class="num">03</span>
+              <h3>{{ 'LANDING.EMP_T3' | translate }}</h3>
+              <p>{{ 'LANDING.EMP_D3' | translate }}</p>
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
   </section>
@@ -84,9 +198,9 @@
   <section class=" heritage">
     <div class="heritage-container">
       <div class="heritage-text">
-        <span class="section-label">NOTRE AMBITION</span>
-        <h2>L'Humain au Cœur de l'Héritage</h2>
-        <p>Ce portail est conçu pour offrir à chaque collaborateur les outils d'une excellence durable. En alliant tradition et innovation, nous bâtissons ensemble le futur de la Maison Bondin.</p>
+        <span class="section-label">{{ 'LANDING.AMBITION_LBL' | translate }}</span>
+        <h2>{{ 'LANDING.AMBITION_TITLE' | translate }}</h2>
+        <p>{{ 'LANDING.AMBITION_DESC' | translate }}</p>
       </div>
     </div>
   </section>

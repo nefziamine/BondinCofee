@@ -1,33 +1,71 @@
 <footer class="footer">
   <div class="footer-container">
     <div class="footer-grid">
+      <!-- 1. Brand -->
       <div class="footer-column brand-col">
         <h2 class="brand-display">BONDIN</h2>
-        <p class="since">Fondé en 1910 à Tunis</p>
-        <p class="heritage-text">L'excellence de la torréfaction tunisienne depuis plus d'un siècle. Une passion transmise de génération en génération.</p>
+        <p class="since">DEPUIS 1910</p>
+        <p class="heritage-text">
+          La société Cafés BONDIN a été fondée en 1910 par Monsieur Henri<br>
+          BONDIN. Elle était installée au marché central de Tunis, avant d'être<br>
+          transférée à la rue d'Espagne Tunis, son siège actuel.
+        </p>
       </div>
 
-      <div class="footer-column links-col">
-        <span class="col-label">Navigation</span>
-        <nav class="footer-nav">
-          <a routerLink="/">L'Art du Café</a>
-          <a routerLink="/login">Connexion</a>
-          <a routerLink="/register">Inscription</a>
-        </nav>
-      </div>
-
+      <!-- 2. Contact -->
       <div class="footer-column contact-col">
-        <span class="col-label">Contact</span>
-        <address>
-          Route de Sousse km 5<br>
-          Tunis, Tunisie<br>
-          <a href="mailto:contact@cafesbondin.tn">contact@cafesbondin.tn</a>
-        </address>
+        <span class="col-label">Contactez-nous</span>
+        <ul class="contact-list">
+          <li>
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="contact-text">
+              11, rue des entrepreneurs,<br>Z.I. AéroportCharguia II ,<br>2035 Tunis Carthage-Tunisie
+            </div>
+          </li>
+          <li>
+            <i class="fas fa-phone"></i>
+            <div class="contact-text">+216 70 011 111</div>
+          </li>
+          <li>
+            <i class="fas fa-envelope"></i>
+            <div class="contact-text">contact@bondin.com</div>
+          </li>
+        </ul>
+        
+        <div class="num-vert-container">
+          <div class="num-vert">
+            <span class="icon-play"><i class="fas fa-play"></i></span>
+            <strong>N° Vert</strong>
+            <span class="num">80 101 200</span>
+          </div>
+        </div>
+        <p class="disclaimer">« Après obtention du consentement de l'appelant, la communication<br>sera enregistrée pour traitement. »</p>
       </div>
+
+      <!-- 3. Social -->
+      <div class="footer-column social-col">
+        <span class="col-label">Rejoignez-nous</span>
+        <div class="social-icons">
+          <a href="https://www.instagram.com/cafesbondin/" target="_blank" class="social-icon">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://www.facebook.com/Cafe.Bondin/" target="_blank" class="social-icon">
+            <i class="fab fa-facebook-f"></i>
+          </a>
+          <a href="https://www.youtube.com/user/CafesBondin" target="_blank" class="social-icon youtube">
+             <i class="fab fa-youtube"></i>
+          </a>
+        </div>
+      </div>
+
     </div>
-    
+
+    <!-- Bottom Bar -->
     <div class="footer-bottom">
-      <p>© Cafés BONDIN · 2025</p>
+      <p>Copyright © Cafés Bondin - 2025 - Tous droits réservés</p>
+      <button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fas fa-chevron-up"></i>
+      </button>
     </div>
   </div>
 </footer>

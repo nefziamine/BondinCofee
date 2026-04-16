@@ -26,5 +26,19 @@ export class ReclamationService {
   delete(id: number) {
     return this.http.delete(`${this.apiUrl}/delete/${id}`);
   }
+
+  getByCategory(category: string): Observable<Reclamation[]> {
+    return this.http.get<Reclamation[]>(`${this.apiUrl}/category/${category}`);
+  }
+
+  answer(id: number, reponse: string): Observable<Reclamation> {
+    return this.http.post<Reclamation>(`${this.apiUrl}/answer/${id}`, reponse, {
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  }
+
+  getByUserId(userId: number): Observable<Reclamation[]> {
+    return this.http.get<Reclamation[]>(`${this.apiUrl}/user/${userId}`);
+  }
   
 }

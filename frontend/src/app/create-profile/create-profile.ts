@@ -4,11 +4,12 @@ import { ProfileService, ProfilUser } from '../services/profile-service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-create-profile',
   templateUrl: './create-profile.html',
-   imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule],
+   imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule, TranslateModule],
   styleUrls: ['./create-profile.css'], // corrige styleUrl -> styleUrls
 })
 export class CreateProfileComponent {

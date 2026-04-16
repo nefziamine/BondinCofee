@@ -1,24 +1,57 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700;1,800&family=Barlow+Condensed:wght@400;600;700&family=Lora:wght@400;500&display=swap');
 
 :root {
-  --bg-dark:     #0E0A07;   /* roasted black */
-  --bg-surface:  #1A1109;   /* espresso brown */
-  --cream:       #EDE0C8;   /* aged paper */
-  --red:         #C0281F;   /* Bondin brand red */
-  --gold:        #B8882A;   /* brass roast gold */
-  --rust:        #8C3A1E;   /* terracotta warm */
-  --text-light:  #F0E6D3;   /* warm white */
-  --text-muted:  #7A6555;   /* faded ink */
-  --font-display: 'Cormorant Garamond', serif;  /* heavy italic, editorial */
-  --font-ui:     'Barlow Condensed', sans-serif; /* tight, uppercase labels */
-  --font-body:   'Lora', serif;                 /* warm readable body */
+  /* DARK MODE (DEFAULT) */
+  --bg:               #0E0A07;
+  --surface:          #1A1109;
+  --surface-secondary: #24190F;
+  --text:             #EDE0C8;
+  --text-muted:       #A0988A;
+  --border:           rgba(184, 136, 42, 0.15);
+  --input-bg:         rgba(255, 255, 255, 0.03);
+  --input-border:     rgba(184, 136, 42, 0.2);
+  --card-bg:          #1A1109;
+  --shadow:           0 20px 40px rgba(0, 0, 0, 0.5);
+  --badge-text:       #FFFFFF;
+  
+  --red:              #C0281F;
+  --gold:             #B8882A;
+  
+  --font-display: 'Cormorant Garamond', serif;
+  --font-ui:     'Barlow Condensed', sans-serif;
+  --font-body:   'Lora', serif;
+}
+
+body.light-mode {
+  --bg:               #FAF9F6;  /* Cleaner, brighter beige */
+  --surface:          #FFFFFF;
+  --surface-secondary: #F0EDE5;
+  --text:             #2D241E;  /* Darker for better contrast */
+  --text-muted:       #6B5E52;  /* Slightly darker muted text */
+  --border:           rgba(107, 94, 82, 0.25);
+  --input-bg:         #FFFFFF;
+  --input-border:     rgba(107, 94, 82, 0.35);
+  --card-bg:          #FFFFFF;
+  --shadow:           0 15px 35px rgba(45, 36, 30, 0.08);
+  --badge-text:       #FFFFFF;
+  
+  --red:              #A8231B;
+  --gold:             #8C6D21;  /* Darker gold for light mode visibility */
+}
+
+html[dir="rtl"] {
+  text-align: right;
+  
+  .navbar-nav, .dashboard-container, .main-content {
+      direction: rtl;
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--bg-dark);
-  color: var(--text-light);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-body);
   position: relative;
   overflow-x: hidden;
@@ -35,8 +68,12 @@ body::before {
   height: 100%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.04;
+  opacity: 0.035; /* Slightly reduced */
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+body.light-mode::before {
+  opacity: 0.02; /* Much lower for light mode to avoid "dirty" look */
 }
 
 /* TYPOGRAPHY */
@@ -44,7 +81,7 @@ h1, h2, h3, h4, h5, .display {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 700;
-  color: var(--cream);
+  color: var(--text);
 }
 
 .ui-label {
@@ -81,14 +118,14 @@ h1, h2, h3, h4, h5, .display {
 
   &:hover {
     background: var(--red);
-    color: var(--cream);
+    color: var(--bg);
   }
 }
 
 /* SECTIONS */
 section {
   padding: 8rem 2rem;
-  border-top: 1px solid rgba(184, 136, 42, 0.1);
+  border-top: 1px solid var(--border);
 }
 
 .section-label {
@@ -130,4 +167,96 @@ label {
   font-size: 0.7rem;
   color: var(--gold);
   margin-bottom: 0.5rem;
+}
+
+/* BONDIN DESIGN SYSTEM COMPONENTS */
+.page-container {
+  min-height: 100vh;
+  padding: 6rem 2rem;
+  display: flex;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.bondin-card {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 3rem;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+}
+
+.bondin-input, .bondin-textarea {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 1rem;
+  font-family: var(--font-body);
+  margin-bottom: 1.5rem;
+  outline: none;
+  transition: 0.3s;
+
+  &:focus {
+    border-color: var(--red);
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.btn-bondin {
+  background: var(--red);
+  color: var(--text);
+  border: none;
+  padding: 1rem 2rem;
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover {
+    background: #a01d16;
+    transform: translateY(-2px);
+  }
+}
+
+.btn-bondin-secondary {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  padding: 0.7rem 1.5rem;
+  font-family: var(--font-ui);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: 0.3s;
+
+  &:hover {
+    background: var(--gold);
+    color: var(--bg);
+  }
+}
+
+.bondin-table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th {
+    text-align: left;
+    padding: 1.2rem;
+    color: var(--gold);
+    font-family: var(--font-ui);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    border-bottom: 1px solid var(--border);
+  }
+  
+  td {
+    padding: 1.2rem;
+    color: var(--text);
+    border-bottom: 1px solid var(--border);
+  }
 }

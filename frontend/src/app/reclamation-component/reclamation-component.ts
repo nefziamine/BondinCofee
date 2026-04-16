@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit } from '@angular/core';
 import { Reclamation } from '../Model/Reclamation';
 import { ReclamationService } from '../services/reclamation-service';
@@ -10,7 +11,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-reclamation-component',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule],
+  imports: [CommonModule, FormsModule, HttpClientModule, RouterModule, TranslateModule],
   templateUrl: './reclamation-component.html',
   styleUrl: './reclamation-component.css',
 })

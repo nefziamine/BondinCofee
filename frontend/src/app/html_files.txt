@@ -1,0 +1,13 @@
+C:\Users\user\Desktop\stage-finale\frontend\src\app\app.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\components\chatbot\chatbot.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\components\footer\footer.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\components\navbar\navbar.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\create-profile\create-profile.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\pages\dashboard\dashboard.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\pages\forgot-password\forgot-password.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\pages\landing\landing.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\pages\login\login.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\pages\register\register.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\pages\requests\requests.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\profile-view\profile-view.html
+C:\Users\user\Desktop\stage-finale\frontend\src\app\reclamation-component\reclamation-component.html

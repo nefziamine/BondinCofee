@@ -1,0 +1,175 @@
+.chatbot-wrapper {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 2000;
+  
+  &.open .chatbot-panel {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.chatbot-trigger {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: var(--red);
+  border: none;
+  box-shadow: 0 10px 30px rgba(192,40,31,0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  .icon { font-size: 1.8rem; }
+  &:hover { transform: scale(1.1); }
+}
+
+.chatbot-panel {
+  position: absolute;
+  bottom: 85px;
+  right: 0;
+  width: 400px;
+  height: 550px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.8);
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: bottom right;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.chatbot-header {
+  padding: 1.5rem;
+  background: rgba(0,0,0,0.1);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  h3 { margin: 0; font-size: 1.1rem; color: var(--gold); }
+  .status { font-size: 0.7rem; color: #4caf50; font-family: var(--font-ui); text-transform: uppercase; letter-spacing: 0.1em; }
+  .close-btn { background: none; border: none; color: var(--text); font-size: 1.5rem; cursor: pointer; opacity: 0.5; &:hover { opacity: 1; } }
+}
+
+.chatbot-messages {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: radial-gradient(circle at top right, rgba(184, 136, 42, 0.05) 0%, transparent 40%);
+}
+
+.message {
+  max-width: 80%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
+  white-space: pre-wrap;
+  
+  &.system { 
+    max-width: 100%; 
+    background: transparent; 
+    text-align: center; 
+    color: var(--text); 
+    opacity: 0.5; 
+    font-size: 0.8rem;
+    font-style: italic;
+  }
+
+  &.user {
+    align-self: flex-end;
+    background: var(--red);
+    color: #fff;
+    border-bottom-right-radius: 2px;
+  }
+
+  &.bot {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    border-bottom-left-radius: 2px;
+    border-left: 1px solid var(--border);
+  }
+}
+
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  
+  span {
+    width: 6px;
+    height: 6px;
+    background: var(--text);
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: typing 1.4s infinite ease-in-out both;
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+
+.chatbot-footer {
+  padding: 1.25rem;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 0.5rem;
+  
+  input {
+    flex: 1;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    padding: 0.75rem 1.25rem;
+    color: var(--text);
+    font-size: 0.9rem;
+    outline: none;
+    transition: 0.3s;
+    &:focus { border-color: var(--red); }
+  }
+  
+  button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--red);
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.3s;
+    &:disabled { opacity: 0.3; cursor: default; }
+    &:hover:not(:disabled) { transform: scale(1.05); }
+  }
+}
+
+@keyframes typing {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* RTL Support */
+html[dir="rtl"] {
+  .chatbot-wrapper { right: auto; left: 2rem; }
+  .chatbot-panel { transform-origin: bottom left; left: 0; right: auto; }
+}

@@ -1,27 +1,76 @@
-<nav class="navbar">
+<nav class="navbar" [class.ltr]="auth.currentLang() !== 'ar'" [class.rtl]="auth.currentLang() === 'ar'">
   <div class="nav-container">
     <div class="brand" routerLink="/">
       <img class="brand-logo" src="assets/images/logobondin.png" alt="Cafés BONDIN">
     </div>
-    
+
     <div class="nav-links">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">L'Art du Café</a>
-      
-      <ng-container *ngIf="!auth.isLoggedIn()">
-        <a routerLink="/login" routerLinkActive="active">Maison de Torréfaction</a>
-        <a routerLink="/register" class="cta-join">S'abonner aux récoltes</a>
+      <!-- Theme Toggle -->
+      <div class="nav-icon-container" (click)="toggleTheme()">
+        <span class="icon">{{ auth.isDarkMode() ? '🔆' : '🌙' }}</span>
+      </div>
+
+      <!-- Language Selector -->
+      <div class="nav-icon-container" (click)="toggleLangs()" style="margin-right: 0.5rem;">
+        <span class="icon">🌐</span>
+        <div *ngIf="showLangs()" class="dropdown-panel lang-panel" (click)="$event.stopPropagation()">
+          <div class="lang-item" (click)="changeLang('fr')">🇫🇷 Français</div>
+          <div class="lang-item" (click)="changeLang('en')">🇬🇧 English</div>
+          <div class="lang-item" (click)="changeLang('ar')">🇸🇦 العربية</div>
+        </div>
+      </div>
+
+      <!-- Main Navigation -->
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'Acceuil'
+        |translate}}</a>
+
+      <ng-container *ngIf="!auth.userRole()">
+        <a routerLink="/login" routerLinkActive="active">{{ 'NAV.LOGIN' | translate }}</a>
+        <a routerLink="/register" class="cta-join">{{ 'NAV.REGISTER' | translate }}</a>
       </ng-container>
 
-      <ng-container *ngIf="auth.isLoggedIn()">
-        <a routerLink="/dashboard" routerLinkActive="active">Cabinet de Gestion</a>
-        <a (click)="logout()" class="logout-link">Déconnexion</a>
+      <ng-container *ngIf="auth.userRole()">
+        <a routerLink="/dashboard" routerLinkActive="active">{{ 'NAV.DASHBOARD' | translate }}</a>
+        <a *ngIf="auth.userRole() === 'ADMIN'" routerLink="/admin">{{ 'NAV.ADMIN_PANEL' | translate }}</a>
       </ng-container>
-    </div>
 
-    <!-- Mobile Hamburger: Conceptual as per requirements -->
-    <div class="mobile-toggle">
-      <span></span>
-      <span></span>
+      <!-- User Actions (Only visible if logged in) -->
+      <div class="nav-actions" *ngIf="auth.userRole()">
+        <!-- Profile View -->
+        <div class="nav-icon-container" routerLink="/afficherprofil" title="Profile" style="margin-right: 15px;">
+          <span class="icon">👤</span>
+        </div>
+
+        <!-- Bell Notifications -->
+        <div class="nav-icon-container" (click)="toggleNotifications()">
+          <span class="icon">📥</span>
+          <span *ngIf="notifService.unreadCount() > 0" class="badge">{{ notifService.unreadCount() }}</span>
+
+          <div *ngIf="showNotifications()" class="dropdown-panel notifications-panel"
+            (click)="$event.stopPropagation()">
+            <header>
+              <span>Notifications</span>
+              <button (click)="notifService.markAllAsRead()">{{ 'APP.READ_ALL' | translate }}</button>
+            </header>
+            <div class="scroll-area">
+              <div *ngIf="notifService.notifications().length === 0" class="empty">{{ 'APP.EMPTY_NOTIF' | translate }}
+              </div>
+              <div *ngFor="let n of notifService.notifications()" class="notif-item" [class.unread]="!n.read"
+                [class.highlighted]="highlightedId() === n.id" (click)="highlightedId.set(n.id)"
+                (dblclick)="notifService.markAsRead(n.id); $event.stopPropagation()">
+                <span class="icon">{{ n.icon }}</span>
+                <div class="text">
+                  <p>{{ n.message }}</p>
+                  <time>{{ n.timestamp | date:'shortTime' }}</time>
+                </div>
+                <span *ngIf="!n.read" class="unread-dot"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a (click)="logout()" class="logout-link">{{ 'NAV.LOGOUT' | translate }}</a>
+      </div>
     </div>
   </div>
 </nav>

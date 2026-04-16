@@ -2,43 +2,43 @@
   <div class="bondin-card" style="max-width: 600px;">
     
     <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid #da1c1c; padding-bottom: 15px; margin-bottom:20px;">
-       <h1 style="color:#fff; margin:0;">📝 Nouveau Profil</h1>
-       <a routerLink="/dashboard" class="btn-bondin-secondary">← Annuler</a>
+       <h1 style="color:#fff; margin:0;">{{ 'PROF_C.TITLE' | translate }}</h1>
+       <a routerLink="/dashboard" class="btn-bondin-secondary">{{ 'PROF_C.CANCEL' | translate }}</a>
     </div>
 
     <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" style="background: rgba(0,0,0,0.3); padding: 25px; border-radius: 12px;">
       
       <div style="margin-bottom:15px;">
-        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Nom complet</label>
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">{{ 'PROF.NAME' | translate }}</label>
         <input class="bondin-input" formControlName="nomComplet" placeholder="Ex: Ali Ben Salem" />
       </div>
 
       <div style="margin-bottom:15px;">
-        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Email</label>
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">{{ 'PROF.EMAIL' | translate }}</label>
         <input type="email" class="bondin-input" formControlName="email" placeholder="Ex: jean.dupont@bondin.com" />
       </div>
 
       <div style="margin-bottom:15px;">
-        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Département</label>
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">{{ 'PROF.DEPT' | translate }}</label>
         <input class="bondin-input" formControlName="department" placeholder="Ex: Ressources Humaines" />
       </div>
 
       <div style="margin-bottom:15px;">
-        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Poste Administratif</label>
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">{{ 'PROF.JOB' | translate }}</label>
         <input class="bondin-input" formControlName="poste" placeholder="Ex: Ingénieur IT" />
       </div>
 
       <div style="margin-bottom:15px;">
-        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Téléphone</label>
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">{{ 'PROF.TEL' | translate }}</label>
         <input class="bondin-input" formControlName="telephone" placeholder="Ex: +216..." />
       </div>
 
       <div style="margin-bottom:25px;">
-        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">Récapitulatif Expérience</label>
+        <label style="color:#ffcccc; font-size: 0.9em; margin-bottom: 5px; display:block;">{{ 'PROF_C.SUMM' | translate }}</label>
         <textarea class="bondin-textarea" formControlName="experience" placeholder="Décrivez votre parcours..." rows="3"></textarea>
       </div>
 
-      <button type="submit" class="btn-bondin" style="width:100%;">Finaliser l'inscription</button>
+      <button type="submit" class="btn-bondin" style="width:100%;">{{ 'PROF_C.FINISH' | translate }}</button>
     </form>
     
   </div>

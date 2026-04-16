@@ -1,0 +1,41 @@
+<div class="chatbot-wrapper" [class.open]="isOpen()">
+  <!-- FLOATING TRIGGER -->
+  <button class="chatbot-trigger" (click)="toggle()">
+    <span class="icon">☕</span>
+  </button>
+
+  <!-- CHAT PANEL -->
+  <div class="chatbot-panel">
+    <header class="chatbot-header">
+      <div class="bot-info">
+        <h3>{{ getBotName() }}</h3>
+        <span class="status">{{ 'CHAT.ONLINE' | translate }}</span>
+      </div>
+      <button class="close-btn" (click)="toggle()">×</button>
+    </header>
+
+    <div class="chatbot-messages" #scrollMe>
+      <div class="message system">
+        {{ 'CHAT.WELCOME' | translate }}
+      </div>
+
+      <div *ngFor="let m of chatService.messages()" class="message" [class.user]="m.role === 'user'" [class.bot]="m.role === 'assistant'">
+        <div class="content">{{ m.content }}</div>
+      </div>
+
+      <div *ngIf="chatService.isTyping()" class="message bot typing">
+        <div class="typing-indicator">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="chatbot-footer">
+      <input type="text" 
+             [placeholder]="'CHAT.PLACEHOLDER' | translate" 
+             [(ngModel)]="userMessage" 
+             (keyup.enter)="send()">
+      <button (click)="send()" [disabled]="!userMessage.trim()">→</button>
+    </div>
+  </div>
+</div>

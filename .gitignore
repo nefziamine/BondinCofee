@@ -31,3 +31,10 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local H2 DB and dev logs (do not push)
+backend/*.mv.db
+backend/crash.log
+backend/startup_logs.txt
+backend/startup_output.txt
+frontend/build-log.txt

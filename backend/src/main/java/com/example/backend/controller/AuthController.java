@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.example.backend.model.ProfileUser;
+import com.example.backend.repository.ProfileRepository;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -15,46 +18,71 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ProfileRepository profileRepository;
+
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody Map<String, String> creds) {
+    public org.springframework.http.ResponseEntity<?> login(@RequestBody Map<String, String> creds) {
         String email = creds.get("email");
         String password = creds.get("password");
-        
-        Optional<User> userOpt = userRepository.findByEmail(email);
+
+        User user = userRepository.findByEmail(email).orElse(null);
         Map<String, String> response = new HashMap<>();
 
-        if (userOpt.isPresent() && userOpt.get().getPassword().equals(password)) {
-            User user = userOpt.get();
-            response.put("token", "dummy-jwt-token-for-" + email);
+        if (user != null && user.getPassword().equals(password)) {
+            user.setLastLogin(java.time.LocalDateTime.now());
+            userRepository.save(user);
+            response.put("token", generateToken(user.getEmail(), user.getRole(), user.getId()));
             response.put("role", user.getRole());
-            response.put("message", "Logged in successfully");
-            return response;
+            response.put("userId", user.getId().toString());
+            response.put("message", "Login successful");
+            return org.springframework.http.ResponseEntity.ok(response);
         } else {
-            // Fallback for mock roles if user not in DB (Optional)
-            String role = "EMPLOYE";
-            if (email != null) {
-                if (email.contains("admin")) role = "ADMIN";
-                else if (email.contains("it")) role = "SERVICE_IT";
-                else if (email.contains("rh")) role = "RH";
-            }
-            response.put("token", "dummy-jwt-token-for-" + email);
-            response.put("role", role);
-            response.put("message", "Logged in successfully (Mock)");
-            return response;
+            response.put("message", "Identifiants invalides");
+            return org.springframework.http.ResponseEntity.status(401).body(response);
         }
+    }
+
+    private String generateToken(String email, String role, Long userId) {
+        // structural JWT: header.payload.signature
+        String header = "{\"alg\":\"HS256\",\"typ\":\"JWT\"}";
+        String payload = String.format("{\"sub\":\"%s\",\"role\":\"%s\",\"userId\":%d,\"exp\":%d}", 
+            email, role, userId, (System.currentTimeMillis() / 1000) + 36000);
+        
+        return java.util.Base64.getEncoder().encodeToString(header.getBytes()) + "." +
+               java.util.Base64.getEncoder().encodeToString(payload.getBytes()) + ".signature";
     }
 
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody Map<String, String> data) {
         Map<String, String> response = new HashMap<>();
         try {
+            String role = data.get("role");
+            if ("ADMIN".equals(role)) {
+                // Count existing admins to enforce single admin rule
+                long adminCount = userRepository.findAll().stream()
+                        .filter(u -> "ADMIN".equals(u.getRole()))
+                        .count();
+                if (adminCount >= 1) {
+                    response.put("message", "Accès refusé. La Maison Bondin ne peut avoir qu'un seul Administrateur.");
+                    return response;
+                }
+            }
+
             User user = new User();
             user.setEmail(data.get("email"));
-            user.setPassword(data.get("motDePasse"));
-            user.setNomUtilisateur(data.get("nomUtlisateur"));
-            user.setRole(data.get("role"));
+            user.setPassword(data.get("password"));
+            user.setNomUtilisateur(data.get("nomUtilisateur"));
+            user.setRole(role != null ? role : "EMPLOYE");
             
             userRepository.save(user);
+            
+            ProfileUser profile = new ProfileUser();
+            profile.setUserId(user.getId());
+            profile.setNomComplet(user.getNomUtilisateur());
+            profile.setEmail(user.getEmail());
+            profile.setPoste(user.getRole());
+            profileRepository.save(profile);
             
             response.put("message", "Registered successfully");
             return response;

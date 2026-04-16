@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -5,7 +6,7 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-manage-permissions',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslateModule],
   template: `
     <div class="page-container">
       <div class="bondin-card" style="max-width: 800px;">

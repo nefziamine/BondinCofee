@@ -2,36 +2,49 @@
   <div class="register-container">
     <div class="register-box">
       <header class="register-header">
-        <span class="ui-label">Cabinet de Gestion</span>
-        <h1>Solliciter un Accès</h1>
-        <p class="subtitle">L’Excellence Opérationnelle depuis 1910</p>
+        <span class="ui-label">{{ 'AUTH.LOGIN_CABINET' | translate }}</span>
+        <h1>{{ 'AUTH.REG_TITLE' | translate }}</h1>
+        <p class="subtitle">{{ 'AUTH.LOGIN_SUB' | translate }}</p>
       </header>
+
+      <div *ngIf="errorMessage" class="error-banner">
+        <span>⚠️</span> {{ errorMessage }}
+      </div>
 
       <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
         <div class="form-group">
-          <label>Identité (Nom complet)</label>
+          <label>{{ 'AUTH.REG_NAME' | translate }}</label>
           <input type="text" formControlName="fullName" placeholder="Votre nom complet">
         </div>
 
         <div class="form-group">
-          <label>Affectation (Email professionnel)</label>
+          <label>{{ 'AUTH.LOGIN_ID' | translate }}</label>
           <input type="email" formControlName="email" placeholder="votre.nom@cafesbondin.tn">
         </div>
 
         <div class="form-group">
-          <label>Mot de passe</label>
+          <label>{{ 'AUTH.REG_ROLE' | translate }}</label>
+          <select formControlName="role" class="bondin-select">
+            <option value="EMPLOYE">{{ 'AUTH.REG_ROLE_EMP' | translate }}</option>
+            <option value="RH">{{ 'AUTH.REG_ROLE_RH' | translate }}</option>
+            <option value="IT">{{ 'AUTH.REG_ROLE_IT' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'AUTH.LOGIN_PWD' | translate }}</label>
           <input type="password" formControlName="password" placeholder="••••••••">
         </div>
 
         <div class="form-actions">
-          <button type="submit" [disabled]="loading" class="btn-bondin-red">
-            {{ loading ? 'Enregistrement...' : 'Solliciter un compte →' }}
+          <button type="submit" class="btn-bondin-red" style="width: 100%; padding: 1rem; cursor: pointer;">
+            {{ loading ? ('AUTH.REG_LOADING' | translate) : ('AUTH.REG_BTN' | translate) }}
           </button>
         </div>
       </form>
 
       <footer class="register-footer">
-        <p>Déjà membre de la maison ? <a routerLink="/login">Se connecter</a></p>
+        <p>{{ 'AUTH.REG_MEMBER' | translate }} <a routerLink="/login">{{ 'AUTH.REG_LOGIN' | translate }}</a></p>
       </footer>
     </div>
   </div>

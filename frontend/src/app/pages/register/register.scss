@@ -4,7 +4,7 @@
 
 .register-page {
   min-height: 100vh;
-  background-image: url('/assets/images/hero_bondin_updated.jpg');
+  background-image: url('/assets/images/background.png');
   background-size: cover;
   background-position: center;
   display: flex;
@@ -53,6 +53,23 @@
   }
 }
 
+.error-banner {
+  background: rgba(181, 23, 23, 0.1);
+  border: 1px solid rgba(181, 23, 23, 0.3);
+  padding: 1rem;
+  margin-bottom: 2rem;
+  color: var(--red);
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  letter-spacing: 0.05em;
+
+  span { font-size: 1.1rem; }
+}
+
 .register-form {
   text-align: left;
 
@@ -69,7 +86,7 @@
       margin-bottom: 0.5rem;
     }
 
-    input {
+    input, select.bondin-select {
       width: 100%;
       background: transparent;
       border: none;
@@ -89,6 +106,30 @@
         color: rgba(237, 224, 200, 0.2);
         font-family: var(--font-body);
         font-size: 0.9rem;
+      }
+
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover, 
+      &:-webkit-autofill:focus {
+        -webkit-text-fill-color: var(--cream);
+        -webkit-box-shadow: 0 0 0px 1000px var(--bg-surface) inset;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+    }
+
+    select.bondin-select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='goldenrod' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.5rem center;
+      background-size: 1.2rem;
+      padding-right: 2.5rem;
+
+      option {
+        background: var(--bg-surface);
+        color: var(--cream);
+        padding: 1rem;
       }
     }
   }

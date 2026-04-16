@@ -16,6 +16,10 @@ public class User {
     private String nomUtilisateur;
     private String role;
 
+    private String status = "ACTIVE";
+    private java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
+    private java.time.LocalDateTime lastLogin;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -30,4 +34,13 @@ public class User {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public java.time.LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public java.time.LocalDateTime getLastLogin() { return lastLogin; }
+    public void setLastLogin(java.time.LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
 }

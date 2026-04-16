@@ -2,25 +2,25 @@
   <div class="login-container">
     <div class="login-box">
       <header class="login-header">
-        <span class="ui-label">Cabinet de Gestion</span>
-        <h1>Accès Interne</h1>
-        <p class="subtitle">L’Excellence Opérationnelle depuis 1910</p>
+        <span class="ui-label">{{ 'AUTH.LOGIN_CABINET' | translate }}</span>
+        <h1>{{ 'AUTH.LOGIN_TITLE' | translate }}</h1>
+        <p class="subtitle">{{ 'AUTH.LOGIN_SUB' | translate }}</p>
       </header>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
         <div class="form-group">
-          <label for="email">Identifiant (Email)</label>
+          <label for="email">{{ 'AUTH.LOGIN_ID' | translate }}</label>
           <input type="email" id="email" formControlName="email" placeholder="votre.nom@cafesbondin.tn">
           <div *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid" class="error">
-            L'identifiant est requis.
+            {{ 'AUTH.LOGIN_ID_ERR' | translate }}
           </div>
         </div>
 
         <div class="form-group">
-          <label for="password">Mot de passe</label>
+          <label for="password">{{ 'AUTH.LOGIN_PWD' | translate }}</label>
           <input type="password" id="password" formControlName="password" placeholder="••••••••">
           <div *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid" class="error">
-            Le mot de passe est obligatoire.
+            {{ 'AUTH.LOGIN_PWD_ERR' | translate }}
           </div>
         </div>
 
@@ -29,16 +29,16 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" [disabled]="loading" class="btn-bondin-red">
-            {{ loading ? 'Chargement...' : 'Entrer dans la maison →' }}
+          <button type="submit" [disabled]="loading || loginForm.invalid" class="btn-bondin-red">
+            {{ loading ? ('AUTH.LOGIN_LOADING' | translate) : ('AUTH.LOGIN_BTN' | translate) }}
           </button>
         </div>
       </form>
 
       <footer class="login-footer">
-        <a routerLink="/forgot-password">Accès oublié ?</a>
+        <a routerLink="/forgot-password">{{ 'AUTH.LOGIN_FORGOT' | translate }}</a>
         <span>·</span>
-        <a routerLink="/register">Demander un accès</a>
+        <a routerLink="/register">{{ 'AUTH.LOGIN_REGISTER' | translate }}</a>
       </footer>
     </div>
   </div>

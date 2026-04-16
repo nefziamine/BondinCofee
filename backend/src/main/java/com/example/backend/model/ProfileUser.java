@@ -1,10 +1,6 @@
 package com.example.backend.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "profiles")
@@ -21,6 +17,7 @@ public class ProfileUser {
     private String poste;
     private String telephone;
     private String experience;
+    @Column(columnDefinition = "TEXT")
     private String imageurl;
 
     public Long getId() { return id; }

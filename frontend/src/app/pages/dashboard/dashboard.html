@@ -1,69 +1,238 @@
-<div class="page-container">
-  <div class="bondin-card">
-    <h1 class="bondin-title">
-      ☕ Espace {{ userRole }}
-      <img src="assets/images/logobondin.png" style="height: 60px; margin-left: auto;" alt="Bondin Logo" />
-    </h1>
+<div class="dashboard-page">
+  <div class="dashboard-container">
+    <header class="dashboard-header">
+      <div class="welcome-header">
+        <span class="ui-label">{{ 'DASHBOARD.SPACE' | translate }} {{ auth.userRole() }}</span>
+        <h1>{{ 'DASHBOARD.WELCOME' | translate }} <br>{{ 'DASHBOARD.BONDIN' | translate }}</h1>
+        <p>{{ 'DASHBOARD.HEADING' | translate }}</p>
+      </div>
 
-    <p class="welcome-msg">
-      Bienvenue sur votre portail BONDIN, l'excellence du café depuis 1910.
-    </p>
+      <div class="profile-badge-container" *ngIf="auth.userProfile()">
+        <div class="profile-photo">
+          <img [src]="auth.userProfile().imageurl || 'assets/default-avatar.png'" alt="Profile">
+        </div>
+        <div class="profile-info" style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+          <span class="user-name" style="font-family: var(--font-body); font-weight: 600; color: var(--text); font-size: 0.9rem;">{{ auth.userProfile().nomComplet || 'Utilisateur Bondin' }}</span>
+          <span class="dept">{{ auth.userProfile().department || 'Bondin Heritage' }}</span>
+        </div>
+      </div>
+    </header>
 
-    <!-- Menu Dynamique selon le Rôle -->
-    <div class="menu-grid">
-      <!-- Actions EMPLOYÉ -->
-      <ng-container *ngIf="userRole === 'EMPLOYE'">
-        <a routerLink="/afficherprofil" class="btn-bondin">
-          <span class="btn-icon">👤</span> Gérer Profil
-        </a>
-        <a routerLink="/poser-question" class="btn-bondin">
-          <span class="btn-icon">❓</span> Poser Question
-        </a>
-        <a routerLink="/repondre-question" class="btn-bondin">
-          <span class="btn-icon">💬</span> Répondre Question
-        </a>
-        <a routerLink="/reclamation" class="btn-bondin">
-          <span class="btn-icon">📋</span> Soumettre Réclamation
-        </a>
+    <!-- ADMIN/RH/IT STATISTICS -->
+    <section class="stats-overview" *ngIf="(auth.userRole() === 'ADMIN' || auth.userRole() === 'RH' || auth.userRole() === 'IT') && stats()">
+      <div class="kpi-grid">
+        <div class="kpi-card clickable" *ngIf="auth.userRole() === 'ADMIN'" (click)="activeTab.set('ACTIVE')" [class.active-kpi]="activeTab() === 'ACTIVE'">
+          <span class="kpi-label">{{ 'ADMIN.KPI.ACTIVE' | translate }}</span>
+          <span class="kpi-value">{{ stats().totalActiveUsers }}</span>
+          <span class="kpi-trend">+{{ stats().newUsersThisMonth }} ce mois</span>
+        </div>
+        <div class="kpi-card clickable" (click)="activeTab.set('OPEN')" [class.active-kpi]="activeTab() === 'OPEN'">
+          <span class="kpi-label">{{ 'ADMIN.KPI.OPEN_TICKETS' | translate }}</span>
+          <span class="kpi-value">{{ stats().openTickets }}</span>
+          <span class="kpi-trend">En attente</span>
+        </div>
+        <div class="kpi-card clickable" (click)="activeTab.set('RESOLVED')" [class.active-kpi]="activeTab() === 'RESOLVED'">
+          <span class="kpi-label">{{ 'ADMIN.KPI.RESOLVED' | translate }}</span>
+          <span class="kpi-value">{{ stats().ticketsResolvedThisWeek }}</span>
+          <span class="kpi-trend">Performance stable</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">{{ 'ADMIN.KPI.RESPONSE_TIME' | translate }}</span>
+          <span class="kpi-value">{{ stats().averageResponseTime }}h</span>
+          <span class="kpi-trend">Moyenne globale</span>
+        </div>
+      </div>
+
+      <!-- DETAILS DRAWER (Inline on Dashboard) -->
+      <div class="stats-detail-drawer" *ngIf="activeTab()" class="animate-fade">
+          <div class="drawer-header" style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; align-items: center;">
+             <div>
+               <h3 style="color: var(--gold); font-family: var(--font-display); font-style: italic; font-size: 1.8rem; margin: 0;">
+                 {{ activeTab() === 'ACTIVE' ? 'Exploration: Collaborateurs Actifs' : (activeTab() === 'OPEN' ? 'Exploration: Tickets en Attente' : 'Exploration: Archive des Résolutions') }}
+               </h3>
+               <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">Données synchronisées en temps réel avec la base de données Maison Bondin.</p>
+             </div>
+             <button (click)="activeTab.set(null)" style="background:none; border:none; color: var(--text-muted); font-size: 2rem; cursor:pointer; line-height: 1;">×</button>
+          </div>
+          
+          <div class="drawer-content" style="max-height: 480px; overflow-y: auto; padding-right: 1rem;">
+             <table class="bondin-styled-table" style="width: 100%; border-collapse: collapse;">
+                <!-- ACTIVE USERS -->
+                <thead *ngIf="activeTab() === 'ACTIVE'">
+                   <tr style="text-align: left; color: var(--gold); font-size: 0.8rem; border-bottom: 1px solid var(--border);">
+                      <th style="padding: 1rem;">Collaborateur</th>
+                      <th style="padding: 1rem;">Contact</th>
+                      <th style="padding: 1rem;">Poste / Rôle</th>
+                   </tr>
+                </thead>
+                <tbody *ngIf="activeTab() === 'ACTIVE'">
+                   <tr *ngFor="let u of stats().activeUserList" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <td style="padding: 1rem; font-weight: 600;">{{ u.nomUtilisateur }}</td>
+                      <td style="padding: 1rem; color: var(--gold); font-size: 0.9rem;">{{ u.email }}</td>
+                      <td style="padding: 1rem;"><span class="role-badge" [class]="u.role">{{ u.role }}</span></td>
+                   </tr>
+                </tbody>
+
+                <!-- OPEN TICKETS -->
+                <thead *ngIf="activeTab() === 'OPEN'">
+                   <tr style="text-align: left; color: var(--gold); font-size: 0.8rem; border-bottom: 1px solid var(--border);">
+                      <th style="padding: 1rem;">Sujet & Catégorie</th>
+                      <th style="padding: 1rem;">Émetteur</th>
+                      <th style="padding: 1rem;">Détails de la Requête</th>
+                      <th style="padding: 1rem;">Priorité</th>
+                   </tr>
+                </thead>
+                <tbody *ngIf="activeTab() === 'OPEN'">
+                   <tr *ngFor="let t of stats().openTicketList" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <td style="padding: 1rem;">
+                         <div style="font-weight: 600; color: var(--gold);">{{ t.sujet }}</div>
+                         <div style="font-size: 0.7rem; text-transform: uppercase; opacity: 0.6;">Dép: {{ t.category || 'Général' }}</div>
+                      </td>
+                      <td style="padding: 1rem; font-size:0.9rem;">
+                         <div style="display: flex; align-items: center; gap: 0.8rem;">
+                            <img *ngIf="stats().userPhotos?.[t.userEmail]" 
+                                 [src]="stats().userPhotos[t.userEmail]" 
+                                 style="width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--gold); object-fit: cover; background: var(--surface);">
+                            <div *ngIf="!stats().userPhotos?.[t.userEmail]" class="sm-profile-placeholder" style="width: 32px; height: 32px; font-size: 0.8rem;">👤</div>
+                            <span>{{ t.userEmail }}</span>
+                         </div>
+                      </td>
+                      <td style="padding: 1rem; font-size: 0.85rem; line-height: 1.4; max-width: 400px;">{{ t.description }}</td>
+                      <td style="padding: 1rem;"><span style="color: #ff5247; font-size: 0.7rem; font-weight: 800;">EN ATTENTE</span></td>
+                   </tr>
+                </tbody>
+
+                 <!-- RESOLVED TICKETS -->
+                 <thead *ngIf="activeTab() === 'RESOLVED'">
+                   <tr style="text-align: left; color: var(--gold); font-size: 0.8rem; border-bottom: 1px solid var(--border);">
+                      <th style="padding: 1rem;">Sujet</th>
+                      <th style="padding: 1rem;">Solution Apportée (Base DB)</th>
+                      <th style="padding: 1rem;">Statut</th>
+                   </tr>
+                 </thead>
+                 <tbody *ngIf="activeTab() === 'RESOLVED'">
+                   <tr *ngFor="let t of stats().resolvedTicketList" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                      <td style="padding: 1rem; font-weight: 600;">{{ t.sujet }}</td>
+                      <td style="padding: 1rem; font-size: 0.9rem; font-style: italic; color: var(--text-muted); line-height: 1.4; max-width: 500px;">{{ t.reponse }}</td>
+                      <td style="padding: 1rem;"><span style="color: #4CAF50; font-size: 0.7rem; font-weight: 800;">RÉSOLU ✓</span></td>
+                   </tr>
+                 </tbody>
+             </table>
+          </div>
+       </div>
+    </section>
+
+    <div class="editorial-grid">
+      <!-- DASHBOARD CARDS: ADMIN SECTION -->
+      <ng-container *ngIf="auth.userRole() === 'ADMIN'">
+        <div routerLink="/admin" class="card editorial-card-equal">
+          <div class="card-glow"></div>
+          <div class="card-inner">
+            <span class="editorial-tag">{{ 'DASHBOARD.ADMIN_TAG' | translate }}</span>
+            <h3>{{ 'DASHBOARD.ADMIN_TITLE' | translate }}</h3>
+            <p>{{ 'DASHBOARD.ADMIN_DESC' | translate }}</p>
+            <div class="card-footer">
+              <span class="icon">👥</span>
+              <span class="action-hint">{{ 'DASHBOARD.ADMIN_ENTER' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div routerLink="/requests" class="card editorial-card-equal alternate">
+          <div class="card-inner">
+            <span class="editorial-tag">COMMS</span>
+            <h3>Communication</h3>
+            <p>Gérez la messagerie interne et diffusez des annonces.</p>
+            <div class="card-footer">
+              <span class="icon">✉️</span>
+              <span class="action-hint">Messagerie</span>
+            </div>
+          </div>
+        </div>
       </ng-container>
 
-      <!-- Actions ADMIN -->
-      <ng-container *ngIf="userRole === 'ADMIN'">
-        <a routerLink="/gerer-utilisateurs" class="btn-bondin">
-          <span class="btn-icon">👥</span> Gérer Utilisateurs
-        </a>
-        <a routerLink="/gerer-permissions" class="btn-bondin">
-          <span class="btn-icon">🔐</span> Gérer Permissions
-        </a>
-        <a routerLink="/reclamation" class="btn-bondin">
-          <span class="btn-icon">📊</span> Consulter Réclamations
-        </a>
+      <!-- DASHBOARD CARDS: RH SECTION -->
+      <ng-container *ngIf="auth.userRole() === 'RH'">
+        <div routerLink="/afficherprofil" class="card editorial-card-primary">
+          <div class="card-glow"></div>
+          <div class="card-inner">
+            <span class="editorial-tag">{{ 'DASHBOARD.EMP_TAG' | translate }}</span>
+            <h3>{{ 'DASHBOARD.EMP_TITLE' | translate }}</h3>
+            <p>{{ 'DASHBOARD.EMP_DESC' | translate }}</p>
+            <div class="card-footer">
+              <span class="icon">👤</span>
+              <span class="action-hint">{{ 'DASHBOARD.EMP_MANAGE' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div routerLink="/requests" class="card editorial-card-secondary">
+          <div class="card-inner">
+            <span class="editorial-tag">RH COMMS</span>
+            <h3>Messagerie Interne</h3>
+            <p>Communiquez avec les collaborateurs et gérez les dossiers.</p>
+            <div class="card-footer">
+              <span class="icon">✉️</span>
+              <span class="action-hint">Ouvrir</span>
+            </div>
+          </div>
+        </div>
       </ng-container>
 
-      <!-- Actions SERVICE IT -->
-      <ng-container *ngIf="userRole === 'SERVICE_IT'">
-        <a routerLink="/reclamation" class="btn-bondin">
-          <span class="btn-icon">📊</span> Consulter Réclamations
-        </a>
-        <a routerLink="/maintenance" class="btn-bondin">
-          <span class="btn-icon">🛠️</span> Maintenance App
-        </a>
-        <a routerLink="/bugs" class="btn-bondin">
-          <span class="btn-icon">🐛</span> Correction Bug
-        </a>
-        <a routerLink="/supervision" class="btn-bondin">
-          <span class="btn-icon">👁️</span> Supervision
-        </a>
+      <!-- DASHBOARD CARDS: IT SECTION -->
+      <ng-container *ngIf="auth.userRole() === 'IT'">
+        <div routerLink="/afficherprofil" class="card editorial-card-primary">
+          <div class="card-glow"></div>
+          <div class="card-inner">
+            <span class="editorial-tag">{{ 'DASHBOARD.EMP_TAG' | translate }}</span>
+            <h3>{{ 'DASHBOARD.EMP_TITLE' | translate }}</h3>
+            <p>{{ 'DASHBOARD.EMP_DESC' | translate }}</p>
+            <div class="card-footer">
+              <span class="icon">👤</span>
+              <span class="action-hint">{{ 'DASHBOARD.EMP_MANAGE' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div routerLink="/requests" class="card editorial-card-secondary">
+          <div class="card-inner">
+            <span class="editorial-tag">{{ 'DASHBOARD.IT_TAG' | translate }}</span>
+            <h3>{{ 'DASHBOARD.IT_TITLE' | translate }}</h3>
+            <p>{{ 'DASHBOARD.IT_DESC' | translate }}</p>
+            <div class="card-footer">
+              <span class="icon">🖥️</span>
+              <span class="action-hint">{{ 'DASHBOARD.IT_DIAGNOSE' | translate }}</span>
+            </div>
+          </div>
+        </div>
       </ng-container>
 
-      <!-- Actions RH -->
-      <ng-container *ngIf="userRole === 'RH'">
-        <a routerLink="/evaluer-user" class="btn-bondin">
-          <span class="btn-icon">📋</span> Évaluer utilisateur
-        </a>
-        <a routerLink="/consulter-questions" class="btn-bondin">
-          <span class="btn-icon">🔍</span> Consulter Questions
-        </a>
+      <!-- DASHBOARD CARDS: EMPLOYEE SECTION -->
+      <ng-container *ngIf="auth.userRole() === 'EMPLOYE'">
+        <div routerLink="/afficherprofil" class="card editorial-card-primary">
+          <div class="card-glow"></div>
+          <div class="card-inner">
+            <span class="editorial-tag">{{ 'DASHBOARD.EMP_TAG' | translate }}</span>
+            <h3>{{ 'DASHBOARD.EMP_TITLE' | translate }}</h3>
+            <p>{{ 'DASHBOARD.EMP_DESC' | translate }}</p>
+            <div class="card-footer">
+              <span class="icon">👤</span>
+              <span class="action-hint">{{ 'DASHBOARD.EMP_MANAGE' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div routerLink="/requests" class="card editorial-card-secondary">
+          <div class="card-inner">
+            <span class="editorial-tag">{{ 'DASHBOARD.EMP_REQ_TAG' | translate }}</span>
+            <h3>{{ 'DASHBOARD.EMP_REQ_TITLE' | translate }}</h3>
+            <p>{{ 'DASHBOARD.EMP_REQ_DESC' | translate }}</p>
+            <div class="card-footer">
+              <span class="icon">📩</span>
+              <span class="action-hint">{{ 'DASHBOARD.EMP_REQ_OPEN' | translate }}</span>
+            </div>
+          </div>
+        </div>
       </ng-container>
     </div>
   </div>

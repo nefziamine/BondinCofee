@@ -1,0 +1,140 @@
+<div class="page-container requests-page">
+  <div class="bondin-card requests-container">
+    <header class="requests-header">
+      <div class="title-section">
+        <span class="ui-label">Maison Bondin</span>
+        <h1>{{ 'REQ.TITLE' | translate }}</h1>
+        <p class="subtitle" *ngIf="auth.userRole() !== 'EMPLOYE'">{{ 'DASHBOARD.HEADING' | translate }}</p>
+      </div>
+
+      <!-- TABS -->
+      <div class="tabs">
+        <!-- Ticket Tabs for Employees (submit) and RH/IT (respond) -->
+        <ng-container *ngIf="auth.userRole() !== 'ADMIN'">
+          <button [class.active]="currentTab() === 'QUESTION'" (click)="setTab('QUESTION')">
+            {{ 'REQ.QUESTIONS' | translate }}
+          </button>
+          <button [class.active]="currentTab() === 'RECLAMATION'" (click)="setTab('RECLAMATION')">
+            {{ 'REQ.RECLAMATIONS' | translate }}
+          </button>
+        </ng-container>
+        
+        <!-- Messaging Tab for Everyone -->
+        <button [class.active]="currentTab() === 'MESSAGES'" (click)="setTab('MESSAGES')">
+          Messages
+        </button>
+      </div>
+    </header>
+
+    <!-- EMP SUBMISSION FORM (VISIBLE FOR EMPLOYEE ROLE) -->
+    <section *ngIf="auth.userRole() === 'EMPLOYE' && currentTab() !== 'MESSAGES'" class="submission-section animate-fade">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label>{{ 'REQ.SUBJ' | translate }}</label>
+          <input type="text" class="bondin-input" [(ngModel)]="newRequest.sujet" [placeholder]="currentTab() === 'QUESTION' ? 'Posez votre question...' : 'Décrivez votre problème...'">
+        </div>
+        <div class="form-group full-width">
+          <label>{{ 'REQ.DET' | translate }}</label>
+          <textarea class="bondin-input" rows="3" [(ngModel)]="newRequest.description" [placeholder]="currentTab() === 'QUESTION' ? 'Quel renseignement cherchez-vous ?' : 'Expliquez votre situation pour une résolution rapide.'"></textarea>
+        </div>
+      </div>
+      <button class="btn-bondin" (click)="submitRequest()">
+        {{ (currentTab() === 'QUESTION' ? 'Demander' : 'Réclamer') }}
+      </button>
+    </section>
+
+    <!-- REQUESTS LIST -->
+    <div class="requests-list" *ngIf="currentTab() !== 'MESSAGES'">
+      <div *ngIf="filteredRequests().length === 0" class="empty-state">
+        {{ 'REQ.EMP_EMPTY' | translate }}
+      </div>
+
+      <div *ngFor="let r of filteredRequests()" class="request-card" [class.resolved]="r.status === 'Resolved'" [class.question-type]="r.type === 'QUESTION'" [class.reclamation-type]="r.type === 'RECLAMATION'">
+        <div class="card-side">
+           <div class="avatar" [style.background]="r.type === 'QUESTION' ? '#1976d2' : '#d32f2f'" style="overflow: hidden; display: flex; align-items: center; justify-content: center;">
+             <img *ngIf="userPhotos().get($any(r.userEmail)?.toLowerCase()?.trim())" 
+                  [src]="userPhotos().get($any(r.userEmail)?.toLowerCase()?.trim())" 
+                  style="width: 100%; height: 100%; object-fit: cover;">
+             <span *ngIf="!userPhotos().get($any(r.userEmail)?.toLowerCase()?.trim())">{{ r.type === 'QUESTION' ? '❓' : '❗' }}</span>
+           </div>
+        </div>
+        <div class="card-main">
+          <div class="card-header">
+             <div class="info">
+               <span class="dept-badge" [class.it]="r.category === 'IT'" [class.rh]="r.category === 'RH'">{{ r.category }}</span>
+               <h3 [style.color]="r.type === 'RECLAMATION' ? '#ef9a9a' : 'inherit'">{{ r.sujet }}</h3>
+               <div class="card-meta">
+                 <span class="sender-email">{{ r.userEmail }}</span>
+                 <span class="date">{{ r.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+               </div>
+             </div>
+             <span class="status-badge" [class]="r.status.toLowerCase()">{{ r.status }}</span>
+          </div>
+          <p class="preview">{{ r.description }}</p>
+
+          <!-- RESPONSE SECTION -->
+          <div *ngIf="r.reponse" class="response-box animate-slide">
+            <span class="response-label">{{ (r.type === 'QUESTION' ? 'Renseignement fourni :' : 'Résolution Appliquée :') }}</span>
+            <p>{{ r.reponse }}</p>
+          </div>
+
+          <!-- ACTIONS PER ROLE -->
+          <div *ngIf="auth.userRole() !== 'EMPLOYE' && r.status !== 'Resolved'" class="card-actions">
+            <button *ngIf="showAnswerForm() !== r.id" class="btn-answer" (click)="showAnswerForm.set(r.id || null)">
+              <span class="icon">✍️</span> {{ 'REQ.ANSWER' | translate }}
+            </button>
+            <button *ngIf="showAnswerForm() !== r.id" class="btn-answer ai-btn" (click)="askAI(r)" [disabled]="isAiLoading() === r.id">
+              <span class="icon">{{ isAiLoading() === r.id ? '⏳' : '🤖' }}</span> 
+              {{ isAiLoading() === r.id ? 'Génération...' : 'Ask AI' }}
+            </button>
+            <button class="btn-answer secondary" (click)="updateStatus(r.id, 'InProgress')" [disabled]="isAiLoading() === r.id">
+              {{ 'REQ.PROGRESS' | translate }}
+            </button>
+          </div>
+
+          <!-- ANSWER FORM -->
+          <div *ngIf="showAnswerForm() === r.id" class="answer-drawer">
+            <textarea class="bondin-input" [(ngModel)]="currentResponse" [disabled]="isAiLoading() === r.id" placeholder="Saisissez votre réponse..."></textarea>
+            <div class="drawer-btns">
+              <button class="btn-bondin" (click)="sendResponse(r.id)" [disabled]="isAiLoading() === r.id || !currentResponse || currentResponse === 'L\'IA réfléchit...'">Envoyer</button>
+              <button class="btn-bondin secondary" (click)="showAnswerForm.set(null)" [disabled]="isAiLoading() === r.id">Annuler</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES CHAT -->
+    <div class="messages-container animate-fade" *ngIf="currentTab() === 'MESSAGES'">
+      <div class="chat-history">
+        <div *ngIf="messages().length === 0" class="empty-state">
+          Aucun message pour le moment.
+        </div>
+        <div *ngFor="let m of messages()" class="chat-message" [class.is-mine]="m.senderId === currentUserId" [class.broadcast-msg]="m.broadcast">
+          <div class="msg-header">
+            <span class="msg-type-badge" *ngIf="m.broadcast">📢 DIFFUSION</span>
+            <span class="msg-type-badge private" *ngIf="!m.broadcast">🔒 PRIVÉ</span>
+            <strong>{{ m.senderName }}</strong>
+            <span class="msg-time">{{ m.timestamp | date:'short' }}</span>
+          </div>
+          <div class="msg-body">
+            {{ m.content }}
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <div class="admin-controls" *ngIf="auth.userRole() === 'ADMIN'">
+          <label>Destinataire :</label>
+          <select class="bondin-select" [ngModel]="selectedRecipientId()" (ngModelChange)="selectedRecipientId.set($event)">
+            <option value="ALL">Tout le monde (Diffuser)</option>
+            <option *ngFor="let u of users()" [value]="u.id">{{ u.nomUtilisateur }} ({{ u.role }})</option>
+          </select>
+        </div>
+        <div class="input-row">
+          <textarea class="bondin-input" [(ngModel)]="newMessageText" placeholder="Saisissez votre message..."></textarea>
+          <button class="btn-bondin" (click)="sendMessageText()">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
