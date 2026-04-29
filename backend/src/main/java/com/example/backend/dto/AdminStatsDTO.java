@@ -9,7 +9,7 @@ public class AdminStatsDTO {
     private long ticketsResolvedThisWeek;
     private double averageResponseTime;
     private Map<String, Long> faqRankings;
-    private Map<String, Double> departmentLoad;
+    private Map<String, Integer> departmentLoad;
     private Map<String, Double> reclamationTypes;
     private long newUsersThisMonth;
     private java.util.List<User> activeUserList;
@@ -38,8 +38,8 @@ public class AdminStatsDTO {
     public void setAverageResponseTime(double averageResponseTime) { this.averageResponseTime = averageResponseTime; }
     public Map<String, Long> getFaqRankings() { return faqRankings; }
     public void setFaqRankings(Map<String, Long> faqRankings) { this.faqRankings = faqRankings; }
-    public Map<String, Double> getDepartmentLoad() { return departmentLoad; }
-    public void setDepartmentLoad(Map<String, Double> departmentLoad) { this.departmentLoad = departmentLoad; }
+    public Map<String, Integer> getDepartmentLoad() { return departmentLoad; }
+    public void setDepartmentLoad(Map<String, Integer> departmentLoad) { this.departmentLoad = departmentLoad; }
     public Map<String, Double> getReclamationTypes() { return reclamationTypes; }
     public void setReclamationTypes(Map<String, Double> reclamationTypes) { this.reclamationTypes = reclamationTypes; }
     public long getNewUsersThisMonth() { return newUsersThisMonth; }

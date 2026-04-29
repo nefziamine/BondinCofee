@@ -12,7 +12,7 @@
 
       <!-- Language Selector -->
       <div class="nav-icon-container" (click)="toggleLangs()" style="margin-right: 0.5rem;">
-        <span class="icon">🌐</span>
+        <img class="icon-img" src="assets/images/nav-language.png" alt="Language">
         <div *ngIf="showLangs()" class="dropdown-panel lang-panel" (click)="$event.stopPropagation()">
           <div class="lang-item" (click)="changeLang('fr')">🇫🇷 Français</div>
           <div class="lang-item" (click)="changeLang('en')">🇬🇧 English</div>
@@ -30,20 +30,20 @@
       </ng-container>
 
       <ng-container *ngIf="auth.userRole()">
-        <a routerLink="/dashboard" routerLinkActive="active">{{ 'NAV.DASHBOARD' | translate }}</a>
-        <a *ngIf="auth.userRole() === 'ADMIN'" routerLink="/admin">{{ 'NAV.ADMIN_PANEL' | translate }}</a>
+        <a *ngIf="auth.userRole() !== 'ADMIN'" routerLink="/dashboard" routerLinkActive="active">{{ 'NAV.DASHBOARD' | translate }}</a>
+        <a *ngIf="auth.userRole() === 'ADMIN'" routerLink="/dashboard" routerLinkActive="active">{{ 'NAV.ADMIN_PANEL' | translate }}</a>
       </ng-container>
 
       <!-- User Actions (Only visible if logged in) -->
       <div class="nav-actions" *ngIf="auth.userRole()">
         <!-- Profile View -->
         <div class="nav-icon-container" routerLink="/afficherprofil" title="Profile" style="margin-right: 15px;">
-          <span class="icon">👤</span>
+          <img class="icon-img icon-light" src="assets/images/nav-profile.png" alt="Profile">
         </div>
 
         <!-- Bell Notifications -->
         <div class="nav-icon-container" (click)="toggleNotifications()">
-          <span class="icon">📥</span>
+          <img class="icon-img icon-light" src="assets/images/nav-bell.png" alt="Notifications">
           <span *ngIf="notifService.unreadCount() > 0" class="badge">{{ notifService.unreadCount() }}</span>
 
           <div *ngIf="showNotifications()" class="dropdown-panel notifications-panel"

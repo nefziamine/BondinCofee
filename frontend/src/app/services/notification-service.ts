@@ -21,6 +21,8 @@ export class NotificationService {
   notifications = computed(() => this.notificationsSource());
   unreadCount = computed(() => this.notificationsSource().filter(n => !n.read).length);
 
+  private audioCtx: AudioContext | null = null;
+
   constructor() {}
 
   getUnreadCount(): number {
@@ -48,5 +50,38 @@ export class NotificationService {
       icon
     };
     this.notificationsSource.update(list => [newNotif, ...list]);
+    this.playNotificationSound();
+  }
+
+  private playNotificationSound() {
+    try {
+      // WebAudio avoids shipping extra audio files.
+      if (!this.audioCtx) {
+        this.audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      if (this.audioCtx.state === 'suspended') {
+        // Best effort; may require user interaction first in some browsers.
+        void this.audioCtx.resume();
+      }
+
+      const ctx = this.audioCtx;
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+
+      o.type = 'sine';
+      o.frequency.setValueAtTime(880, ctx.currentTime);
+      o.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.08);
+
+      g.gain.setValueAtTime(0.0001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.06, ctx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.14);
+
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start();
+      o.stop(ctx.currentTime + 0.15);
+    } catch {
+      // ignore audio failures (autoplay restrictions, unsupported env)
+    }
   }
 }

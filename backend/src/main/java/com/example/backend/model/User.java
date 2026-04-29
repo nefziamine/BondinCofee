@@ -19,6 +19,8 @@ public class User {
     private String status = "ACTIVE";
     private java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
     private java.time.LocalDateTime lastLogin;
+    private Integer congeRestant = 21; // Default to 21 days
+    private String department = "Bondin Heritage";
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -43,4 +45,10 @@ public class User {
 
     public java.time.LocalDateTime getLastLogin() { return lastLogin; }
     public void setLastLogin(java.time.LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
+
+    public Integer getCongeRestant() { return congeRestant; }
+    public void setCongeRestant(Integer congeRestant) { this.congeRestant = congeRestant; }
+
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
 }

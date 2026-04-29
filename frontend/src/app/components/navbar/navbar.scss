@@ -20,6 +20,10 @@
   padding: 1rem 2rem;
 }
 
+body.light-mode .navbar {
+  border-bottom: 1px solid rgba(45, 36, 30, 0.08);
+}
+
 .nav-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -84,8 +88,28 @@
     font-size: 1.1rem;
     transition: 0.2s;
   }
+
+  .icon-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    display: block;
+    transition: 0.2s;
+  }
+
+  .icon-light {
+    filter: invert(1) brightness(1.15);
+  }
+
+  /* In light mode, keep icons dark (no invert) */
+  body.light-mode & .icon-light {
+    filter: none;
+  }
   
-  &:hover .icon { transform: scale(1.1); }
+  &:hover .icon,
+  &:hover .icon-img {
+    transform: scale(1.1);
+  }
 
   .badge {
     position: absolute;

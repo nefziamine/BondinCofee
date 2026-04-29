@@ -102,6 +102,14 @@
     color: var(--text);
     border-bottom-left-radius: 2px;
     border-left: 1px solid var(--border);
+
+    a {
+      color: var(--gold);
+      text-decoration: underline;
+      font-weight: bold;
+      transition: opacity 0.2s;
+      &:hover { opacity: 0.8; }
+    }
   }
 }
 

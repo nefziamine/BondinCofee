@@ -1,0 +1,735 @@
+<div class="hub-layout">
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed()" [class.mobile-open]="mobileMenuOpen()">
+    <div class="sidebar-header">
+      <span class="sidebar-title" *ngIf="!sidebarCollapsed()">{{ sidebarTitle() }}</span>
+      <button class="sidebar-toggle" (click)="toggleSidebar()">{{ sidebarCollapsed() ? '☰' : '✕' }}</button>
+    </div>
+
+    <!-- User mini -->
+    <div class="sidebar-user" *ngIf="auth.userProfile()">
+      <img class="sidebar-avatar" [src]="auth.userProfile().imageurl || 'assets/default-avatar.png'" alt="">
+      <div class="user-info-text">
+        <span class="user-name-sm">{{ auth.userProfile().nomComplet || 'Utilisateur' }}</span>
+        <span class="user-role-sm">{{ role }}</span>
+      </div>
+    </div>
+
+    <!-- Leave balance mini -->
+    <div class="leave-balance-mini">
+      <span class="leave-icon">🏖️</span>
+      <div class="leave-text">
+        <span class="leave-days">{{ leaveBalance() }} / 30</span>
+        <span class="leave-label">Solde congé</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">Navigation</div>
+      <div class="sidebar-item" [class.active]="activeView() === 'overview'" (click)="setView('overview')">
+        <span>📊</span> <span>Tableau de bord</span>
+      </div>
+      <div class="sidebar-item" [class.active]="activeView() === 'calendar'" (click)="setView('calendar')">
+        <span>📅</span> <span>Calendrier</span>
+      </div>
+      <div class="sidebar-item" [class.active]="activeView() === 'pointage'" (click)="setView('pointage')">
+        <span>⏱️</span> <span>Pointage</span>
+      </div>
+      <div class="sidebar-item" [class.active]="activeView() === 'leave'" (click)="setView('leave')">
+        <span>🏖️</span> <span>Congés & Absences</span>
+      </div>
+      <div class="sidebar-item" [class.active]="activeView() === 'documents'" (click)="setView('documents')">
+        <span>📄</span> <span>Demande Documents</span>
+      </div>
+      <div class="sidebar-item" [class.active]="activeView() === 'received-docs'" (click)="setView('received-docs')">
+        <span>📥</span> <span>Documents Reçus</span>
+        <span class="success-badge" *ngIf="receivedDocs().length > 0">{{ receivedDocs().length }}</span>
+      </div>
+
+      <!-- RH only -->
+      <ng-container *ngIf="role === 'RH'">
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-label">Espace RH</div>
+        <div class="sidebar-item" [class.active]="activeView() === 'tickets'" (click)="setView('tickets')">
+          <span>🎫</span> <span>Requêtes & Questions</span>
+          <span class="alert-badge" *ngIf="ticketAlerts() > 0">{{ ticketAlerts() }}</span>
+        </div>
+        <div class="sidebar-item" [class.active]="activeView() === 'rh-docs'" (click)="setView('rh-docs')">
+          <span>📚</span> <span>Documentation RH</span>
+        </div>
+        <div class="sidebar-item" [class.active]="activeView() === 'rh-pointage'" (click)="setView('rh-pointage')">
+          <span>✅</span> <span>Validation Pointage</span>
+          <span class="alert-badge" *ngIf="pointageAlerts() > 0">{{ pointageAlerts() }}</span>
+        </div>
+        <div class="sidebar-item" [class.active]="activeView() === 'rh-leave'" (click)="setView('rh-leave')">
+          <span>📋</span> <span>Gestion Congés</span>
+          <span class="alert-badge" *ngIf="leaveAlerts() > 0">{{ leaveAlerts() }}</span>
+        </div>
+        <div class="sidebar-item" [class.active]="activeView() === 'rh-doc-requests'" (click)="setView('rh-doc-requests')">
+          <span>📨</span> <span>Demandes Reçues</span>
+          <span class="alert-badge" *ngIf="rhDocAlerts() > 0">{{ rhDocAlerts() }}</span>
+        </div>
+      </ng-container>
+
+      <!-- ADMIN only -->
+      <ng-container *ngIf="role === 'ADMIN'">
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-label">Administration</div>
+        <div class="sidebar-item" [class.active]="activeView() === 'admin-users'" (click)="setView('admin-users')">
+          <span>👥</span> <span>Gérer les utilisateurs</span>
+        </div>
+      </ng-container>
+
+      <!-- IT only -->
+      <ng-container *ngIf="role === 'IT'">
+        <div class="sidebar-divider"></div>
+        <div class="sidebar-label">Espace IT</div>
+        <div class="sidebar-item" [class.active]="activeView() === 'tickets'" (click)="setView('tickets')">
+          <span>🎫</span> <span>Tickets IT</span>
+          <span class="alert-badge" *ngIf="ticketAlerts() > 0">{{ ticketAlerts() }}</span>
+        </div>
+      </ng-container>
+
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-item" [class.active]="activeView() === 'messages'" (click)="setView('messages')">
+        <span>💬</span> <span>Messagerie</span>
+        <span class="alert-badge" *ngIf="messageAlerts() > 0">{{ messageAlerts() }}</span>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ═══════ MAIN CONTENT ═══════ -->
+  <main class="hub-main">
+
+    <!-- ══ OVERVIEW ══ -->
+    <div *ngIf="activeView() === 'overview'" class="animate-in">
+      <header class="admin-cover">
+        <img class="cover-image" [src]="coverImage()" alt="Admin cover">
+        <div class="cover-overlay"></div>
+        <div class="cover-profile" *ngIf="auth.userProfile()">
+          <div class="profile-photo">
+            <img [src]="auth.userProfile().imageurl || 'assets/default-avatar.png'" alt="Profile">
+          </div>
+          <div class="profile-info">
+            <span class="user-name">{{ auth.userProfile().nomComplet || 'Utilisateur Bondin' }}</span>
+            <span class="dept">{{ auth.userProfile().department || 'Bondin Heritage' }} ({{ role }})</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Panneau de configuration at the top -->
+      <div class="panneau-config">
+        <h3>Panneau de configuration</h3>
+        <div class="shortcut-grid" *ngIf="role !== 'ADMIN'">
+          <div class="shortcut-card" (click)="setView('pointage')"><span>⏱️</span> Pointage</div>
+          <div class="shortcut-card" (click)="setView('leave')"><span>🏖️</span> Congés</div>
+          <div class="shortcut-card" (click)="setView('documents')"><span>📄</span> Documents</div>
+          <div class="shortcut-card" (click)="setView('messages')"><span>💬</span> Messagerie</div>
+        </div>
+        <div class="shortcut-grid" *ngIf="role === 'ADMIN'">
+          <div class="shortcut-card" (click)="setView('overview')"><span>👥</span> Comptes Actifs</div>
+          <div class="shortcut-card" (click)="setView('tickets')"><span>🎫</span> Tickets ouverts</div>
+          <div class="shortcut-card" (click)="setView('messages')"><span>💬</span> Messagerie</div>
+          <div class="shortcut-card" (click)="setView('overview')"><span>⏱️</span> AvG Response time</div>
+        </div>
+      </div>
+
+      <!-- Logic for Admin: Charts then Stats -->
+      <ng-container *ngIf="role === 'ADMIN'">
+        <!-- Charts first -->
+        <div class="chart-container">
+          <h3>Activité Hebdomadaire (Admin)</h3>
+          <svg class="chart-svg" viewBox="0 0 700 200" preserveAspectRatio="none">
+            <line *ngFor="let y of [0,50,100,150]" x1="40" [attr.y1]="y+20" x2="680" [attr.y2]="y+20" class="chart-grid-line"/>
+            <text *ngFor="let d of chartLabels; let i = index" [attr.x]="55 + i * 95" y="195" text-anchor="middle" class="chart-label">{{ d }}</text>
+            <polygon [attr.points]="chartAreaPoints()" class="chart-area" fill="var(--gold)"/>
+            <polyline [attr.points]="chartLinePoints()" class="chart-line" stroke="var(--gold)"/>
+            <circle *ngFor="let pt of chartPoints(); let i = index" [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" fill="var(--gold)" class="chart-dot"/>
+            <polygon [attr.points]="chartArea2Points()" class="chart-area" fill="var(--red)"/>
+            <polyline [attr.points]="chartLine2Points()" class="chart-line" stroke="var(--red)"/>
+            <circle *ngFor="let pt of chartPoints2(); let i = index" [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" fill="var(--red)" class="chart-dot"/>
+          </svg>
+          <div class="chart-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span> Présences</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span> Absences</div>
+          </div>
+        </div>
+
+        <!-- Stats second -->
+        <div class="stats-cards">
+          <div class="stat-card" *ngFor="let s of realProgressStats()">
+            <div class="stat-label">{{ s.label }}</div>
+            <div class="stat-value">{{ s.value }}%</div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" [style.width.%]="s.value" [style.background]="s.color"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Three real caps (Moved from ManageUsers) -->
+        <div class="admin-stats-grid">
+          <div class="stats-panel faq-panel">
+            <h3>Questions Fréquentes</h3>
+            <div class="faq-item clickable-item" *ngFor="let item of stats()?.faqRankings | keyvalue" (click)="showFaqDetail($any(item.key))">
+              <span class="faq-name">{{ item.key }}</span>
+              <span class="faq-count">{{ item.value }} requêtes</span>
+            </div>
+          </div>
+
+          <div class="stats-panel load-panel">
+            <h3>Charge par Département</h3>
+            <div class="progress-item" *ngFor="let item of stats()?.departmentLoad | keyvalue">
+              <div class="progress-info">
+                <span>{{ item.key }}</span>
+                <span>{{ item.value }}%</span>
+              </div>
+              <div class="progress-bg">
+                <div class="progress-fill" [style.width.%]="item.value"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-panel type-panel">
+            <h3>Catégories de Réclamations</h3>
+            <div class="progress-item" *ngFor="let item of stats()?.reclamationTypes | keyvalue">
+              <div class="progress-info">
+                <span>{{ item.key }}</span>
+                <span>{{ (item.value | number:'1.0-0') }}%</span>
+              </div>
+              <div class="progress-bg">
+                <div class="progress-fill red" [style.width.%]="item.value"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Inline FAQ Detail -->
+        <div class="faq-detail-box animate-in" *ngIf="selectedFaq()">
+           <div class="detail-header-premium">
+              <h4>{{ selectedFaq() }}</h4>
+              <button (click)="selectedFaq.set(null)" class="close-detail">×</button>
+           </div>
+           <div class="detail-body">
+              <p>{{ getFaqInfo(selectedFaq()!) }}</p>
+              <button class="btn-bondin-sm" (click)="setView('tickets'); selectedFaq.set(null)">Consulter les tickets liés</button>
+           </div>
+        </div>
+      </ng-container>
+
+      <!-- Logic for Others: Stats then Charts -->
+      <ng-container *ngIf="role !== 'ADMIN'">
+        <div class="stats-cards">
+          <div class="stat-card">
+            <div class="stat-icon">🏖️</div>
+            <div class="stat-value">{{ leaveBalance() }}</div>
+            <div class="stat-label">Jours de congé restants</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div class="stat-value">{{ todayPointage() ? '✓' : '—' }}</div>
+            <div class="stat-label">Pointage aujourd'hui</div>
+          </div>
+          <div class="stat-card" *ngFor="let s of realProgressStats()">
+            <div class="stat-label">{{ s.label }}</div>
+            <div class="stat-value">{{ s.value }}%</div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" [style.width.%]="s.value" [style.background]="s.color"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <h3>Activité Hebdomadaire</h3>
+          <svg class="chart-svg" viewBox="0 0 700 200" preserveAspectRatio="none">
+            <line *ngFor="let y of [0,50,100,150]" x1="40" [attr.y1]="y+20" x2="680" [attr.y2]="y+20" class="chart-grid-line"/>
+            <text *ngFor="let d of chartLabels; let i = index" [attr.x]="55 + i * 95" y="195" text-anchor="middle" class="chart-label">{{ d }}</text>
+            <polygon [attr.points]="chartAreaPoints()" class="chart-area" fill="var(--gold)"/>
+            <polyline [attr.points]="chartLinePoints()" class="chart-line" stroke="var(--gold)"/>
+            <circle *ngFor="let pt of chartPoints(); let i = index" [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" fill="var(--gold)" class="chart-dot"/>
+            <polygon [attr.points]="chartArea2Points()" class="chart-area" fill="var(--red)"/>
+            <polyline [attr.points]="chartLine2Points()" class="chart-line" stroke="var(--red)"/>
+            <circle *ngFor="let pt of chartPoints2(); let i = index" [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" fill="var(--red)" class="chart-dot"/>
+          </svg>
+          <div class="chart-legend">
+            <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span> Présences</div>
+            <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span> Absences / Retards</div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- ══ CALENDAR ══ -->
+    <div *ngIf="activeView() === 'calendar'" class="animate-in">
+      <div class="view-header">
+        <h2>Calendrier</h2>
+        <p>Jours fériés, congés et jours non travaillés.</p>
+      </div>
+      <div class="calendar-container">
+        <div class="calendar-header">
+          <button class="cal-nav-btn" (click)="prevMonth()">◀</button>
+          <h3>{{ monthNames[calMonth()] }} {{ calYear() }}</h3>
+          <button class="cal-nav-btn" (click)="nextMonth()">▶</button>
+        </div>
+        <div class="calendar-grid">
+          <div class="cal-day-header" *ngFor="let d of dayNames">{{ d }}</div>
+          <div *ngFor="let day of calendarDays()"
+               class="cal-day"
+               [class.today]="day.isToday"
+               [class.holiday]="day.isHoliday"
+               [class.weekend]="day.isWeekend"
+               [class.other-month]="day.otherMonth"
+               [class.leave-day]="day.isLeave"
+               [title]="day.tooltip">
+            {{ day.date }}
+            <span *ngIf="day.isHoliday" class="cal-dot red"></span>
+            <span *ngIf="day.isLeave" class="cal-dot green"></span>
+          </div>
+        </div>
+        <div class="cal-legend">
+          <div class="legend-item"><span class="legend-color" style="background:rgba(184,136,42,0.3)"></span> Aujourd'hui</div>
+          <div class="legend-item"><span class="legend-color" style="background:rgba(192,40,31,0.3)"></span> Jour Férié</div>
+          <div class="legend-item"><span class="legend-color" style="background:rgba(76,175,80,0.3)"></span> Congé</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ POINTAGE ══ -->
+    <div *ngIf="activeView() === 'pointage'" class="animate-in">
+      <div class="view-header">
+        <h2>Pointage</h2>
+        <p>Enregistrez votre arrivée et départ quotidiens.</p>
+      </div>
+      <div class="pointage-section">
+        <div class="pointage-clock">{{ currentTime() }}</div>
+        <div class="pointage-date">{{ currentDateStr() }}</div>
+        <button *ngIf="!todayPointage()?.clockIn" class="pointage-btn clock-in" (click)="clockIn()">🕐 Pointer l'arrivée</button>
+        <button *ngIf="todayPointage()?.clockIn && !todayPointage()?.clockOut" class="pointage-btn clock-out" (click)="clockOut()">🕐 Pointer le départ</button>
+        <div *ngIf="todayPointage()?.clockIn && todayPointage()?.clockOut" class="pointage-status">
+          Journée complète <span class="status-badge present">✓ Pointé</span>
+        </div>
+        <div *ngIf="todayPointage()?.clockIn" class="pointage-status">
+          Arrivée: {{ todayPointage()?.clockIn }} 
+          <span *ngIf="todayPointage()?.clockOut"> | Départ: {{ todayPointage()?.clockOut }}</span>
+        </div>
+      </div>
+
+      <div class="pointage-section">
+        <div class="pointage-history">
+          <h4>Historique des Pointages</h4>
+          <table class="pointage-table">
+            <thead><tr><th>Date</th><th>Arrivée</th><th>Départ</th><th>Statut</th></tr></thead>
+            <tbody>
+              <tr *ngFor="let p of pointageHistory()">
+                <td>{{ p.date }}</td>
+                <td>{{ p.clockIn || '—' }}</td>
+                <td>{{ p.clockOut || '—' }}</td>
+                <td>
+                  <span [class]="'badge-' + p.status">{{ p.status === 'present' ? 'Présent' : (p.status === 'retard' ? 'Retard' : 'Absent') }}</span>
+                </td>
+              </tr>
+              <tr *ngIf="pointageHistory().length === 0"><td colspan="4" style="text-align:center;color:var(--text-muted)">Aucun pointage enregistré.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LEAVE MANAGEMENT ══ -->
+    <div *ngIf="activeView() === 'leave'" class="animate-in">
+      <div class="view-header">
+        <h2>Congés & Absences</h2>
+        <p>Gérez vos demandes de congé et suivez votre solde.</p>
+      </div>
+
+      <div class="leave-section">
+        <div class="leave-balance-card">
+          <div class="leave-gauge">
+            <svg viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="35" fill="none" stroke="var(--border)" stroke-width="6"/>
+              <circle cx="40" cy="40" r="35" fill="none" stroke="var(--gold)" stroke-width="6"
+                      [attr.stroke-dasharray]="leaveCircle()" stroke-linecap="round"/>
+            </svg>
+            <div class="gauge-text">{{ leaveBalance() }}</div>
+          </div>
+          <div class="leave-info">
+            <h4>Solde de Congé</h4>
+            <p>{{ leaveBalance() }} jours restants sur 30 jours annuels</p>
+          </div>
+        </div>
+
+        <div class="leave-form">
+          <h4>Nouvelle Demande de Congé</h4>
+          <div class="form-row">
+            <div class="form-field">
+              <label>Date de début</label>
+              <input type="date" [(ngModel)]="newLeave.startDate">
+            </div>
+            <div class="form-field">
+              <label>Date de fin</label>
+              <input type="date" [(ngModel)]="newLeave.endDate">
+            </div>
+            <div class="form-field">
+              <label>Type</label>
+              <select [(ngModel)]="newLeave.type">
+                <option value="annual">Congé annuel</option>
+                <option value="sick">Congé maladie</option>
+                <option value="personal">Congé personnel</option>
+                <option value="family">Événement familial</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field" style="margin-bottom:1rem">
+            <label>Motif</label>
+            <textarea [(ngModel)]="newLeave.reason" placeholder="Précisez le motif de votre demande..."></textarea>
+          </div>
+          <button class="btn-submit-leave" (click)="submitLeave()">Soumettre la demande</button>
+        </div>
+
+        <div class="leave-list">
+          <h4>Mes Demandes</h4>
+          <div class="leave-item" *ngFor="let l of myLeaves()">
+            <div>
+              <div class="leave-dates">{{ l.startDate }} → {{ l.endDate }}</div>
+              <div class="leave-type">{{ l.type }}</div>
+              <div class="leave-reason">{{ l.reason }}</div>
+            </div>
+            <span class="leave-status" [class]="l.status">{{ l.status === 'pending' ? 'En attente' : (l.status === 'approved' ? 'Approuvé' : 'Refusé') }}</span>
+          </div>
+          <p *ngIf="myLeaves().length === 0" style="color:var(--text-muted);font-style:italic">Aucune demande de congé.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RH LEAVE MANAGEMENT ══ -->
+    <div *ngIf="activeView() === 'rh-leave'" class="animate-in">
+      <div class="view-header">
+        <h2>Gestion des Congés</h2>
+        <p>Validez ou refusez les demandes de congé des collaborateurs.</p>
+      </div>
+      <div class="leave-section">
+        <div class="leave-list">
+          <div class="leave-item" *ngFor="let l of allLeaves()">
+            <div>
+              <div class="leave-dates">{{ l.userName }} — {{ l.startDate }} → {{ l.endDate }}</div>
+              <div class="leave-type">{{ l.type }}</div>
+              <div class="leave-reason">{{ l.reason }}</div>
+            </div>
+            <div class="leave-item-actions">
+              <div *ngIf="l.status === 'pending'" class="rh-actions">
+                <button class="btn-approve" (click)="approveLeave(l)">Approuver</button>
+                <button class="btn-reject" (click)="rejectLeave(l)">Refuser</button>
+              </div>
+              <span *ngIf="l.status !== 'pending'" class="leave-status" [class]="l.status">{{ l.status === 'approved' ? 'Approuvé' : 'Refusé' }}</span>
+              <button *ngIf="l.status === 'approved'" class="btn-receipt" (click)="generateLeaveReceipt(l)" title="Générer reçu de congé">📜 Reçu</button>
+            </div>
+          </div>
+          <p *ngIf="allLeaves().length === 0" style="color:var(--text-muted);font-style:italic">Aucune demande en attente.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DOCUMENT REQUESTS ══ -->
+    <div *ngIf="activeView() === 'documents'" class="animate-in">
+      <div class="view-header">
+        <h2>Demande de Documents</h2>
+        <p>Demandez un document officiel au service RH.</p>
+      </div>
+      <div class="doc-request-section">
+        <div class="doc-form-grid">
+          <div class="form-field">
+            <label>Type de document</label>
+            <select [(ngModel)]="newDocRequest.type">
+              <option value="attestation_travail">Attestation de travail</option>
+              <option value="attestation_salaire">Attestation de salaire</option>
+              <option value="fiche_paie">Fiche de paie</option>
+              <option value="certificat_travail">Certificat de travail</option>
+              <option value="ordre_mission">Ordre de mission</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-field" *ngIf="role === 'RH'">
+            <label>Destinataire (RH)</label>
+            <select [(ngModel)]="newDocRequest.destinataire">
+              <option value="" disabled>-- Choisir un destinataire --</option>
+              <option *ngFor="let u of nonRhUsers()" [value]="u.nomUtilisateur">{{ u.nomUtilisateur }} ({{ u.role }})</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Remarque (optionnel)</label>
+            <input type="text" [(ngModel)]="newDocRequest.note" placeholder="Précisions supplémentaires...">
+          </div>
+        </div>
+        <button class="btn-submit-leave" (click)="submitDocRequest()">Envoyer la demande</button>
+
+        <div class="doc-list" style="margin-top:2rem">
+          <h4 style="font-family:var(--font-display);font-style:italic;color:var(--gold);margin-bottom:1rem">Mes Demandes</h4>
+          <div class="doc-item" *ngFor="let d of myDocRequests()">
+            <div>
+              <div class="doc-type">{{ docTypeLabel(d.type) }}</div>
+              <div class="doc-date">{{ d.date }}</div>
+            </div>
+            <span class="leave-status" [class]="d.status">{{ d.status === 'pending' ? 'En cours' : (d.status === 'approved' ? 'Terminé' : 'Refusé') }}</span>
+          </div>
+          <p *ngIf="myDocRequests().length === 0" style="color:var(--text-muted);font-style:italic">Aucune demande.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RECEIVED DOCUMENTS ══ -->
+    <div *ngIf="activeView() === 'received-docs'" class="animate-in">
+      <div class="view-header">
+        <h2>Documents Reçus</h2>
+        <p>Consultez et téléchargez les documents envoyés par le service RH.</p>
+      </div>
+      <div class="doc-request-section">
+        <div class="doc-list">
+          <div class="doc-item" *ngFor="let d of receivedDocs()">
+            <div>
+              <div class="doc-type">{{ docTypeLabel(d.type) }}</div>
+              <div class="doc-date">Approuvé le : {{ d.date }}</div>
+            </div>
+            <div class="rh-actions" style="display:flex;align-items:center;gap:1rem">
+              <span class="leave-status approved">Terminé</span>
+              <button class="btn-approve" (click)="exportRhDoc({title: docTypeLabel(d.type), content: 'Document généré par RH.', icon: '📄', summary: ''})">📥 Télécharger</button>
+            </div>
+          </div>
+          <div class="empty-state" *ngIf="receivedDocs().length === 0">
+            <span style="font-size:3rem;display:block;margin-bottom:1rem">📭</span>
+            <p>Aucun document reçu pour le moment.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RH DOC REQUESTS ══ -->
+    <div *ngIf="activeView() === 'rh-doc-requests'" class="animate-in">
+      <div class="view-header">
+        <h2>Demandes de Documents Reçues</h2>
+        <p>Traitez les demandes de documents des collaborateurs.</p>
+      </div>
+      <div class="doc-request-section">
+        <div class="doc-list">
+          <div class="doc-item" *ngFor="let d of allDocRequests()">
+            <div>
+              <div class="doc-type">{{ d.userName }} — {{ docTypeLabel(d.type) }}</div>
+              <div class="doc-date">{{ d.date }} | {{ d.note }}</div>
+            </div>
+            <div *ngIf="d.status === 'pending'" class="rh-actions">
+              <button class="btn-approve" (click)="approveDoc(d)">Traité</button>
+              <button class="btn-reject" (click)="rejectDoc(d)">Refuser</button>
+            </div>
+            <span *ngIf="d.status !== 'pending'" class="leave-status" [class]="d.status">{{ d.status === 'approved' ? 'Traité' : 'Refusé' }}</span>
+          </div>
+          <p *ngIf="allDocRequests().length === 0" style="color:var(--text-muted);font-style:italic">Aucune demande reçue.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ RH DOCUMENTATION ══ -->
+    <div *ngIf="activeView() === 'rh-docs'" class="animate-in">
+      <div class="view-header">
+        <h2>Documentation RH</h2>
+        <div class="rh-docs-actions">
+          <p>Politiques internes, procédures et guides pour le service RH.</p>
+          <button class="btn-add-doc" (click)="addRhDoc()" *ngIf="role === 'RH'">+ Ajouter Document</button>
+        </div>
+      </div>
+      <div *ngIf="!selectedDoc()" class="docs-grid">
+        <div class="doc-card" *ngFor="let doc of rhDocs" (click)="selectedDoc.set(doc)">
+          <div class="doc-card-icon">{{ doc.icon }}</div>
+          <h4>{{ doc.title }}</h4>
+          <p>{{ doc.summary }}</p>
+        </div>
+      </div>
+      <div *ngIf="selectedDoc()" class="doc-detail">
+        <div class="doc-detail-header">
+          <h3>{{ selectedDoc()!.title }}</h3>
+          <div class="doc-actions">
+            <button class="btn-export" (click)="exportRhDoc(selectedDoc()!)" title="Exporter en PDF">📄 Export PDF</button>
+            <button class="btn-back" (click)="selectedDoc.set(null)">← Retour</button>
+          </div>
+        </div>
+        <div class="doc-content" [innerHTML]="selectedDoc()!.content"></div>
+      </div>
+    </div>
+
+    <!-- ══ RH POINTAGE REVIEW ══ -->
+    <div *ngIf="activeView() === 'rh-pointage'" class="animate-in">
+      <div class="view-header">
+        <h2>Validation des Pointages</h2>
+        <p>Confirmez les présences, retards et absences des collaborateurs.</p>
+      </div>
+      <div class="pointage-section" style="text-align:left">
+        <table class="pointage-table">
+          <thead><tr><th>Collaborateur</th><th>Date</th><th>Arrivée</th><th>Départ</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr *ngFor="let p of allPointages()">
+              <td style="font-weight:600">{{ p.userName }}</td>
+              <td>{{ p.date }}</td>
+              <td>{{ p.clockIn || '—' }}</td>
+              <td>{{ p.clockOut || '—' }}</td>
+              <td><span [class]="'badge-' + p.status">{{ p.status === 'present' ? 'Présent' : (p.status === 'retard' ? 'Retard' : 'Absent') }}</span></td>
+              <td>
+                <div *ngIf="!p.confirmed" class="review-actions">
+                  <button class="btn-confirm" (click)="confirmPointage(p)">Confirmer</button>
+                  <button class="btn-flag" (click)="flagPointage(p)">Signaler Retard</button>
+                </div>
+                <span *ngIf="p.confirmed" style="color:#4caf50;font-size:0.75rem;font-weight:700">✓ Confirmé</span>
+              </td>
+            </tr>
+            <tr *ngIf="allPointages().length === 0"><td colspan="6" style="text-align:center;color:var(--text-muted)">Aucun pointage à valider.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ TICKETS (inline) - no messages tab for IT tickets ══ -->
+    <div *ngIf="activeView() === 'tickets'" class="animate-in">
+      <div class="view-header">
+        <h2>Gestion des Requêtes</h2>
+      </div>
+      <div class="compact-requests full-width">
+        <app-requests [initialTab]="'QUESTION'" [hiddenTabs]="(role === 'IT' || role === 'RH') ? ['MESSAGES'] : []"></app-requests>
+      </div>
+    </div>
+
+    <!-- ══ MESSAGERIE (standalone, no requests) ══ -->
+    <div *ngIf="activeView() === 'messages'" class="animate-in">
+      <div class="view-header">
+        <h2>Messagerie Interne</h2>
+      </div>
+      <div class="compact-requests full-width">
+        <app-requests [initialTab]="'MESSAGES'" [hiddenTabs]="(role === 'IT' || role === 'RH') ? ['QUESTION', 'RECLAMATION'] : []"></app-requests>
+      </div>
+    </div>
+
+    <!-- ══ USER MANAGEMENT (ADMIN ONLY) ══ -->
+    <div *ngIf="activeView() === 'admin-users'" class="animate-in">
+      <header class="admin-cover">
+        <img class="cover-image" [src]="coverImage()" alt="Admin cover">
+        <div class="cover-overlay"></div>
+        <div class="cover-profile" *ngIf="auth.userProfile()">
+          <div class="profile-photo">
+            <img [src]="auth.userProfile().imageurl || 'assets/default-avatar.png'" alt="Profile">
+          </div>
+          <div class="profile-info">
+            <span class="user-name">{{ auth.userProfile().nomComplet || 'Utilisateur Bondin' }}</span>
+            <span class="dept">{{ auth.userProfile().department || 'Bondin Heritage' }}</span>
+          </div>
+        </div>
+      </header>
+
+      <div class="view-header user-mgmt-header">
+        <div>
+          <h2>Gestion des Utilisateurs</h2>
+          <p>Gérez les accès et les rôles de vos collaborateurs.</p>
+        </div>
+        <button class="btn-add-doc" (click)="showForm.set(!showForm())">
+          {{ showForm() ? 'Fermer' : '+ Nouvel Utilisateur' }}
+        </button>
+      </div>
+
+      <!-- Creation Drawer -->
+      <div class="creation-drawer animate-in" *ngIf="showForm()">
+        <div class="form-wrapper">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nom complet</label>
+              <div class="input-with-icon">
+                <span class="icon">👤</span>
+                <input type="text" [(ngModel)]="newUser.nomUtilisateur" placeholder="Ex: Ahmed Bondin">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email professionnel</label>
+              <div class="input-with-icon">
+                <span class="icon">✉️</span>
+                <input type="email" [(ngModel)]="newUser.email" placeholder="admin@cafesbondin.tn">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Mot de passe</label>
+              <div class="input-with-icon">
+                <span class="icon">🔒</span>
+                <input type="password" [(ngModel)]="newUser.password" placeholder="••••••">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Rôle</label>
+              <div class="input-with-icon">
+                <span class="icon">🛡️</span>
+                <select [(ngModel)]="newUser.role" class="bondin-select-minimal">
+                  <option value="EMPLOYE">Employé</option>
+                  <option value="RH">Ressources Humaines</option>
+                  <option value="IT">Service IT</option>
+                  <option value="ADMIN">Administrateur</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button (click)="addUser()" class="btn-bondin-red-lg" style="width:100%">Créer le compte</button>
+        </div>
+      </div>
+
+      <!-- Filters & Search -->
+      <div class="controls-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" [ngModel]="adminSearchQuery()" (ngModelChange)="adminSearchQuery.set($event)" placeholder="Rechercher par nom ou email...">
+        </div>
+        <div class="filter-box">
+          <select [ngModel]="roleFilter()" (ngModelChange)="roleFilter.set($event)" class="bondin-select-minimal">
+            <option value="ALL">Tous les rôles</option>
+            <option value="ADMIN">Administrateurs</option>
+            <option value="RH">RH</option>
+            <option value="IT">IT</option>
+            <option value="EMPLOYE">Employé</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="table-container shadow">
+        <table class="bondin-styled-table">
+          <thead>
+            <tr>
+              <th>Collaborateur</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>Arrivée</th>
+              <th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers()">
+              <td>
+                <div class="user-identity">
+                  <div class="avatar">{{ getInitials(user.nomUtilisateur) }}</div>
+                  <div class="name-box">
+                    <span class="user-name">{{ user.nomUtilisateur }}</span>
+                    <span class="user-id">#{{ user.id }}</span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="text-muted">{{ user.email }}</span></td>
+              <td><span class="role-badge" [class]="user.role">{{ user.role }}</span></td>
+              <td>
+                <span class="status-badge" [class.active]="isOnline(user)" [class.revoked]="user.status === 'REVOKED'" [class.offline]="user.status === 'ACTIVE' && !isOnline(user)">
+                  {{ isOnline(user) ? 'En ligne' : (user.status === 'REVOKED' ? 'Révoqué' : 'Hors ligne') }}
+                </span>
+              </td>
+              <td><span class="text-muted">{{ user.createdAt | date:'dd/MM/yyyy' }}</span></td>
+              <td class="text-right">
+                <button (click)="editUser(user)" class="btn-receipt" style="margin-right:0.5rem">✎</button>
+                <button *ngIf="user.status === 'ACTIVE'" (click)="revokeUser(user)" class="btn-revoke">✕</button>
+                <button *ngIf="user.status === 'REVOKED'" (click)="reactivateUser(user)" class="btn-reactivate">Réactiver</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>

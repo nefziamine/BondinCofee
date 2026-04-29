@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed, Input, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -7,8 +7,21 @@ import { Auth } from '../../services/auth';
 import { ReclamationService } from '../../services/reclamation-service';
 import { Reclamation } from '../../Model/Reclamation';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { MessageService, Message } from '../../services/message-service';
+import { MessageService } from '../../services/message-service';
 import { NotificationService } from '../../services/notification-service';
+
+export interface Message {
+  id?: number;
+  senderId: number;
+  senderName?: string;
+  receiverId?: number | null;
+  content: string;
+  timestamp?: string;
+  broadcast?: boolean;
+  attachmentUrl?: string;
+  attachmentName?: string;
+  attachmentType?: string;
+}
 
 @Component({
   standalone: true,
@@ -17,7 +30,10 @@ import { NotificationService } from '../../services/notification-service';
   templateUrl: './requests.html',
   styleUrl: './requests.scss'
 })
-export class RequestsComponent implements OnInit {
+export class RequestsComponent implements OnInit, AfterViewChecked {
+  @ViewChild('chatScroll') private chatScrollContainer!: ElementRef;
+  @Input() initialTab?: 'QUESTION' | 'RECLAMATION' | 'MESSAGES';
+  @Input() hiddenTabs: string[] = [];
   userRole = '';
   reclamations = signal<Reclamation[]>([]);
   messages = signal<Message[]>([]);
@@ -26,8 +42,15 @@ export class RequestsComponent implements OnInit {
   // Chat messaging
   newMessageText = '';
   users = signal<any[]>([]);
-  selectedRecipientId = signal<number | 'ALL'>('ALL');
+  selectedRecipientId = signal<number | 'ALL' | null>(null);
   userPhotos = signal<Map<string, string>>(new Map());
+  showMentionList = signal(false);
+  mentionQuery = signal('');
+  mentionStartIndex = signal<number | null>(null);
+  mentionCursorIndex = signal<number | null>(null);
+  
+  // File upload state
+  currentAttachment = signal<{ url: string, name: string, type: string } | null>(null);
   
   // Form State
   newRequest: Reclamation = {
@@ -51,21 +74,48 @@ export class RequestsComponent implements OnInit {
     this.userRole = this.auth.getRole() || 'EMPLOYE';
   }
 
+  mentionSuggestions = computed(() => {
+    const query = this.mentionQuery().trim().toLowerCase();
+    const list = this.users();
+    if (!query) return list;
+    return list.filter(u =>
+      String(u.nomUtilisateur || '').toLowerCase().includes(query)
+    );
+  });
+
+  recipientOptions = computed(() => {
+    const me = this.currentUserId;
+    return this.users().filter(u => u.id !== me);
+  });
+
   ngOnInit() {
     this.loadRequests();
     this.loadMessages();
     this.loadPhotos();
     const role = this.auth.userRole();
     
-    if (role === 'ADMIN') {
+    if (this.initialTab) {
+      this.currentTab.set(this.initialTab);
+    } else if (role === 'ADMIN') {
       this.currentTab.set('MESSAGES');
-      this.loadUsers();
     } else if (role === 'RH' || role === 'IT') {
       this.currentTab.set('QUESTION');
-      this.loadUsers();
     } else {
       this.currentTab.set('QUESTION');
     }
+    this.loadUsers();
+  }
+
+  ngAfterViewChecked() {
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom(): void {
+    try {
+      if (this.currentTab() === 'MESSAGES' && this.chatScrollContainer) {
+        this.chatScrollContainer.nativeElement.scrollTop = this.chatScrollContainer.nativeElement.scrollHeight;
+      }
+    } catch(err) { }
   }
 
   loadPhotos() {
@@ -85,7 +135,15 @@ export class RequestsComponent implements OnInit {
 
   loadUsers() {
     this.http.get<any[]>('http://localhost:8080/api/admin/users').subscribe({
-      next: (data) => this.users.set(data.filter(u => u.role !== 'ADMIN')),
+      next: (data) => {
+        this.users.set(data);
+        if (this.auth.userRole() === 'ADMIN') {
+          this.selectedRecipientId.set('ALL');
+        } else if (!this.selectedRecipientId()) {
+          const first = data.find(u => u.id !== this.currentUserId);
+          this.selectedRecipientId.set(first?.id ?? null);
+        }
+      },
       error: (err) => console.error('Error loading users for messaging', err)
     });
   }
@@ -95,44 +153,45 @@ export class RequestsComponent implements OnInit {
     const userId = Number(localStorage.getItem('userId'));
 
     if (role === 'ADMIN') {
-      this.messageService.getAllAdminMessages().subscribe(res => this.messages.set(res));
+      this.messageService.getAllAdminMessages().subscribe((res: any) => this.messages.set(res));
     } else {
-      this.messageService.getUserMessages(userId).subscribe(res => this.messages.set(res));
+      this.messageService.getUserMessages(userId).subscribe((res: any) => this.messages.set(res));
     }
   }
 
   sendMessageText() {
-    if (!this.newMessageText.trim()) return;
+    if (!this.newMessageText.trim() && !this.currentAttachment()) return;
 
     const role = this.auth.userRole();
     const userId = Number(localStorage.getItem('userId'));
 
-    // Improved logic: If user is employee, reply to the specific admin who last messaged them privately
-    let targetReceiver: number | null = 1; 
-    if (role !== 'ADMIN') {
-      const lastPrivateMsg = [...this.messages()].reverse().find(m => !m.broadcast && m.senderId !== userId);
-      if (lastPrivateMsg && lastPrivateMsg.senderId) {
-        targetReceiver = lastPrivateMsg.senderId;
-      }
-    } else {
-      targetReceiver = this.selectedRecipientId() === 'ALL' ? null : Number(this.selectedRecipientId());
+    if (role !== 'ADMIN' && !this.selectedRecipientId()) {
+      alert('Veuillez choisir un destinataire.');
+      return;
     }
+
+    const targetReceiver = this.selectedRecipientId() === 'ALL' ? null : Number(this.selectedRecipientId());
 
     const msg: Message = {
       senderId: userId,
       content: this.newMessageText,
       broadcast: role === 'ADMIN' ? (this.selectedRecipientId() === 'ALL') : false,
-      receiverId: targetReceiver
+      receiverId: targetReceiver,
+      attachmentUrl: this.currentAttachment()?.url,
+      attachmentName: this.currentAttachment()?.name,
+      attachmentType: this.currentAttachment()?.type
     };
 
     this.messageService.sendMessage(msg).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.messages.update(m => [...m, res]);
         this.newMessageText = '';
-        const targetName = msg.broadcast ? 'tous' : (role === 'ADMIN' ? 'le collaborateur' : 'l\'administrateur');
+        this.currentAttachment.set(null);
+        this.hideMentionList();
+        const targetName = msg.broadcast ? 'tous' : 'le destinataire choisi';
         this.notifService.addNotification(`Message envoyé à ${targetName}`, '✉️');
       },
-      error: (err) => console.error('Error sending message', err)
+      error: (err: any) => console.error('Error sending message', err)
     });
   }
 
@@ -156,14 +215,49 @@ export class RequestsComponent implements OnInit {
   }
 
   setTab(tab: 'QUESTION' | 'RECLAMATION' | 'MESSAGES') {
+    if (this.hiddenTabs.includes(tab)) return;
     this.currentTab.set(tab);
     if (tab !== 'MESSAGES') {
       this.newRequest.type = tab;
     }
   }
 
+  uploadFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,application/pdf';
+    input.onchange = (e: any) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.currentAttachment.set({
+            url: reader.result as string,
+            name: file.name,
+            type: file.type
+          });
+          this.notifService.addNotification(`Fichier "${file.name}" attaché`, '📎');
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    input.click();
+  }
+
+  downloadFile(msg: Message) {
+    if (!msg.attachmentUrl) return;
+    const link = document.createElement('a');
+    link.href = msg.attachmentUrl;
+    link.download = msg.attachmentName || 'download';
+    link.click();
+  }
+
   submitRequest() {
     if (!this.newRequest.sujet || !this.newRequest.description) return;
+    if (!this.newRequest.category) {
+      alert('Veuillez choisir un destinataire (RH ou IT).');
+      return;
+    }
     
     this.newRequest.userId = Number(localStorage.getItem('userId'));
     this.recService.add(this.newRequest).subscribe({
@@ -171,7 +265,13 @@ export class RequestsComponent implements OnInit {
         const typeLabel = this.newRequest.type === 'QUESTION' ? 'Question' : 'Réclamation';
         this.notifService.addNotification(`${typeLabel} soumise avec succès`, '📝');
         this.loadRequests();
-        this.newRequest = { sujet: '', description: '', status: 'Pending', type: (this.currentTab() === 'MESSAGES' ? 'QUESTION' : this.currentTab()) as 'QUESTION' | 'RECLAMATION' };
+        this.newRequest = {
+          sujet: '',
+          description: '',
+          status: 'Pending',
+          type: (this.currentTab() === 'MESSAGES' ? 'QUESTION' : this.currentTab()) as 'QUESTION' | 'RECLAMATION',
+          category: this.newRequest.category
+        };
       },
       error: (err) => console.error('Error submitting request', err)
     });
@@ -201,40 +301,108 @@ export class RequestsComponent implements OnInit {
   }
 
   askAI(r: Reclamation) {
-    const prompt = `Vous êtes un expert HR & IT pour la Maison Bondin. 
-    Un employé a soumis une ${r.type} sur le sujet "${r.sujet}" : "${r.description}".
-    
-    CONSIGNES DE RÉPONSE :
-    1. Utilisez un langage simple et clair (pas de jargon inutile).
-    2. Structurez la réponse avec des points (bullet points) si nécessaire.
-    3. Utilisez le formatage gras pour les points clés.
-    4. Soyez professionnel mais très accessible.
-    5. Fournissez une solution concrète et rapide.`;
-
-    const payload = {
-      role: this.auth.userRole() || 'RH',
-      history: [],
-      message: prompt
-    };
-
     this.showAnswerForm.set(r.id || null);
     this.isAiLoading.set(r.id || null);
-    this.currentResponse = 'L\'IA réfléchit...';
+    this.currentResponse = 'Assistant interne en préparation de réponse...';
 
-    // Directly calling the chat API
-    const chatUrl = 'http://localhost:8080/api/chat';
-    this.http.post<{reply: string}>(chatUrl, payload).subscribe({
-      next: (res: {reply: string}) => {
-        this.currentResponse = res.reply;
-        this.isAiLoading.set(null);
-      },
-      error: () => {
-        this.currentResponse = 'Désolé, l\'IA n\'a pas pu répondre à ce moment.';
-        this.isAiLoading.set(null);
-      }
-    });
+    setTimeout(() => {
+      this.currentResponse = this.generateInternalAiReply(r);
+      this.isAiLoading.set(null);
+    }, 550);
   }
   get currentUserId(): number {
     return Number(localStorage.getItem('userId'));
+  }
+
+  onMessageInput(event: Event) {
+    const target = event.target as HTMLTextAreaElement;
+    this.newMessageText = target.value;
+    this.updateMentionState(target.value, target.selectionStart ?? target.value.length);
+  }
+
+  onMessageCaretChange(event: Event) {
+    const target = event.target as HTMLTextAreaElement;
+    this.updateMentionState(this.newMessageText, target.selectionStart ?? this.newMessageText.length);
+  }
+
+  selectMention(user: any) {
+    const start = this.mentionStartIndex();
+    const cursor = this.mentionCursorIndex();
+    if (start === null || cursor === null) return;
+    const name = String(user.nomUtilisateur || '').trim();
+    if (!name) return;
+    const before = this.newMessageText.slice(0, start);
+    const after = this.newMessageText.slice(cursor);
+    this.newMessageText = `${before}@${name} ${after}`;
+    this.hideMentionList();
+  }
+
+  private updateMentionState(value: string, cursorIndex: number) {
+    this.mentionCursorIndex.set(cursorIndex);
+    const atIndex = value.lastIndexOf('@', cursorIndex - 1);
+    if (atIndex < 0) {
+      this.hideMentionList();
+      return;
+    }
+
+    const between = value.slice(atIndex + 1, cursorIndex);
+    const hasSpace = /\s/.test(between);
+    if (hasSpace) {
+      this.hideMentionList();
+      return;
+    }
+
+    this.mentionStartIndex.set(atIndex);
+    this.mentionQuery.set(between);
+    this.showMentionList.set(true);
+  }
+
+  private hideMentionList() {
+    this.showMentionList.set(false);
+    this.mentionQuery.set('');
+    this.mentionStartIndex.set(null);
+    this.mentionCursorIndex.set(null);
+  }
+
+  private generateInternalAiReply(r: Reclamation): string {
+    const text = `${r.sujet || ''} ${r.description || ''}`.toLowerCase();
+    const isRh = (r.category || '').toUpperCase() === 'RH';
+    const isIt = (r.category || '').toUpperCase() === 'IT';
+
+    const hasAny = (arr: string[]) => arr.some(k => text.includes(k));
+
+    if (isIt) {
+      if (hasAny(['vpn', 'distance', 'remote'])) {
+        return `**Plan IT - VPN**\n- Vérifier identifiants et statut du compte.\n- Redémarrer client VPN et poste.\n- Tester connexion via partage 4G.\n- Si échec, ouvrir ticket IT avec capture d'écran.\n\n**Escalade**: équipe réseau si impact global.`;
+      }
+      if (hasAny(['wifi', 'internet', 'réseau', 'reseau'])) {
+        return `**Plan IT - Connectivité**\n- Vérifier câble/borne et redémarrer routeur local.\n- Exécuter test ping interne puis externe.\n- Contrôler IP/DNS automatiques.\n- Basculer temporairement sur réseau secours.\n\n**Escalade**: support infra si panne persistante.`;
+      }
+      if (hasAny(['mot de passe', 'password', 'compte', 'login'])) {
+        return `**Plan IT - Accès compte**\n- Forcer réinitialisation du mot de passe.\n- Vérifier verrouillage du compte.\n- Contrôler rôle et droits applicatifs.\n- Demander reconnexion puis test fonctionnel.\n\n**Escalade**: sécurité SI si activité suspecte.`;
+      }
+      if (hasAny(['imprimante', 'printer', 'scan'])) {
+        return `**Plan IT - Impression**\n- Vérifier file d'impression et redémarrer spooler.\n- Tester imprimante sur un autre poste.\n- Réinstaller pilote recommandé.\n- Valider réseau local de l'équipement.\n\n**Escalade**: maintenance matériel si panne physique.`;
+      }
+      return `**Plan IT standard**\n- Reproduire le problème avec l'utilisateur.\n- Vérifier poste, session, réseau et droits.\n- Appliquer correctif puis revalider le scénario.\n- Documenter cause racine et action préventive.`;
+    }
+
+    if (isRh) {
+      if (hasAny(['congé', 'vacance', 'absence'])) {
+        return `**Réponse RH - Congé**\n- Vérifier solde et période demandée.\n- Contrôler contraintes de service.\n- Proposer validation ou ajustement de dates.\n- Notifier décision au collaborateur sous 48h.`;
+      }
+      if (hasAny(['paie', 'salaire', 'prime'])) {
+        return `**Réponse RH - Paie**\n- Vérifier variables paie du mois.\n- Contrôler prime/retard/absence.\n- Corriger si écart confirmé.\n- Informer le collaborateur du détail de calcul.`;
+      }
+      if (hasAny(['attestation', 'certificat', 'emploi'])) {
+        return `**Réponse RH - Attestation**\n- Valider identité et type d'attestation.\n- Générer document signé.\n- Envoyer en PDF + dépôt RH.\n- Délai cible: 24 à 48h ouvrées.`;
+      }
+      if (hasAny(['harcèlement', 'harcelement', 'conflit'])) {
+        return `**Réponse RH - Situation sensible**\n- Accuser réception de manière confidentielle.\n- Planifier entretien séparé avec les parties.\n- Appliquer protocole RH et traçabilité.\n- Escalader à la direction RH si nécessaire.`;
+      }
+      return `**Réponse RH standard**\n- Vérifier dossier collaborateur.\n- Confirmer politique interne applicable.\n- Donner une réponse claire + délai.\n- Prévoir suivi et clôture officielle.`;
+    }
+
+    return `**Assistant interne**\n- Catégorie non précisée.\n- Merci de choisir un destinataire RH ou IT pour une réponse ciblée.\n- En attendant, traiter selon procédure standard et tracer les actions.`;
   }
 }

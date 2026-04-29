@@ -11,16 +11,16 @@
       <div class="tabs">
         <!-- Ticket Tabs for Employees (submit) and RH/IT (respond) -->
         <ng-container *ngIf="auth.userRole() !== 'ADMIN'">
-          <button [class.active]="currentTab() === 'QUESTION'" (click)="setTab('QUESTION')">
+          <button *ngIf="!hiddenTabs.includes('QUESTION')" [class.active]="currentTab() === 'QUESTION'" (click)="setTab('QUESTION')">
             {{ 'REQ.QUESTIONS' | translate }}
           </button>
-          <button [class.active]="currentTab() === 'RECLAMATION'" (click)="setTab('RECLAMATION')">
+          <button *ngIf="!hiddenTabs.includes('RECLAMATION')" [class.active]="currentTab() === 'RECLAMATION'" (click)="setTab('RECLAMATION')">
             {{ 'REQ.RECLAMATIONS' | translate }}
           </button>
         </ng-container>
         
         <!-- Messaging Tab for Everyone -->
-        <button [class.active]="currentTab() === 'MESSAGES'" (click)="setTab('MESSAGES')">
+        <button *ngIf="!hiddenTabs.includes('MESSAGES')" [class.active]="currentTab() === 'MESSAGES'" (click)="setTab('MESSAGES')">
           Messages
         </button>
       </div>
@@ -29,6 +29,14 @@
     <!-- EMP SUBMISSION FORM (VISIBLE FOR EMPLOYEE ROLE) -->
     <section *ngIf="auth.userRole() === 'EMPLOYE' && currentTab() !== 'MESSAGES'" class="submission-section animate-fade">
       <div class="form-grid">
+        <div class="form-group full-width">
+          <label>Destinataire</label>
+          <select class="bondin-input" [(ngModel)]="newRequest.category">
+            <option value="">Choisir un service</option>
+            <option value="RH">Ressources Humaines (RH)</option>
+            <option value="IT">Support IT</option>
+          </select>
+        </div>
         <div class="form-group full-width">
           <label>{{ 'REQ.SUBJ' | translate }}</label>
           <input type="text" class="bondin-input" [(ngModel)]="newRequest.sujet" [placeholder]="currentTab() === 'QUESTION' ? 'Posez votre question...' : 'Décrivez votre problème...'">
@@ -106,33 +114,117 @@
 
     <!-- MESSAGES CHAT -->
     <div class="messages-container animate-fade" *ngIf="currentTab() === 'MESSAGES'">
-      <div class="chat-history">
-        <div *ngIf="messages().length === 0" class="empty-state">
-          Aucun message pour le moment.
-        </div>
-        <div *ngFor="let m of messages()" class="chat-message" [class.is-mine]="m.senderId === currentUserId" [class.broadcast-msg]="m.broadcast">
-          <div class="msg-header">
-            <span class="msg-type-badge" *ngIf="m.broadcast">📢 DIFFUSION</span>
-            <span class="msg-type-badge private" *ngIf="!m.broadcast">🔒 PRIVÉ</span>
-            <strong>{{ m.senderName }}</strong>
-            <span class="msg-time">{{ m.timestamp | date:'short' }}</span>
+      <div class="chat-wrapper">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="header-info">
+            <span class="status-indicator"></span>
+            <div>
+              <h3>Messagerie Interne</h3>
+              <p>{{ messages().length }} messages dans la discussion</p>
+            </div>
           </div>
-          <div class="msg-body">
-            {{ m.content }}
+          <div class="header-actions" *ngIf="auth.userRole() === 'ADMIN'">
+            <span class="admin-badge">MODE ADMINISTRATEUR</span>
           </div>
         </div>
-      </div>
-      <div class="chat-input-area">
-        <div class="admin-controls" *ngIf="auth.userRole() === 'ADMIN'">
-          <label>Destinataire :</label>
-          <select class="bondin-select" [ngModel]="selectedRecipientId()" (ngModelChange)="selectedRecipientId.set($event)">
-            <option value="ALL">Tout le monde (Diffuser)</option>
-            <option *ngFor="let u of users()" [value]="u.id">{{ u.nomUtilisateur }} ({{ u.role }})</option>
-          </select>
+
+        <!-- Chat History -->
+        <div class="chat-history" #chatScroll>
+          <div *ngIf="messages().length === 0" class="empty-chat">
+            <div class="empty-icon">✉️</div>
+            <h4>Aucun message</h4>
+            <p>Commencez la conversation avec la Maison Bondin.</p>
+          </div>
+
+          <div *ngFor="let m of messages()" 
+               class="message-group" 
+               [class.is-mine]="m.senderId === currentUserId"
+               [class.is-broadcast]="m.broadcast">
+            
+            <div class="message-avatar" *ngIf="m.senderId !== currentUserId">
+              {{ m.senderName?.charAt(0) || '?' }}
+            </div>
+
+            <div class="message-content">
+              <div class="message-info">
+                <span class="sender-name">{{ m.senderName }}</span>
+                <span class="message-time">{{ m.timestamp | date:'HH:mm' }}</span>
+              </div>
+              <div class="message-bubble">
+                <div class="broadcast-tag" *ngIf="m.broadcast">
+                  <span class="icon">📢</span> DIFFUSION GÉNÉRALE
+                </div>
+                
+                <div class="attachment-preview" *ngIf="m.attachmentUrl">
+                  <!-- Show as image if type is image OR if we have a URL and it's not a PDF -->
+                  <img *ngIf="m.attachmentType?.startsWith('image/') || (!m.attachmentType?.includes('pdf') && m.attachmentUrl.startsWith('data:image'))" 
+                       [src]="m.attachmentUrl" 
+                       class="chat-img" 
+                       (click)="downloadFile(m)">
+                  
+                  <div *ngIf="m.attachmentType?.includes('pdf')" class="pdf-link" (click)="downloadFile(m)">
+                    <span class="icon">📄</span> {{ m.attachmentName || 'Document PDF' }}
+                  </div>
+                </div>
+
+                <div class="text" *ngIf="m.content">{{ m.content }}</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="input-row">
-          <textarea class="bondin-input" [(ngModel)]="newMessageText" placeholder="Saisissez votre message..."></textarea>
-          <button class="btn-bondin" (click)="sendMessageText()">Envoyer</button>
+
+        <!-- Chat Input Area -->
+        <div class="chat-input-area">
+          <div class="input-controls" *ngIf="auth.userRole() === 'ADMIN' || recipientOptions().length > 1">
+            <div class="recipient-selector">
+              <label>Envoyer à :</label>
+              <select class="bondin-select-minimal" [ngModel]="selectedRecipientId()" (ngModelChange)="selectedRecipientId.set($event)">
+                <option *ngIf="auth.userRole() === 'ADMIN'" value="ALL">📢 Tout le monde</option>
+                <option *ngFor="let u of recipientOptions()" [value]="u.id">👤 {{ u.nomUtilisateur }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-wrapper">
+            <div class="mention-anchor">
+              <textarea
+                class="chat-textarea"
+                [(ngModel)]="newMessageText"
+                (input)="onMessageInput($event)"
+                (keyup.enter)="!$any($event).shiftKey && sendMessageText()"
+                (keyup)="onMessageCaretChange($event)"
+                (click)="onMessageCaretChange($event)"
+                placeholder="Votre message..."
+              ></textarea>
+              
+              <!-- Mentions Overlay -->
+              <div class="mention-popover" *ngIf="showMentionList()">
+                <div class="mention-header">Mentionner un collaborateur</div>
+                <div class="mention-scroll">
+                  <button type="button" class="mention-row" *ngFor="let u of mentionSuggestions()" (click)="selectMention(u)">
+                    <span class="avatar-sm">{{ u.nomUtilisateur?.charAt(0) }}</span>
+                    <span class="name">@{{ u.nomUtilisateur }}</span>
+                    <span class="role">{{ u.role }}</span>
+                  </button>
+                  <div class="mention-none" *ngIf="mentionSuggestions().length === 0">Aucun résultat</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="attachment-status" *ngIf="currentAttachment()">
+              <span class="icon">📎</span> {{ currentAttachment()?.name }}
+              <button class="remove-attach" (click)="currentAttachment.set(null)">✕</button>
+            </div>
+            
+            <button class="attach-button" (click)="uploadFile()" title="Joindre un fichier">
+              <span class="icon">📎</span>
+            </button>
+            
+            <button class="send-button" (click)="sendMessageText()" [disabled]="!newMessageText.trim() && !currentAttachment()">
+              <span class="icon">➡️</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -14,13 +14,13 @@
       <button class="close-btn" (click)="toggle()">×</button>
     </header>
 
-    <div class="chatbot-messages" #scrollMe>
+    <div class="chatbot-messages" #scrollMe (click)="handleLinkClick($event)">
       <div class="message system">
         {{ 'CHAT.WELCOME' | translate }}
       </div>
 
       <div *ngFor="let m of chatService.messages()" class="message" [class.user]="m.role === 'user'" [class.bot]="m.role === 'assistant'">
-        <div class="content">{{ m.content }}</div>
+        <div class="content" [innerHTML]="m.content"></div>
       </div>
 
       <div *ngIf="chatService.isTyping()" class="message bot typing">

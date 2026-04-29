@@ -66,7 +66,9 @@ public class UserController {
         dto.setTicketsResolvedThisWeek(resolvedTickets); // Using total resolved
         dto.setAverageResponseTime(1.5); // Average AI response time in seconds
         dto.setFaqRankings(topFaq.isEmpty() ? Map.of("Aucune donnée", 0L) : topFaq);
-        dto.setDepartmentLoad(Map.of("RH", (rhLoad * 100.0) / totalLoad, "IT", (itLoad * 100.0) / totalLoad));
+        int rhPercent = (int) Math.round((rhLoad * 100.0) / totalLoad);
+        int itPercent = (int) Math.round((itLoad * 100.0) / totalLoad);
+        dto.setDepartmentLoad(Map.of("RH", rhPercent, "IT", itPercent));
         dto.setReclamationTypes(Map.of("Questions", (questions * 100.0) / totalTypes, "Réclamations", (complaints * 100.0) / totalTypes));
         dto.setNewUsersThisMonth(newUsersThisMonth);
         
@@ -105,10 +107,47 @@ public class UserController {
         return userRepository.save(user);
     }
 
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody User payload) {
+        Long safeId = java.util.Objects.requireNonNull(id, "id is required");
+        User user = userRepository.findById(safeId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable."));
+
+        String nextRole = payload.getRole() != null ? payload.getRole().trim().toUpperCase() : user.getRole();
+        if ("ADMIN".equals(nextRole) && !"ADMIN".equals(user.getRole())) {
+            long adminCount = userRepository.findAll().stream()
+                    .filter(u -> "ADMIN".equals(u.getRole()) && !u.getId().equals(safeId))
+                    .count();
+            if (adminCount >= 1) {
+                throw new RuntimeException("Accès refusé. La Maison Bondin ne peut avoir qu'un seul Administrateur.");
+            }
+        }
+
+        if (payload.getNomUtilisateur() != null && !payload.getNomUtilisateur().isBlank()) {
+            user.setNomUtilisateur(payload.getNomUtilisateur().trim());
+        }
+        if (payload.getEmail() != null && !payload.getEmail().isBlank()) {
+            user.setEmail(payload.getEmail().trim());
+        }
+        user.setRole(nextRole);
+
+        return userRepository.save(user);
+    }
+
     @DeleteMapping("/{id}")
     public void revokeUser(@PathVariable Long id) {
-        userRepository.findById(id).ifPresent(user -> {
+        Long safeId = java.util.Objects.requireNonNull(id, "id is required");
+        userRepository.findById(safeId).ifPresent(user -> {
             user.setStatus("REVOKED");
+            userRepository.save(user);
+        });
+    }
+
+    @PutMapping("/{id}/reactivate")
+    public void reactivateUser(@PathVariable Long id) {
+        Long safeId = java.util.Objects.requireNonNull(id, "id is required");
+        userRepository.findById(safeId).ifPresent(user -> {
+            user.setStatus("ACTIVE");
             userRepository.save(user);
         });
     }

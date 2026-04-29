@@ -22,6 +22,7 @@ public class Reclamation {
     private String description;
     private String status;
     private String category; // "RH" or "IT"
+    private String subCategory; // "WiFi", "VPN", "Matériel", etc.
     @jakarta.persistence.Column(columnDefinition = "TEXT")
     private String reponse;
     private String type; // "QUESTION" or "RECLAMATION"
@@ -60,6 +61,9 @@ public class Reclamation {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+
+    public String getSubCategory() { return subCategory; }
+    public void setSubCategory(String subCategory) { this.subCategory = subCategory; }
 
     public String getReponse() { return reponse; }
     public void setReponse(String reponse) { this.reponse = reponse; }

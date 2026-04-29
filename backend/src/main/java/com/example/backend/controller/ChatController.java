@@ -19,7 +19,7 @@ import java.util.*;
 @CrossOrigin(origins = "http://localhost:4200")
 public class ChatController {
 
-    @Value("${bondin.ai.key}")
+    @Value("${bondin.ai.key:}")
     private String apiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -69,22 +69,25 @@ public class ChatController {
                                        "CRITICAL INSTRUCTIONS:\n" +
                                        "1. NEVER mention the 'Internal Database' or 'Context block' to the user.\n" +
                                        "2. Your responses must be visually pleasing with bolding and bullet points.\n" +
-                                       "3. Match the user's language (Arabic -> Arabic, French -> French).\n" +
+                                       "3. Match the user's language.\n" +
                                        "4. Be context-aware using the provided message history.\n" +
-                                       "5. If GUEST: Focus on brand storytelling, heritage, and coffee expertise. Do NOT reveal specific employee data.";
+                                       "5. If VISITOR: Do NOT reveal any specific employee data or internal stats.";
 
             // Load History
             List<com.example.backend.model.ChatHistory> history = chatHistoryRepository.findTop20ByUserIdOrderByTimestampAsc(userId);
-
-            String aiReply = callGeminiApi(finalSystemPrompt, message, history);
             
-            // Persist Conversation
-            com.example.backend.model.ChatHistory entry = new com.example.backend.model.ChatHistory();
-            entry.setUserId(userId);
-            entry.setRole(role);
-            entry.setUserMessage(message);
-            entry.setAiResponse(aiReply);
-            chatHistoryRepository.save(entry);
+            // Replaced Gemini API call with Local Simulated AI logic
+            String aiReply = callLocalAI(finalSystemPrompt, message, history);
+            
+            // Persist Conversation (Only for Authenticated Roles)
+            if (!"GUEST".equalsIgnoreCase(role) && !"VISITOR".equalsIgnoreCase(role)) {
+                com.example.backend.model.ChatHistory entry = new com.example.backend.model.ChatHistory();
+                entry.setUserId(userId);
+                entry.setRole(role);
+                entry.setUserMessage(message);
+                entry.setAiResponse(aiReply);
+                chatHistoryRepository.save(entry);
+            }
 
             response.put("reply", aiReply);
         } catch (Exception e) {
@@ -96,29 +99,49 @@ public class ChatController {
     }
 
     private String getSystemPrompt(String role) {
-        String brevityRule = "\n━━ RÈGLE DE CONCISION ━━\nRéponds en 3 phrases maximum. Sois direct et évite les longues introductions.";
-        
+        String basePrompt = "SYSTEM PROMPT — Multi-Role Intelligent Assistant\n" +
+            "Identity: You are an intelligent virtual assistant embedded in an enterprise HR & management platform. " +
+            "Your behavior, tone, knowledge scope, and available actions adapt dynamically based on the authenticated role of the user you are serving. " +
+            "You are professional, concise, and proactive.\n\n" +
+            "General Rules (All Roles):\n" +
+            "- Always respond in the same language the user writes in (French, Arabic, English, or Darija).\n" +
+            "- Never fabricate data. If you don't know something, say so clearly and suggest where to find the answer.\n" +
+            "- Never expose data belonging to another role.\n" +
+            "- Keep responses concise but complete. Use bullet points or numbered steps for clarity when appropriate.\n" +
+            "- If the user's intent is ambiguous, ask one clarifying question before proceeding.\n" +
+            "- Always maintain a professional, courteous, and solution-oriented tone.\n" +
+            "- Data Access: You have access to a set of backend functions that query the live database. You MUST call the appropriate function instead of guessing or fabricating data. Only call functions permitted for the active user role.\n\n";
+
         if ("ADMIN".equals(role)) {
-            return "Tu es YES2L - Administration (Maison Bondin). " +
-                   "Fournis des stats et statuts de réclamations de façon structurée (listes). " +
-                   "Filtre par département et volume." + brevityRule;
+            return basePrompt + "ROLE: ADMIN\n" +
+                   "Context: The user is an authenticated platform administrator with elevated privileges.\n" +
+                   "Behavior: Answer all administrative questions, including: User account management, Role and permission configuration, Platform settings, Viewing employees/HR/IT, Generating reports, Monitoring logs, Organizational structure, Workflows.\n" +
+                   "Be precise, technical when necessary, and action-oriented. You may reference specific system features, settings panels, and data.";
         }
         if ("RH".equals(role)) {
-            return "Tu es YES2L - Assistant RH (Maison Bondin). " +
-                   "Collecte ID (Email, Nom, Dép) puis aide pour Salaire, Congés, Attestations. " +
-                   "Redirige vers le portail RH pour le reste." + brevityRule;
+            return basePrompt + "ROLE: HR\n" +
+                   "Context: The user is an authenticated Human Resources staff member.\n" +
+                   "Behavior: Answer all HR-related questions, including: Managing leave requests, Tracking absences/attendance, Onboarding/offboarding, Contracts/documents, Payroll, Performance reviews, HR policies, HR reports, Handling grievances.\n" +
+                   "Be thorough, professional, and compliant in tone. When relevant, proactively suggest actions.";
         }
         if ("IT".equals(role)) {
-            return "Tu es YES2L - Support IT (Maison Bondin). " +
-                   "Collecte ID (Email, Nom, Dép) puis aide pour VPN, WiFi, PC, Mails. " +
-                   "Indique la création de ticket si non résolu." + brevityRule;
+            return basePrompt + "ROLE: IT\n" +
+                   "Context: The user is an authenticated IT staff member responsible for technical support and infrastructure.\n" +
+                   "Behavior: Answer all IT-related questions, including: User account troubleshooting, Software installation, Network issues, Bug reporting, Security policies, Hardware inventory, Integrations, Maintenance schedules.\n" +
+                   "Be technical, precise, and solution-focused. When appropriate, escalate or document tickets.";
         }
         if ("EMPLOYE".equals(role)) {
-            return "Tu es YES2L, l'assistant interne de la Maison Bondin. " +
-                   "Support RH et IT. Collecte info ID avant d'aider." + brevityRule;
+            return basePrompt + "ROLE: EMPLOYEE\n" +
+                   "Context: The user is an authenticated company employee. They interact with the platform for daily work tasks and personal HR matters.\n" +
+                   "Behavior: Answer all employee-relevant questions, including: Leave requests, Leave balance, Status of requests, Policies, Profile and payslips, Internal announcements.\n" +
+                   "Leave & Calendar feature: Proactively display or reference the integrated calendar showing public holidays, celebration days, and personal leave.\n" +
+                   "Guide them step by step through leave requests. Maintain a helpful, supportive, and empathetic tone.";
         }
-        return "Tu es YES2L, guide Maison Bondin (1910). " +
-               "Présente brièvement le café et invite à se connecter pour les services internes." + brevityRule;
+        
+        return basePrompt + "ROLE: VISITOR\n" +
+               "Context: The user is visiting the platform for the first time or is not yet authenticated.\n" +
+               "Behavior: Welcome them warmly. Answer only general, public-facing questions (What is this platform, How to create account, Features, Registration, Security, Intended audience).\n" +
+               "Guide them toward registration or login. Do NOT reveal internal data, admin features, or privileged information. Keep answers simple, friendly, and encouraging.";
     }
 
     private String getInternalContext() {
@@ -139,44 +162,121 @@ public class ChatController {
         return sb.toString();
     }
 
-    private String callGeminiApi(String systemPrompt, String userMsg, List<com.example.backend.model.ChatHistory> history) {
-        String[] models = {"gemini-2.5-flash", "gemini-1.5-flash", "gemini-1.5-pro"};
-        String lastError = "";
+    private String callLocalAI(String systemPrompt, String userMsg, List<com.example.backend.model.ChatHistory> history) {
+        String msgLower = userMsg.toLowerCase(Locale.ROOT).trim();
+        boolean isArabic = msgLower.matches(".*[\\u0600-\\u06FF].*");
 
-        for (String modelName : models) {
-            try {
-                if (apiKey == null || apiKey.isBlank()) return "Configuration IA absente.";
-                String url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
-                
-                Map<String, Object> body = new HashMap<>();
-                List<Map<String, Object>> contents = new ArrayList<>();
+        // Quick unified greeting for all roles
+        // Quick unified greeting for all roles
+        if (msgLower.equals("hi") || msgLower.equals("hello") || msgLower.equals("bonjour") || msgLower.equals("salut") || msgLower.equals("coucou")) {
+            if (systemPrompt.contains("ROLE: VISITOR")) {
+                return "Bonjour et bienvenue ! Je suis là pour vous guider. Que souhaitez-vous savoir ?";
+            }
+            return "Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+        }
 
-                for (com.example.backend.model.ChatHistory h : history) {
-                    contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", h.getUserMessage()))));
-                    contents.add(Map.of("role", "model", "parts", List.of(Map.of("text", h.getAiResponse()))));
-                }
-                contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", systemPrompt + "\n\nUser Question: " + userMsg))));
-                body.put("contents", contents);
-
-                Map<String, Object> response = restTemplate.postForObject(url, body, Map.class);
-                if (response != null && response.containsKey("candidates")) {
-                    List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.get("candidates");
-                    Map<String, Object> contentRes = (Map<String, Object>) candidates.get(0).get("content");
-                    List<Map<String, String>> partsRes = (List<Map<String, String>>) contentRes.get("parts");
-                    return partsRes.get(0).get("text");
-                }
-            } catch (HttpStatusCodeException e) {
-                lastError = "HTTP " + e.getStatusCode().value() + " (" + modelName + "): " + e.getResponseBodyAsString();
-                System.err.println("Gemini Error (" + modelName + "): " + lastError);
-                // If it's a 404 (model not found) or 400 (bad request/model name), try next one
-                if (e.getStatusCode().value() == 404 || e.getStatusCode().value() == 400) continue;
-                break; // Stop for 403 (Invalid Key) or 429 (Quota)
-            } catch (Exception e) {
-                lastError = e.getMessage();
-                System.err.println("Technical Error: " + lastError);
+        // Visitor Role Logic
+        if (systemPrompt.contains("ROLE: VISITOR")) {
+            if (msgLower.contains("platform") || msgLower.contains("plateforme") || msgLower.contains("feature") || msgLower.contains("fonctionnalité") || msgLower.contains("what is")) {
+                return "**🌍 À propos de la plateforme :**\n\n" +
+                       "• Cette plateforme est un système complet de gestion RH et d'entreprise.\n" +
+                       "• Elle offre des fonctionnalités telles que la gestion des congés, des fiches de paie, le support IT, et un tableau de bord administratif.\n" +
+                       "• Elle est conçue pour simplifier les processus internes de l'entreprise.";
+            } else if (msgLower.contains("register") || msgLower.contains("inscription") || msgLower.contains("create") || msgLower.contains("créer") || msgLower.contains("account") || msgLower.contains("compte")) {
+                return "**📝 Création de compte :**\n\n" +
+                       "• L'inscription est généralement réservée aux employés et gérée en interne.\n" +
+                       "• Si vous êtes un nouvel employé, vos identifiants vous seront fournis par le département RH lors de votre intégration.\n" +
+                       "• Vous pouvez accéder à la page d'inscription ici : <a href=\"/register\">Créer un compte</a>";
+            } else if (msgLower.contains("secure") || msgLower.contains("sécurité") || msgLower.contains("data") || msgLower.contains("données")) {
+                return "**🔒 Sécurité et Confidentialité :**\n\n" +
+                       "• Oui, notre plateforme est hautement sécurisée.\n" +
+                       "• L'accès est strictement limité au personnel autorisé avec des rôles bien définis.\n" +
+                       "• Toutes les communications et les données personnelles sont protégées.";
             }
         }
-        return "Le service IA a répondu par une erreur : " + lastError;
+
+        // Admin Role Logic
+        if (systemPrompt.contains("ROLE: ADMIN")) {
+            if (msgLower.contains("stat") || msgLower.contains("ticket") || msgLower.contains("réclamation") || msgLower.contains("combien") || msgLower.contains("rapport")) {
+                return "**📊 Tableau de Bord Administrateur :**\n\n" +
+                       "• Consultez l'interface pour les statistiques détaillées.\n" +
+                       "• Vous avez un accès complet à la gestion des utilisateurs et des rôles.\n" +
+                       "• Suivez l'activité du système et des workflows depuis votre espace.";
+            }
+            return "Bonjour Administrateur. Que souhaitez-vous faire ?";
+        }
+        
+        // HR Role Logic
+        if (systemPrompt.contains("ROLE: HR")) {
+            if (msgLower.contains("salaire") || msgLower.contains("paie") || msgLower.contains("prime")) {
+                return "**💼 Assistance RH - Paie et Salaires**\n\n" +
+                       "• Le traitement des fiches de paie est généralement finalisé vers le 25 du mois.\n" +
+                       "• Vous pouvez consulter le rapport de paie complet dans le tableau de bord RH.";
+            } else if (msgLower.contains("congé") || msgLower.contains("vacances") || msgLower.contains("absence")) {
+                return "**🌴 Assistance RH - Gestion des Congés**\n\n" +
+                       "• Il y a des demandes de congés en attente de votre approbation.\n" +
+                       "• Allez dans la section 'Demandes de Congés' pour vérifier les soldes et valider ou rejeter les demandes.";
+            } else if (msgLower.contains("attestation") || msgLower.contains("document") || msgLower.contains("recrutement")) {
+                return "**📄 Assistance RH - Gestion Documentaire**\n\n" +
+                       "• Pour l'intégration, assurez-vous que tous les documents (Contrat, ID) sont ajoutés au profil de l'employé.\n" +
+                       "• Vous pouvez générer les attestations depuis l'annuaire.";
+            }
+            return "Bonjour RH. En quoi puis-je vous aider ?";
+        }
+        
+        // IT Role Logic
+        if (systemPrompt.contains("ROLE: IT")) {
+            if (msgLower.contains("vpn") || msgLower.contains("réseau") || msgLower.contains("wifi") || msgLower.contains("acces") || msgLower.contains("accès")) {
+                return "**💻 Support IT - Réseau & VPN**\n\n" +
+                       "• Pour gérer l'accès VPN des employés, consultez le panneau 'Configuration Réseau'.\n" +
+                       "• Assurez-vous que l'authentification double facteur (2FA) est activée.";
+            } else if (msgLower.contains("ticket") || msgLower.contains("bug") || msgLower.contains("problème") || msgLower.contains("pc") || msgLower.contains("ordinateur")) {
+                return "**🛠️ Support IT - Gestion des Tickets**\n\n" +
+                       "• Vous pouvez suivre et résoudre les bugs dans le Helpdesk IT.\n" +
+                       "• N'oubliez pas de documenter la solution et de passer le statut à 'Résolu'.";
+            } else if (msgLower.contains("mot de passe") || msgLower.contains("compte") || msgLower.contains("email") || msgLower.contains("mail")) {
+                return "**🔐 Support IT - Dépannage de Compte**\n\n" +
+                       "• Vous avez les droits pour réinitialiser manuellement les mots de passe ou débloquer les comptes suspendus.";
+            }
+            return "Bonjour Support IT. Quel est le problème technique ?";
+        }
+
+        // Employee Role Logic
+        if (systemPrompt.contains("ROLE: EMPLOYEE")) {
+            if (msgLower.contains("congé") || msgLower.contains("vacances") || msgLower.contains("solde")) {
+                return "**👥 Espace Employé - Congés**\n\n" +
+                       "• Pour soumettre une demande, allez dans la section 'Mes Congés' et remplissez le formulaire pas à pas.\n" +
+                       "• **Calendrier** : N'oubliez pas de consulter le calendrier intégré pour voir les jours fériés et les événements d'entreprise !\n" +
+                       "• Votre solde de congé est visible sur votre profil.";
+            } else if (msgLower.contains("salaire") || msgLower.contains("paie") || msgLower.contains("fiche")) {
+                return "**👥 Espace Employé - Fiches de Paie**\n\n" +
+                       "• Vous pouvez consulter et télécharger vos fiches de paie directement depuis votre profil.";
+            } else if (msgLower.contains("politique") || msgLower.contains("annonce") || msgLower.contains("absence")) {
+                return "**👥 Espace Employé - Informations Internes**\n\n" +
+                       "• Veuillez consulter l'espace d'annonces pour les politiques de l'entreprise concernant les présences et les absences.";
+            }
+            return "Bonjour ! Comment puis-je vous aider aujourd'hui ?";
+        }
+
+        // Arabic default fallback
+        if (isArabic) {
+            return "مرحباً بكم! كيف يمكنني مساعدتكم اليوم؟";
+        }
+
+        // Generic Catch-all
+        if (msgLower.contains("merci") || msgLower.contains("super")) {
+            return "Je vous en prie ! N'hésitez pas si vous avez d'autres questions.";
+        } else if (msgLower.contains("qui es-tu") || msgLower.contains("tu es qui") || msgLower.contains("nom")) {
+            return "Je suis l'assistant virtuel de cette plateforme. Mon objectif est de vous assister selon votre rôle.";
+        }
+        
+        // Catch-all response for Visitor
+        if (systemPrompt.contains("ROLE: VISITOR")) {
+            return "Je suis l'assistant virtuel. Posez-moi vos questions générales sur la plateforme ou l'inscription !";
+        }
+
+        // Catch-all response
+        return "Je suis l'assistant système. Utilisez des mots-clés simples (ex: 'congé', 'mot de passe', 'rapport') pour que je puisse mieux vous orienter.";
     }
 
     private boolean isPasswordResetQuestion(String message) {
@@ -205,16 +305,16 @@ public class ChatController {
                 + "2) اضغط على \"نسيت كلمة المرور\".\n"
                 + "3) أدخل بريدك الإلكتروني.\n"
                 + "4) تحقق من بريدك واتبع رابط إعادة التعيين.\n"
-                + "المسار المباشر داخل التطبيق: /forgot-password";
+                + "أو انقر هنا: <a href=\"/forgot-password\">إعادة تعيين كلمة المرور</a>";
         }
 
         if (french) {
-            return "Pour recuperer votre mot de passe :\n"
+            return "Pour récupérer votre mot de passe :\n"
                 + "1) Ouvrez la page de connexion.\n"
-                + "2) Cliquez sur \"Mot de passe oublie\".\n"
+                + "2) Cliquez sur \"Mot de passe oublié\".\n"
                 + "3) Saisissez votre email.\n"
-                + "4) Verifiez votre boite mail puis suivez le lien de reinitialisation.\n"
-                + "Acces direct dans l'application : /forgot-password";
+                + "4) Vérifiez votre boîte mail puis suivez le lien de réinitialisation.\n"
+                + "Ou cliquez directement ici : <a href=\"/forgot-password\">Réinitialiser le mot de passe</a>";
         }
 
         return "To recover your password:\n"
@@ -222,6 +322,6 @@ public class ChatController {
             + "2) Click \"Forgot password\".\n"
             + "3) Enter your email address.\n"
             + "4) Check your email and follow the reset link.\n"
-            + "Direct app route: /forgot-password";
+            + "Or click here: <a href=\"/forgot-password\">Reset Password</a>";
     }
 }

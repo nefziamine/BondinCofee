@@ -3,10 +3,10 @@ import { Login } from './pages/login/login';
 import { Register } from './pages/register/register';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { ProfileViewComponent } from './profile-view/profile-view';
-import { ManageUsers } from './pages/admin/manage-users/manage-users';
 import { LandingPage } from './pages/landing/landing';
 import { ForgotPassword } from './pages/forgot-password/forgot-password';
 import { RequestsComponent } from './pages/requests/requests';
+import { DashboardHub } from './pages/dashboard-hub/dashboard-hub';
 import { authGuard } from './guards/auth-guard';
 
 export const routes: Routes = [
@@ -15,19 +15,13 @@ export const routes: Routes = [
   { path: 'register', component: Register },
   { path: 'forgot-password', component: ForgotPassword },
   
-  // Protected Routes - Switching back to unified Dashboard
-  { path: 'dashboard', component: Dashboard, canActivate: [authGuard] },
+  // Protected Routes - New unified Dashboard Hub with sidebar
+  { path: 'dashboard', component: DashboardHub, canActivate: [authGuard], data: { roles: ['EMPLOYE', 'RH', 'IT', 'ADMIN'] } },
   
   { path: 'requests', component: RequestsComponent, canActivate: [authGuard] },
   { path: 'afficherprofil', component: ProfileViewComponent, canActivate: [authGuard] },
   
-  // Admin Only
-  { 
-    path: 'admin', 
-    component: ManageUsers, 
-    canActivate: [authGuard], 
-    data: { roles: ['ADMIN'] } 
-  },
+
 
   { path: '**', redirectTo: '/login' }
 ];

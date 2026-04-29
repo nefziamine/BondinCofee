@@ -35,14 +35,16 @@ public class ReclamationController {
             reclamation.setStatus("Pending");
         }
         
-        // Intelligent AI Filtering logic
-        String content = (reclamation.getSujet() + " " + reclamation.getDescription()).toLowerCase();
-        if (content.contains("network") || content.contains("computer") || content.contains("password") || 
-            content.contains("software") || content.contains("it") || content.contains("wifi") || 
-            content.contains("imprimante") || content.contains("ecran")) {
-            reclamation.setCategory("IT");
-        } else {
-            reclamation.setCategory("RH");
+        // Only apply automated filtering if no category was selected by the user
+        if (reclamation.getCategory() == null || reclamation.getCategory().isEmpty()) {
+            String content = (reclamation.getSujet() + " " + reclamation.getDescription()).toLowerCase();
+            if (content.contains("network") || content.contains("computer") || content.contains("password") || 
+                content.contains("software") || content.contains("it") || content.contains("wifi") || 
+                content.contains("imprimante") || content.contains("ecran")) {
+                reclamation.setCategory("IT");
+            } else {
+                reclamation.setCategory("RH");
+            }
         }
         
         populateEmail(reclamation);

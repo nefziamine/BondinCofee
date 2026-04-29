@@ -66,13 +66,8 @@ export class Auth {
           const decoded = this.decodeToken(res.token);
           this.userRole.set(decoded.role);
           
-          // Role-based immediate redirect - Split for separation
-          const role = decoded.role;
-          if (role === 'ADMIN') {
-            this.router.navigate(['/admin']);
-          } else {
-            this.router.navigate(['/dashboard']);
-          }
+          // All roles now go to the unified dashboard hub
+          this.router.navigate(['/dashboard']);
         }
       })
     );
