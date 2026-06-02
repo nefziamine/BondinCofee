@@ -1,7 +1,7 @@
 <div class="dashboard-page">
   <div class="dashboard-container">
     <header class="dashboard-cover">
-      <img class="cover-image" src="assets/images/PC.jpg" alt="Dashboard cover">
+      <img class="cover-image" [src]="coverImage" alt="Dashboard cover">
       <div class="cover-overlay"></div>
       <div class="cover-profile" *ngIf="auth.userProfile()">
         <div class="profile-photo">

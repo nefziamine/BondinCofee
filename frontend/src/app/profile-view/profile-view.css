@@ -55,7 +55,7 @@ button {
 
 /* Hover bouton */
 button:hover {
-  background-color: #45a049;
+  background-color: var(--red);
 }
 
 /* Upload image */

@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Auth } from '../../services/auth';
-import { ChatbotService } from '../../services/chatbot-service';
+
 import { NotificationService } from '../../services/notification-service';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
@@ -21,8 +21,7 @@ export class Navbar {
   constructor(
     public auth: Auth, 
     public notifService: NotificationService,
-    private router: Router,
-    private chatService: ChatbotService
+    private router: Router
   ) {}
 
   toggleNotifications() {
@@ -46,7 +45,6 @@ export class Navbar {
 
   logout() {
     this.auth.logout();
-    this.chatService.loadHistory();
     this.router.navigate(['/']);
   }
 }

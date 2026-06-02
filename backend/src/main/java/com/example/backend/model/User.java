@@ -21,6 +21,8 @@ public class User {
     private java.time.LocalDateTime lastLogin;
     private Integer congeRestant = 21; // Default to 21 days
     private String department = "Bondin Heritage";
+    private Integer nbRetards = 0;
+    private Integer nbAbsencesNonJustifiees = 0;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -51,4 +53,10 @@ public class User {
 
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
+
+    public Integer getNbRetards() { return nbRetards; }
+    public void setNbRetards(Integer nbRetards) { this.nbRetards = nbRetards; }
+
+    public Integer getNbAbsencesNonJustifiees() { return nbAbsencesNonJustifiees; }
+    public void setNbAbsencesNonJustifiees(Integer nbAbsencesNonJustifiees) { this.nbAbsencesNonJustifiees = nbAbsencesNonJustifiees; }
 }

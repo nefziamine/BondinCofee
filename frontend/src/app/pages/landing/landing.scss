@@ -1,5 +1,6 @@
 .landing-page {
-  background: #FFFFFF;
+  /* Let global theme background show through */
+  background: transparent;
 }
 
 .hero {
@@ -123,8 +124,9 @@ p {
   border-color: #FFFFFF;
 }
 .hero-actions .btn-bondin-red:hover {
-  background: #FFFFFF;
-  color: #1A1A1A;
+  background: var(--red);
+  color: #FFFFFF;
+  border-color: var(--red);
 }
 
 :host-context(body.light-mode) .hero-actions .btn-bondin-red {

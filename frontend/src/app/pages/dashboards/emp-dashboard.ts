@@ -25,6 +25,10 @@ export class EmpDashboard {
     return this.auth.userRole() || 'EMPLOYE';
   }
 
+  get coverImage() {
+    return 'assets/images/admin-cover.png';
+  }
+
   get roleCards(): DashboardCard[] {
     return [
       { icon: '💬', label: 'Messagerie', action: () => this.openView('MESSAGES') },

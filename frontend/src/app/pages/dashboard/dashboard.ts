@@ -52,6 +52,10 @@ export class Dashboard {
     return this.auth.userRole() || 'EMPLOYE';
   }
 
+  get coverImage() {
+    return 'assets/images/admin-cover.png';
+  }
+
   get roleCards(): DashboardCard[] {
     if (this.role === 'RH') {
       return [

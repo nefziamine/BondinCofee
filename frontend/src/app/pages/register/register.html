@@ -37,7 +37,7 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn-bondin-red" style="width: 100%; padding: 1rem; cursor: pointer;">
+          <button type="submit" class="btn-register-submit" [disabled]="loading">
             {{ loading ? ('AUTH.REG_LOADING' | translate) : ('AUTH.REG_BTN' | translate) }}
           </button>
         </div>

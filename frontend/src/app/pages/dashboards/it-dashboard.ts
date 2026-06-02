@@ -25,6 +25,10 @@ export class ITDashboard {
     return this.auth.userRole() || 'IT';
   }
 
+  get coverImage() {
+    return 'assets/images/admin-cover.png';
+  }
+
   get roleCards(): DashboardCard[] {
     return [
       { icon: '🖥️', label: 'Tickets IT', action: () => this.openView('QUESTION') },

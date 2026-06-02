@@ -11,6 +11,9 @@ import java.util.Optional;
 import com.example.backend.model.ProfileUser;
 import com.example.backend.repository.ProfileRepository;
 
+import com.example.backend.util.JwtUserIdExtractor;
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -122,5 +125,34 @@ public class AuthController {
             response.put("message", "Erreur lors de la réinitialisation");
         }
         return response;
+    }
+
+    @PostMapping("/change-password")
+    public org.springframework.http.ResponseEntity<?> changePassword(@RequestBody Map<String, String> data, HttpServletRequest request) {
+        Long userId = JwtUserIdExtractor.extractUserId(request.getHeader("Authorization"));
+        if (userId == null) {
+            return org.springframework.http.ResponseEntity.status(401).body(Map.of("message", "Unauthorized"));
+        }
+
+        String oldPassword = data.get("oldPassword");
+        String newPassword = data.get("newPassword");
+
+        if (oldPassword == null || newPassword == null || newPassword.isBlank()) {
+            return org.springframework.http.ResponseEntity.badRequest().body(Map.of("message", "Invalid payload"));
+        }
+
+        Optional<User> userOpt = userRepository.findById(userId);
+        if (userOpt.isEmpty()) {
+            return org.springframework.http.ResponseEntity.status(404).body(Map.of("message", "User not found"));
+        }
+
+        User user = userOpt.get();
+        if (user.getPassword() == null || !user.getPassword().equals(oldPassword)) {
+            return org.springframework.http.ResponseEntity.status(400).body(Map.of("message", "Current password is incorrect"));
+        }
+
+        user.setPassword(newPassword);
+        userRepository.save(user);
+        return org.springframework.http.ResponseEntity.ok(Map.of("message", "Password updated successfully"));
     }
 }

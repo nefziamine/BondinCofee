@@ -1,41 +1,172 @@
-<div class="chatbot-wrapper" [class.open]="isOpen()">
-  <!-- FLOATING TRIGGER -->
-  <button class="chatbot-trigger" (click)="toggle()">
-    <span class="icon">☕</span>
+<div class="chatbot-wrapper" [class.is-open]="isOpen()">
+  <button
+    type="button"
+    class="chatbot-toggle"
+    (click)="toggleChat()"
+    [attr.aria-label]="'CHATBOT.TITLE' | translate"
+  >
+    <span class="icon" *ngIf="!isOpen()">💬</span>
+    <span class="icon" *ngIf="isOpen()">✕</span>
+    <span class="pulse" *ngIf="!isOpen() && messages().length === 0"></span>
   </button>
 
-  <!-- CHAT PANEL -->
-  <div class="chatbot-panel">
-    <header class="chatbot-header">
-      <div class="bot-info">
-        <h3>{{ getBotName() }}</h3>
-        <span class="status">{{ 'CHAT.ONLINE' | translate }}</span>
+  <div class="chat-window" *ngIf="isOpen()">
+    <header class="chat-header">
+      <div class="bot-profile">
+        <div class="bot-avatar">B</div>
+        <div class="bot-info">
+          <h3>{{ 'CHATBOT.TITLE' | translate }}</h3>
+          <span class="status">
+            {{ (isVisitor() ? 'CHATBOT.STATUS_VISITOR' : 'CHATBOT.STATUS_LINE') | translate }}
+          </span>
+        </div>
       </div>
-      <button class="close-btn" (click)="toggle()">×</button>
+      <div class="header-actions">
+        <button
+          type="button"
+          class="icon-btn"
+          (click)="resetChat()"
+          [title]="'CHATBOT.NEW_CHAT' | translate"
+          [attr.aria-label]="'CHATBOT.NEW_CHAT' | translate"
+        >
+          ↻
+        </button>
+        <button
+          type="button"
+          class="icon-btn"
+          (click)="toggleChat()"
+          [attr.aria-label]="'CHATBOT.CLOSE' | translate"
+        >
+          ✕
+        </button>
+      </div>
     </header>
 
-    <div class="chatbot-messages" #scrollMe (click)="handleLinkClick($event)">
-      <div class="message system">
-        {{ 'CHAT.WELCOME' | translate }}
+    <div class="chat-body" #scrollContainer>
+      <!-- Reply indicator -->
+      <div *ngIf="replyingToId" class="reply-indicator">
+        <div class="reply-content">
+          <span class="reply-label">{{ 'CHATBOT.REPLYING_TO' | translate }}</span>
+          <span class="reply-text">{{ getReplyMessage(replyingToId)?.text }}</span>
+        </div>
+        <button type="button" class="cancel-reply-btn" (click)="cancelReply()" title="Cancel reply">✕</button>
       </div>
 
-      <div *ngFor="let m of chatService.messages()" class="message" [class.user]="m.role === 'user'" [class.bot]="m.role === 'assistant'">
-        <div class="content" [innerHTML]="m.content"></div>
+      <!-- Edit indicator -->
+      <div *ngIf="editingMessageId" class="edit-indicator">
+        <span class="edit-label">{{ 'CHATBOT.EDITING' | translate }}</span>
+        <button type="button" class="cancel-edit-btn" (click)="cancelEdit()" title="Cancel edit">✕</button>
       </div>
 
-      <div *ngIf="chatService.isTyping()" class="message bot typing">
-        <div class="typing-indicator">
+      <!-- Messages -->
+      <div
+        *ngFor="let msg of messages(); trackBy: trackByIndex"
+        class="message-row"
+        [class.user]="msg.isUser"
+        (mouseenter)="hoveredMessageId = msg.id"
+        (mouseleave)="hoveredMessageId = null"
+      >
+        <!-- Reply target indicator -->
+        <div *ngIf="msg.replyTo" class="reply-target-indicator">
+          <div class="reply-ref">
+            <span class="ref-label">{{ 'CHATBOT.REPLYING_TO' | translate }}</span>
+            <span class="ref-text">{{ getReplyMessage(msg.replyTo)?.text }}</span>
+          </div>
+        </div>
+
+        <div class="message-bubble" [class.bot]="!msg.isUser">
+          <div *ngIf="msg.image" class="image-container">
+            <img [src]="msg.image" alt="User image" class="message-image" />
+          </div>
+          <div class="text" *ngIf="msg.isUser">{{ msg.text }}</div>
+          <div class="text" *ngIf="!msg.isUser" [innerHTML]="getSafeHtml(msg.text)"></div>
+          <div class="time">
+            {{ msg.timestamp | date:'HH:mm' }}
+            <span *ngIf="msg.isEdited" class="edited-label">({{ 'CHATBOT.EDITED' | translate }})</span>
+          </div>
+        </div>
+
+        <!-- Message options (delete, edit, reply) -->
+        <div *ngIf="msg.isUser && hoveredMessageId === msg.id" class="message-options">
+          <button
+            type="button"
+            class="option-btn reply-btn"
+            (click)="replyToMessage(msg.id)"
+            title="Reply"
+            [attr.aria-label]="'CHATBOT.REPLY' | translate"
+          >
+            ⤴
+          </button>
+          <button
+            type="button"
+            class="option-btn edit-btn"
+            (click)="editMessage(msg.id, msg.text)"
+            title="Edit"
+            [attr.aria-label]="'CHATBOT.EDIT' | translate"
+          >
+            ✎
+          </button>
+          <button
+            type="button"
+            class="option-btn delete-btn"
+            (click)="deleteMessage(msg.id)"
+            title="Delete"
+            [attr.aria-label]="'CHATBOT.DELETE' | translate"
+          >
+            🗑
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading()" class="message-row">
+        <div class="message-bubble bot typing" aria-live="polite">
           <span></span><span></span><span></span>
         </div>
       </div>
     </div>
 
-    <div class="chatbot-footer">
-      <input type="text" 
-             [placeholder]="'CHAT.PLACEHOLDER' | translate" 
-             [(ngModel)]="userMessage" 
-             (keyup.enter)="send()">
-      <button (click)="send()" [disabled]="!userMessage.trim()">→</button>
-    </div>
+    <footer class="chat-footer">
+      <div *ngIf="selectedImage" class="image-preview">
+        <img [src]="selectedImage.data" alt="Preview" class="preview-image" />
+        <button type="button" class="remove-image" (click)="clearImage()" title="Remove image">
+          ✕
+        </button>
+      </div>
+      <div class="input-wrapper">
+        <input
+          type="file"
+          #fileInput
+          (change)="onFileSelected($event)"
+          accept="image/*"
+          style="display: none"
+        />
+        <button
+          type="button"
+          class="attach-btn"
+          (click)="triggerFileInput()"
+          [disabled]="isLoading() || editingMessageId !== null"
+          [title]="'CHATBOT.ATTACH_IMAGE' | translate"
+          [attr.aria-label]="'CHATBOT.ATTACH_IMAGE' | translate"
+        >
+          📎
+        </button>
+        <input
+          type="text"
+          [(ngModel)]="currentMessage"
+          (keyup.enter)="sendMessage()"
+          [disabled]="isLoading()"
+          [placeholder]="(editingMessageId ? 'CHATBOT.EDIT_PLACEHOLDER' : 'CHATBOT.PLACEHOLDER') | translate"
+        />
+        <button
+          type="button"
+          class="send-btn"
+          (click)="sendMessage()"
+          [disabled]="(!currentMessage.trim() && !selectedImage) || isLoading()"
+          [attr.aria-label]="(editingMessageId ? 'CHATBOT.SAVE' : 'CHATBOT.SEND') | translate"
+        >
+          {{ editingMessageId ? '✓' : '➤' }}
+        </button>
+      </div>
+    </footer>
   </div>
 </div>

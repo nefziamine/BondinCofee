@@ -21,8 +21,7 @@
       </div>
 
       <!-- Main Navigation -->
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'Acceuil'
-        |translate}}</a>
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">{{ 'NAV.HOME' | translate }}</a>
 
       <ng-container *ngIf="!auth.userRole()">
         <a routerLink="/login" routerLinkActive="active">{{ 'NAV.LOGIN' | translate }}</a>
@@ -38,22 +37,22 @@
       <div class="nav-actions" *ngIf="auth.userRole()">
         <!-- Profile View -->
         <div class="nav-icon-container" routerLink="/afficherprofil" title="Profile" style="margin-right: 15px;">
-          <img class="icon-img icon-light" src="assets/images/nav-profile.png" alt="Profile">
+          <img class="icon-img icon-dark" src="assets/images/nav-profile.png" alt="Profile">
         </div>
 
         <!-- Bell Notifications -->
         <div class="nav-icon-container" (click)="toggleNotifications()">
-          <img class="icon-img icon-light" src="assets/images/nav-bell.png" alt="Notifications">
+          <img class="icon-img icon-dark" src="assets/images/nav-bell.png" alt="Notifications">
           <span *ngIf="notifService.unreadCount() > 0" class="badge">{{ notifService.unreadCount() }}</span>
 
           <div *ngIf="showNotifications()" class="dropdown-panel notifications-panel"
             (click)="$event.stopPropagation()">
             <header>
-              <span>Notifications</span>
-              <button (click)="notifService.markAllAsRead()">{{ 'APP.READ_ALL' | translate }}</button>
+              <span>{{ 'APP.NOTIFICATIONS' | translate }}</span>
+              <button (click)="notifService.markAllAsRead()">{{ 'APP.MARK_ALL_READ' | translate }}</button>
             </header>
             <div class="scroll-area">
-              <div *ngIf="notifService.notifications().length === 0" class="empty">{{ 'APP.EMPTY_NOTIF' | translate }}
+              <div *ngIf="notifService.notifications().length === 0" class="empty">{{ 'APP.NO_NOTIF' | translate }}
               </div>
               <div *ngFor="let n of notifService.notifications()" class="notif-item" [class.unread]="!n.read"
                 [class.highlighted]="highlightedId() === n.id" (click)="highlightedId.set(n.id)"

@@ -97,7 +97,7 @@ export class RequestsComponent implements OnInit, AfterViewChecked {
     if (this.initialTab) {
       this.currentTab.set(this.initialTab);
     } else if (role === 'ADMIN') {
-      this.currentTab.set('MESSAGES');
+      this.currentTab.set('QUESTION');
     } else if (role === 'RH' || role === 'IT') {
       this.currentTab.set('QUESTION');
     } else {

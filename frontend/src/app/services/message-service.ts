@@ -10,6 +10,9 @@ export interface Message {
   timestamp?: string;
   senderName?: string;
   broadcast?: boolean;
+  attachmentUrl?: string;
+  attachmentName?: string;
+  attachmentType?: string;
 }
 
 @Injectable({

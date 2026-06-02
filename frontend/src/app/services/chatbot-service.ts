@@ -1,27 +1,44 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface ChatAskResponse {
+  reply: string;
+  timestamp: string;
+  authenticated: boolean;
+}
+
+export interface ChatMessageDto {
+  id: number;
+  userId: number;
+  role: 'USER' | 'BOT';
+  content: string;
+  timestamp: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class ChatbotService {
-  private apiUrl = 'http://localhost:8080/api/chatbot';
+  private http = inject(HttpClient);
+  private readonly base = 'http://localhost:8080/api/chatbot';
 
-  constructor(private http: HttpClient) {}
-
-  ask(message: string, userId: number, role: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/ask`, { message, userId, role });
+  ask(message: string): Observable<ChatAskResponse> {
+    return this.http.post<ChatAskResponse>(`${this.base}/ask`, { message }, { headers: this.authHeaders() });
   }
 
-  getHistory(userId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/history/${userId}`);
+  history(): Observable<ChatMessageDto[]> {
+    return this.http.get<ChatMessageDto[]>(`${this.base}/history`, { headers: this.authHeaders() });
   }
 
-  // Compatibility methods for existing components
-  loadHistory() {
-    console.log('Chat history cleared/reloaded');
+  clearHistory(): Observable<void> {
+    return this.http.delete<void>(`${this.base}/history`, { headers: this.authHeaders() });
   }
 
-  messages = () => []; // Dummy for compatibility if needed
+  private authHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    return headers;
+  }
 }

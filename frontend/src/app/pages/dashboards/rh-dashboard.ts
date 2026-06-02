@@ -35,6 +35,10 @@ export class RHDashboard {
     return this.auth.userRole() || 'RH';
   }
 
+  get coverImage() {
+    return 'assets/images/admin-cover.png';
+  }
+
   get roleCards(): DashboardCard[] {
     return [
       { icon: '👥', label: 'Dossiers RH', action: () => this.openView('QUESTION') },

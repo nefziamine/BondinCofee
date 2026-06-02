@@ -1,6 +1,7 @@
 {
   "NAV": {
     "ART_DU_CAFE": "L'Art du Café",
+    "HOME": "Accueil",
     "LOGIN": "Connexion",
     "REGISTER": "Inscription",
     "DASHBOARD": "Tableau de Bord",
@@ -25,9 +26,25 @@
     "COPYRIGHT": "© Cafés BONDIN · 2025"
   },
   "CHATBOT": {
-    "ONLINE": "En ligne",
-    "WELCOME": "Bienvenue dans la Maison Bondin. Je suis votre assistant dédié.",
-    "PLACEHOLDER": "Écrivez votre message..."
+    "TITLE": "Assistant Bondin",
+    "STATUS_LINE": "En ligne • IA",
+    "STATUS_VISITOR": "Public • Visiteur",
+    "WELCOME_FULL": "Bonjour ! Je suis votre assistant interne Bondin. Comment puis-je vous aider aujourd'hui ?",
+    "WELCOME_VISITOR": "Bienvenue à la Maison Bondin. Connectez-vous pour accéder à vos données personnelles (congés, demandes…).",
+    "PLACEHOLDER": "Écrivez votre message…",
+    "EDIT_PLACEHOLDER": "Modifiez votre message…",
+    "SEND": "Envoyer",
+    "SAVE": "Enregistrer",
+    "ATTACH_IMAGE": "Joindre une image",
+    "REPLY": "Répondre",
+    "EDIT": "Modifier",
+    "DELETE": "Supprimer",
+    "REPLYING_TO": "Répondre à:",
+    "EDITING": "Modification en cours...",
+    "EDITED": "modifié",
+    "CLOSE": "Fermer",
+    "NEW_CHAT": "Nouvelle conversation",
+    "ERROR_GENERIC": "Désolé, une erreur s'est produite. Réessayez dans un instant."
   },
   "DASHBOARD": {
     "SPACE": "Cabinet de Gestion — Espace",
@@ -110,7 +127,7 @@
   },
   "AUTH": {
     "LOGIN_CABINET": "Cabinet de Gestion",
-    "LOGIN_TITLE": "Accès Interne",
+    "LOGIN_TITLE": "Connexion",
     "LOGIN_SUB": "L’Excellence Opérationnelle depuis 1910",
     "LOGIN_ID": "Identifiant (Email)",
     "LOGIN_ID_PLACEHOLDER": "votre.nom@cafesbondin.tn",
@@ -207,6 +224,37 @@
     "SEND": "Envoyer le lien",
     "SENDING": "Envoi...",
     "BACK": "Retour à la connexion"
+  },
+  "HUB": {
+    "NAVIGATION": "Navigation",
+    "OVERVIEW": "Tableau de bord",
+    "CALENDAR": "Calendrier",
+    "POINTAGE": "Pointage",
+    "LEAVE": "Congés & Absences",
+    "DOC_REQUESTS": "Demande Documents",
+    "RECEIVED_DOCS": "Documents Reçus",
+    "MESSAGES": "Messagerie",
+    "LEAVE_BALANCE": "Solde congé",
+    "RH_SPACE": "Espace RH",
+    "TICKETS_RH": "Requêtes & Questions",
+    "RH_DOCS": "Documentation RH",
+    "RH_POINTAGE": "Validation Pointage",
+    "RH_LEAVE": "Gestion Congés",
+    "RH_DOC_REQUESTS": "Demandes Reçues",
+    "ADMIN_SPACE": "Administration",
+    "ADMIN_USERS": "Gérer les utilisateurs",
+    "IT_SPACE": "Espace IT",
+    "TICKETS_IT": "Tickets IT"
+  },
+  "SEC": {
+    "CHANGE_PASSWORD": "Modifier le mot de passe",
+    "CHANGE_PASSWORD_INSTR": "Entrez votre mot de passe actuel puis choisissez-en un nouveau.",
+    "OLD_PASSWORD": "Mot de passe actuel",
+    "NEW_PASSWORD": "Nouveau mot de passe",
+    "CONFIRM_PASSWORD": "Confirmer le nouveau mot de passe",
+    "SAVE": "Enregistrer",
+    "SAVING": "Enregistrement...",
+    "BACK_DASHBOARD": "Retour au tableau de bord"
   },
   "CHAT": {
     "ONLINE": "En ligne",

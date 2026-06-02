@@ -1,42 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,700;1,800&family=Barlow+Condensed:wght@400;600;700&family=Lora:wght@400;500&display=swap');
 
 :root {
-  /* PREMIUM WHITE & RED THEME (BONDIN SIGNATURE) */
-  --bg:               #F8F9FA;
-  --surface:          #FFFFFF;
-  --surface-secondary: #F1F3F5;
-  --text:             #1A1A1A;
-  --text-muted:       #666666;
-  --border:           rgba(192, 40, 31, 0.12);
-  --input-bg:         #FFFFFF;
-  --input-border:     rgba(192, 40, 31, 0.2);
-  --card-bg:          #FFFFFF;
-  --shadow:           0 15px 35px rgba(0, 0, 0, 0.08);
-  --badge-text:       #FFFFFF;
-  
-  --red:              #C0281F;
-  --gold:             #C0281F;  /* Aligning Gold with Bondin Red for this theme */
-  
   --font-display: 'Cormorant Garamond', serif;
   --font-ui:     'Barlow Condensed', sans-serif;
   --font-body:   'Lora', serif;
+  --red:         #C0281F;
 }
 
+/*
+ * Dark theme — default (matches Auth.isDarkMode true: body sans classe .light-mode).
+ */
+body:not(.light-mode) {
+  --bg:               #0f0f14;
+  --surface:          #18181f;
+  --surface-secondary: #22222c;
+  --text:             #f2efe9;
+  --text-muted:       #a39e94;
+  --border:           rgba(255, 255, 255, 0.09);
+  --input-bg:         rgba(255, 255, 255, 0.05);
+  --input-border:     rgba(255, 255, 255, 0.14);
+  --card-bg:          #18181f;
+  --shadow:           0 18px 48px rgba(0, 0, 0, 0.55);
+  --badge-text:       #ffffff;
+  --gold:             #d8bc6a;
+}
+
+/*
+ * Light theme — body.light-mode (warm paper tones).
+ */
 body.light-mode {
-  --bg:               #FAF9F6;  /* Cleaner, brighter beige */
-  --surface:          #FFFFFF;
-  --surface-secondary: #F0EDE5;
-  --text:             #2D241E;  /* Darker for better contrast */
-  --text-muted:       #6B5E52;  /* Slightly darker muted text */
+  --bg:               #faf9f6;
+  --surface:          #ffffff;
+  --surface-secondary: #f0ede5;
+  --text:             #2d241e;
+  --text-muted:       #6b5e52;
   --border:           rgba(107, 94, 82, 0.25);
-  --input-bg:         #FFFFFF;
+  --input-bg:         #ffffff;
   --input-border:     rgba(107, 94, 82, 0.35);
-  --card-bg:          #FFFFFF;
-  --shadow:           0 15px 35px rgba(45, 36, 30, 0.08);
-  --badge-text:       #FFFFFF;
-  
-  --red:              #A8231B;
-  --gold:             #8C6D21;  /* Darker gold for light mode visibility */
+  --card-bg:          #ffffff;
+  --shadow:           0 15px 35px rgba(45, 36, 30, 0.1);
+  --badge-text:       #ffffff;
+  --red:              #a8231b;
+  --gold:             #8c6d21;
 }
 
 html[dir="rtl"] {
@@ -91,6 +96,11 @@ h1, h2, h3, h4, h5, .display {
   letter-spacing: 0.15em;
   font-size: 0.75rem;
   color: var(--gold);
+}
+
+/* BUTTON HOVER STYLES */
+button:hover {
+  background-color: var(--red) !important;
 }
 
 /* LAYOUT */
@@ -204,6 +214,17 @@ label {
   }
 }
 
+body.light-mode .bondin-input,
+body.light-mode .bondin-textarea {
+  background: var(--input-bg);
+  border-color: var(--input-border);
+
+  &:focus {
+    background: var(--surface);
+    border-color: var(--red);
+  }
+}
+
 .btn-bondin {
   background: var(--red);
   color: var(--text);
@@ -235,8 +256,9 @@ label {
   transition: 0.3s;
 
   &:hover {
-    background: var(--gold);
-    color: var(--bg);
+    background: var(--red);
+    color: var(--text);
+    border-color: var(--red);
   }
 }
 

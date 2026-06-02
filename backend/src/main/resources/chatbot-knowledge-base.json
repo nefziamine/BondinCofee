@@ -1,0 +1,1514 @@
+{
+  "knowledge_base": [
+    {
+      "id": 1,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "solde",
+        "congé",
+        "jours",
+        "remaining",
+        "balance",
+        "leave days",
+        "conge",
+        "9adeh",
+        "3andi",
+        "jours"
+      ],
+      "questions": [
+        "Quel est mon solde actuel de congés payés ?",
+        "How many leave days do I have remaining?",
+        "كم عدد أيام الإجازة المتبقية لدي؟",
+        "9adeh yom conge baqia?",
+        "9adeh 3andi mn jours congé",
+        "9adeh 3andi conge",
+        "9adeh 3andi mn jours conge",
+        "9adeh yom conge baqia te3i?",
+        "قداش عندي من نهار كونجي متبقي؟",
+        "What benefits do I have?",
+        "How do I sign up?",
+        "كم عدد أيام الإجازة التي استخدمتها؟",
+        "ما درجة خطر القرض لدي؟",
+        "9adeh avantage 3andi?"
+      ],
+      "answer": "Vous avez <strong>{leave_balance}</strong> jours de congés restants. Consultez <a href=\"/#/dashboard?view=leave\" class=\"bot-link\">Mes congés</a> pour plus de détails."
+    },
+    {
+      "id": 2,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "demande",
+        "congé",
+        "comment",
+        "procédure",
+        "submit",
+        "request",
+        "kifech",
+        "t3mel",
+        "tamel",
+        "t3mel demande"
+      ],
+      "questions": [
+        "Comment puis-je faire une demande de congé ?",
+        "How do I submit a leave request?",
+        "كيف أقدم طلب إجازة؟",
+        "kifech nqaddim talab conge?",
+        "Kifech t3mel demande, statut (en attente / approuvé / refusé)",
+        "Kifech t3mel demande",
+        "kifech tamel demande conge?",
+        "كيفاش نقدّم طلب كونجي؟"
+      ],
+      "answer": "Procédure en 3 étapes: 1) Ouvrir <a href=\"/#/dashboard?view=leave\" class=\"bot-link\">Mes congés</a>, 2) Choisir les dates + le type, 3) Soumettre. Validation manager + RH sous ~48 h."
+    },
+    {
+      "id": 3,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "acceptée",
+        "approuvée",
+        "status",
+        "pending",
+        "refusée",
+        "statut",
+        "attente",
+        "approuve",
+        "refuse",
+        "t3mel"
+      ],
+      "questions": [
+        "Ma demande de congé est-elle acceptée ou en attente ?",
+        "What is the status of my leave request?",
+        "ما هي حالة طلب إجازتي؟",
+        "chnou status talab conge mte3i?",
+        "Kifech t3mel demande, statut (en attente / approuvé / refusé)",
+        "statut demande conge",
+        "en attente approuve refuse",
+        "What is my leave balance?",
+        "What is the status of my request?",
+        "شنية حالة الطلب متاعي؟"
+      ],
+      "answer": "Vérifiez dans <a href=\"/#/dashboard?view=leave\" class=\"bot-link\">Mes congés</a> la colonne Statut (En attente / Approuvée / Refusée)."
+    },
+    {
+      "id": 4,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "refusée",
+        "pourquoi",
+        "rejetée",
+        "denied",
+        "rejected"
+      ],
+      "questions": [
+        "Pourquoi ma demande de congé a-t-elle été refusée ?",
+        "Why was my leave request rejected?",
+        "لماذا تم رفض طلب إجازتي؟",
+        "3lash talab conge mte3i tkhalaa?",
+        "Why was my request rejected?",
+        "لماذا تم رفض طلبي؟",
+        "علاش ترفض طلبي؟"
+      ],
+      "answer": "Raisons possibles: solde insuffisant, période critique, plusieurs absents, préavis < 7 jours. Contactez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> pour détails."
+    },
+    {
+      "id": 5,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "type",
+        "congé",
+        "exceptionnel",
+        "mariage",
+        "naissance",
+        "décès"
+      ],
+      "questions": [
+        "Quels types de congés sont disponibles ?",
+        "What types of leave can I take?",
+        "ما أنواع الإجازات المتاحة؟",
+        "chnou anwa3 talab conge mte3a?",
+        "chnou anwa3 talab conge?",
+        "شنية أنواع الكونجي اللي نجم ناخذها؟"
+      ],
+      "answer": "Congé annuel (30 j/an), mariage (3 j), naissance (3 j), décès proche (3 j), déménagement (1 j)."
+    },
+    {
+      "id": 6,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "consommés",
+        "utilisés",
+        "consumed",
+        "used"
+      ],
+      "questions": [
+        "Combien de congés ai-je consommés cette année ?",
+        "How many days have I used so far?",
+        "كم يوماً استخدمت حتى الآن؟",
+        "9adeh yom sttaamalt hatha essena?",
+        "How many days have I used?",
+        "قداش من نهار كونجي استعملت؟"
+      ],
+      "answer": "Jours consommés: <strong>{30 - leave_balance}</strong> jours. Vérifiez l'historique dans <a href=\"/#/dashboard?view=leave\" class=\"bot-link\">Mes congés</a>."
+    },
+    {
+      "id": 7,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "période",
+        "meilleure",
+        "quand",
+        "fenêtre",
+        "window",
+        "best time"
+      ],
+      "questions": [
+        "Quelle est la meilleure période pour prendre un congé ?",
+        "When should I submit my leave request?",
+        "ما أفضل وقت لطلب إجازة؟",
+        "enaha ahsen wa9t bach nqaddim talab conge?",
+        "Quel est le délai minimum pour demander un congé ?",
+        "When should I submit my request?",
+        "What is the minimum notice for leave?",
+        "ما أقل مدة للإخطار برغبة إجازة؟",
+        "9adeh minimum time bach nqaddim conge?",
+        "وقتاش لازم نقدّم طلب الكونجي؟",
+        "قداش من وقت مسبق لازم نعلّم قبل ما ناخذ كونجي؟"
+      ],
+      "answer": "Évitez juin-août (pic d'activité). Préavis recommandé: ≥ 7 jours (≥ 15 j idéalement). Consultez HR INSIGHTS pour la fenêtre recommandée."
+    },
+    {
+      "id": 8,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "plusieurs",
+        "multiple",
+        "demandes",
+        "chevauchement"
+      ],
+      "questions": [
+        "Puis-je déposer plusieurs demandes de congé en même temps ?",
+        "Can I submit multiple leave requests?",
+        "هل يمكنني تقديم عدة طلبات إجازة؟",
+        "nqaddim bezzaf talab conge f nafs el wa9t?",
+        "Can I submit multiple requests?",
+        "هل يمكنني تقديم عدة طلبات؟",
+        "هل يمكنني التحقق من حالة طلبي؟",
+        "nqadra nqaddim bezzaf talab conge f na9s wa9t?",
+        "نجم نقدّم أكثر من طلب؟"
+      ],
+      "answer": "Oui, tant qu'elles ne chevauchent pas et que votre solde le permet."
+    },
+    {
+      "id": 9,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "manager",
+        "consulté",
+        "reviewed",
+        "approval"
+      ],
+      "questions": [
+        "Mon manager a-t-il consulté ma demande ?",
+        "Has my manager reviewed my request?",
+        "هل راجع مديري طلبي؟",
+        "l manager mte3i shaf talab conge mte3i?",
+        "l manager mte3i shaf talab mte3i?",
+        "المدير متاعي راجع طلبي ولا لا؟"
+      ],
+      "answer": "Suivez le statut dans <a href=\"/#/dashboard?view=leave\" class=\"bot-link\">Mes congés</a> (En attente → Approuvée manager → Approuvée RH)."
+    },
+    {
+      "id": 10,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "historique",
+        "suivi",
+        "suivre",
+        "follow",
+        "history"
+      ],
+      "questions": [
+        "Comment suivre l'évolution de ma demande ?",
+        "How do I track my request status?",
+        "كيف أتابع حالة طلبي؟",
+        "kifech nshuf evolution talab mte3i?",
+        "Puis-je consulter mes anciennes demandes de congé ?",
+        "How do I track my request?",
+        "Can I see my old requests?",
+        "هل يمكنني رؤية طلباتي القديمة؟",
+        "nqadra nshuf old requests mte3i?",
+        "كيفاش نتابع الطلب متاعي؟",
+        "نجم نشوف الطلبات القديمة متاعي؟"
+      ],
+      "answer": "Page <a href=\"/#/dashboard?view=leave\" class=\"bot-link\">Mes congés</a>, colonne Statut en temps réel."
+    },
+    {
+      "id": 11,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "jours fériés",
+        "public holidays",
+        "holidays",
+        "3atla"
+      ],
+      "questions": [
+        "Est-ce que les jours fériés sont comptés dans mon congé ?",
+        "Are public holidays deducted from my leave?",
+        "هل تُحتسب أيام العطل من إجازتي؟",
+        "l3atla mtaa3a ftech7 min conge mte3i?",
+        "أيّام العطل الرسمية تتحسب من الكونجي؟"
+      ],
+      "answer": "Non, les jours fériés officiels ne déduisent pas le solde. Ils sont déclarés dans le calendrier RH."
+    },
+    {
+      "id": 12,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "prolonger",
+        "étendre",
+        "extend",
+        "prolong"
+      ],
+      "questions": [
+        "Puis-je prolonger mon congé après validation ?",
+        "Can I extend my leave after approval?",
+        "هل يمكنني تمديد إجازتي بعد الموافقة؟",
+        "nqadra nmadda conge ba3d tassih?",
+        "Can I extend my leave?",
+        "هل يمكنني تمديد إجازتي؟",
+        "نجم نمدّد الكونجي متاعي؟"
+      ],
+      "answer": "Oui, contact RH via <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> pour modifier (selon solde disponible)."
+    },
+    {
+      "id": 13,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "dépassement",
+        "quota",
+        "solde insuffisant",
+        "exceed"
+      ],
+      "questions": [
+        "Que se passe-t-il si je dépasse mon quota de congés ?",
+        "What if I don't have enough leave days?",
+        "ماذا إذا لم يكن لدي أيام إجازة كافية؟",
+        "chnou y7el ila ma 3andiich solde kafi?",
+        "What if I don't have enough days?",
+        "ماذا إذا لم يكن لدي أيام كافية؟",
+        "شنوة يصير إذا ما عنديش أيّام كافية؟"
+      ],
+      "answer": "Le système refuse la demande si solde < jours demandés. Aucun congé sans solde."
+    },
+    {
+      "id": 14,
+      "category": "ABSENCE_AND_JUSTIFICATION",
+      "keywords": [
+        "absence",
+        "justifier",
+        "certificat",
+        "médical",
+        "proof"
+      ],
+      "questions": [
+        "Comment justifier une absence ?",
+        "How do I submit proof of absence?",
+        "كيف أقدم إثبات غياب؟",
+        "kifech nqaddim justificatif absence?",
+        "Quels documents sont nécessaires pour une absence médicale ?",
+        "Mon certificat médical a-t-il été validé ?",
+        "What documents do I need for medical leave?",
+        "Was my medical certificate validated?",
+        "كيف أقدم إثبات الغياب؟",
+        "ما المستندات اللازمة للإجازة الطبية؟",
+        "هل تم التحقق من شهادتي الطبية؟",
+        "kifech njustifii absence?",
+        "chnou document lazem bach njustifii absence medical?",
+        "certificat medical mte3i tbawa3?",
+        "كيفاش نبعث وثيقة تبرير الغياب؟",
+        "شنية الوثائق المطلوبة للكونجي المرضي؟",
+        "الشهادة الطبية متاعي تصادقت ولا لا؟"
+      ],
+      "answer": "3 étapes: 1) Déposer justificatif (médical/officiel) sous 48 h, 2) Joindre via <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> catégorie RH, 3) Notifier le manager. Sans justificatif, l'absence devient non justifiée."
+    },
+    {
+      "id": 15,
+      "category": "ABSENCE_AND_JUSTIFICATION",
+      "keywords": [
+        "délai",
+        "limite",
+        "deadline",
+        "48h"
+      ],
+      "questions": [
+        "Quel est la date limite pour justifier une absence ?",
+        "What is the deadline to submit proof?",
+        "ما هو الموعد النهائي لتقديم الإثبات؟",
+        "chnou l3akher wa9t bach njustifii?",
+        "ما هو رصيد إجازاتي المتبقي؟",
+        "ما هو موعد تقديم الإثبات؟",
+        "شنية آخر آجال باش نبعث التبرير؟"
+      ],
+      "answer": "<strong>48 heures</strong> après le premier jour d'absence. Au-delà, l'absence devient non justifiée et sanction appliquée."
+    },
+    {
+      "id": 16,
+      "category": "ABSENCE_AND_JUSTIFICATION",
+      "keywords": [
+        "enregistrées",
+        "recorded",
+        "combien",
+        "nombre"
+      ],
+      "questions": [
+        "Combien d'absences ai-je enregistrées ce mois-ci ?",
+        "How many absences do I have?",
+        "كم عدد الغيابات لدي؟",
+        "9adeh absence 3andi?",
+        "Quel est mon historique d'absences ?",
+        "What is my absence history?",
+        "ما هو سجل غيابي؟",
+        "chnou absence history mte3i?",
+        "قداش عندي من غياب؟",
+        "وين نلقى تاريخ الغيابات متاعي؟"
+      ],
+      "answer": "Consultez votre dossier dans <a href=\"/#/dashboard?view=documents\" class=\"bot-link\">Mes documents</a> ou <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> pour l'historique complet."
+    },
+    {
+      "id": 17,
+      "category": "ABSENCE_AND_JUSTIFICATION",
+      "keywords": [
+        "non justifiées",
+        "unjustified",
+        "impact",
+        "sanction"
+      ],
+      "questions": [
+        "Ai-je des absences non justifiées ?",
+        "Do I have unjustified absences?",
+        "هل لدي غيابات غير مبررة؟",
+        "3andi absence ma joustifitech?"
+      ],
+      "answer": "Vous avez <strong>{unjustified_absences}</strong> absence(s) non justifiée(s). Attention: 3 absences non justifiées = avertissement écrit + risque de sanction."
+    },
+    {
+      "id": 18,
+      "category": "ABSENCE_AND_JUSTIFICATION",
+      "keywords": [
+        "absentéisme",
+        "taux",
+        "rate",
+        "high rate"
+      ],
+      "questions": [
+        "Mon taux d'absentéisme est-il élevé ?",
+        "Is my absence rate high?",
+        "هل معدل غيابي مرتفع؟",
+        "nisbat absence mte3i 3aalia?",
+        "نسبة الغيابات متاعي مرتفعة؟"
+      ],
+      "answer": "Comparez à la moyenne du département. Consultez HR INSIGHTS ou demandez à <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>."
+    },
+    {
+      "id": 19,
+      "category": "ABSENCE_AND_JUSTIFICATION",
+      "keywords": [
+        "impact",
+        "évaluation",
+        "performance",
+        "rating"
+      ],
+      "questions": [
+        "Quel impact mes absences ont-elles sur mon évaluation ?",
+        "Does absence affect my performance rating?",
+        "هل يؤثر الغياب على تقييمي؟",
+        "absence tathir f evaluation mte3i?",
+        "Does absence affect my performance?",
+        "الغياب يأثر على التقييم المهني متاعي؟"
+      ],
+      "answer": "Les absences non justifiées pénalisent. Les absences justifiées n'impactent pas directement, mais nombreuses = score de fiabilité réduit."
+    },
+    {
+      "id": 20,
+      "category": "DELAY_AND_SANCTIONS",
+      "keywords": [
+        "retard",
+        "delay",
+        "pointage",
+        "attendance"
+      ],
+      "questions": [
+        "Combien de retards ai-je enregistrés ?",
+        "How many delays do I have?",
+        "كم عدد التأخيرات لدي؟",
+        "9adeh retard 3andi?",
+        "À partir de combien de retards y a-t-il une sanction ?",
+        "At how many delays is there a penalty?",
+        "كم عدد التأخيرات قبل العقوبة؟",
+        "mn 9adeh retard ykoun sanction?",
+        "قداش عندي من تأخير؟",
+        "من قداش تأخير تبدأ العقوبات؟"
+      ],
+      "answer": "Vous avez <strong>{recorded_delays}</strong> retard(s). Chaque 5 retards = −1 jour de congé. 3 retards non justifiés = avertissement écrit."
+    },
+    {
+      "id": 21,
+      "category": "DELAY_AND_SANCTIONS",
+      "keywords": [
+        "retards",
+        "absences",
+        "différence",
+        "congé"
+      ],
+      "questions": [
+        "Mes retards sont-ils considérés comme des absences ?",
+        "Are delays counted as absences?",
+        "هل يتم احتساب التأخيرات كغيابات؟",
+        "retard yethasab comme absence?",
+        "التأخير يتحسب غياب؟"
+      ],
+      "answer": "Non techniquement, mais cumulent vers une sanction séparée. 5 retards = −1 jour; 3 non justifiés = avertissement."
+    },
+    {
+      "id": 22,
+      "category": "DELAY_AND_SANCTIONS",
+      "keywords": [
+        "éviter",
+        "reduce",
+        "sanction",
+        "prévention"
+      ],
+      "questions": [
+        "Comment éviter une sanction liée aux retards ?",
+        "How can I avoid delay penalties?",
+        "كيف أتجنب عقوبات التأخير؟",
+        "kifech ntjanneb sanction retards?",
+        "كيفاش نتجنب عقوبات التأخير؟"
+      ],
+      "answer": "Pointage avant 08:30. Si retard: justifier dans les 48 h. Réduire progressivement le nombre de retards."
+    },
+    {
+      "id": 23,
+      "category": "DELAY_AND_SANCTIONS",
+      "keywords": [
+        "maximum",
+        "limite",
+        "max delays",
+        "9adeh"
+      ],
+      "questions": [
+        "Quel est le nombre maximal de retards autorisés ?",
+        "What is the maximum number of delays?",
+        "ما هو الحد الأقصى للتأخيرات؟",
+        "9adeh max retard mtaa3?",
+        "قداش هو الحد الأقصى متاع التأخيرات؟"
+      ],
+      "answer": "Pas de limite stricte, mais: 5 retards = −1 jour du solde; 3 non justifiés = avertissement, puis mise à pied, puis licenciement."
+    },
+    {
+      "id": 24,
+      "category": "DELAY_AND_SANCTIONS",
+      "keywords": [
+        "visible",
+        "responsable",
+        "manager",
+        "report"
+      ],
+      "questions": [
+        "Est-ce que mes retards sont visibles par mon responsable ?",
+        "Can my manager see my delays?",
+        "هل يمكن لمديري أن يرى تأخيراتي؟",
+        "l manager mte3i yshuf retards mte3i?",
+        "المدير متاعي ينجم يشوف التأخيرات متاعي؟"
+      ],
+      "answer": "Oui, votre manager reçoit un rapport mensuel des pointages (retards, absences justifiées/non justifiées)."
+    },
+    {
+      "id": 25,
+      "category": "TECHNICAL_ISSUES",
+      "keywords": [
+        "problème",
+        "erreur",
+        "bug",
+        "issue",
+        "issue"
+      ],
+      "questions": [
+        "J'ai un problème technique avec le portail",
+        "I'm having technical issues",
+        "لدي مشكلة تقنية",
+        "3andi problem technique",
+        "عندي مشاكل تقنية."
+      ],
+      "answer": "Essayez: 1) Rafraîchir la page (Ctrl+F5), 2) Vider le cache navigateur, 3) Utiliser un autre navigateur. Si non résolu, ouvrez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> catégorie IT."
+    },
+    {
+      "id": 26,
+      "category": "PROFILE_AND_ACCOUNT",
+      "keywords": [
+        "profil",
+        "information",
+        "personnelles",
+        "profile",
+        "data"
+      ],
+      "questions": [
+        "Comment consulter mes informations personnelles ?",
+        "How do I view my profile?",
+        "كيف أعرض معلوماتي الشخصية؟",
+        "kifech nshuf info mte3i?",
+        "كيفاش نشوف الملف الشخصي متاعي؟"
+      ],
+      "answer": "Page <a href=\"/#/afficherprofil\" class=\"bot-link\">Mon profil</a> (nom, email, département, photo, téléphone, expérience)."
+    },
+    {
+      "id": 27,
+      "category": "PROFILE_AND_ACCOUNT",
+      "keywords": [
+        "mettre à jour",
+        "modifier",
+        "update",
+        "change"
+      ],
+      "questions": [
+        "Comment mettre à jour mes coordonnées personnelles ?",
+        "How do I update my contact information?",
+        "كيف أحدث معلومات الاتصال الخاصة بي؟",
+        "kifech nmodifii info mte3i?",
+        "How do I update my contact info?",
+        "كيفاش نبدّل معلومات الاتصال متاعي؟"
+      ],
+      "answer": "Page <a href=\"/#/afficherprofil\" class=\"bot-link\">Mon profil</a>, cliquer 'Modifier', mettre à jour email/téléphone/adresse, enregistrer."
+    },
+    {
+      "id": 28,
+      "category": "PROFILE_AND_ACCOUNT",
+      "keywords": [
+        "mot de passe",
+        "password",
+        "change",
+        "mdp"
+      ],
+      "questions": [
+        "Comment modifier mon mot de passe ?",
+        "How do I change my password?",
+        "كيف أغير كلمة المرور؟",
+        "kifech nbaddel mdp mte3i?",
+        "كيفاش نبدّل كلمة السر؟"
+      ],
+      "answer": "Page <a href=\"/#/change-password\" class=\"bot-link\">Changer le mot de passe</a>. Si oublié: <a href=\"/#/forgot-password\" class=\"bot-link\">Mot de passe oublié</a>."
+    },
+    {
+      "id": 29,
+      "category": "PROFILE_AND_ACCOUNT",
+      "keywords": [
+        "oublié",
+        "forgot",
+        "reset",
+        "mdp perdu"
+      ],
+      "questions": [
+        "J'ai oublié mon mot de passe",
+        "I forgot my password",
+        "نسيت كلمة المرور الخاصة بي",
+        "nsit mdp mte3i",
+        "نسيت كلمة السر متاعي."
+      ],
+      "answer": "Utilisez <a href=\"/#/forgot-password\" class=\"bot-link\">Mot de passe oublié</a> pour réinitialiser par email."
+    },
+    {
+      "id": 30,
+      "category": "PROFILE_AND_ACCOUNT",
+      "keywords": [
+        "connexion",
+        "login",
+        "register",
+        "inscription"
+      ],
+      "questions": [
+        "Comment me connecter ?",
+        "How do I log in?",
+        "كيف أسجل الدخول؟",
+        "kifech nconnecti?",
+        "كيفاش نعمل تسجيل دخول؟"
+      ],
+      "answer": "Allez à <a href=\"/#/login\" class=\"bot-link\">Connexion</a> avec email + mot de passe. Pas de compte? <a href=\"/#/register\" class=\"bot-link\">S'inscrire</a>."
+    },
+    {
+      "id": 31,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "requête",
+        "ticket",
+        "problème",
+        "réclamation",
+        "request",
+        "complaint"
+      ],
+      "questions": [
+        "Comment soumettre une requête ?",
+        "How do I submit a request?",
+        "كيف أقدم طلب استعلام؟",
+        "kifech nqaddim request?",
+        "كيفاش نقدّم طلب؟"
+      ],
+      "answer": "Allez à <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>, cliquez 'Nouvelle réclamation', sélectionnez la catégorie (IT ou RH), décrivez le problème, envoyer."
+    },
+    {
+      "id": 32,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "suivi",
+        "statut",
+        "réponse",
+        "tracking",
+        "status"
+      ],
+      "questions": [
+        "Quel est le statut de ma requête ?",
+        "Can I check the status of my request?",
+        "ما هي حالة طلبي؟",
+        "9adeh status ticket mte3i?",
+        "نجم نتابع حالة الطلب متاعي؟"
+      ],
+      "answer": "Consultez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>. Chaque ticket affiche son statut (Ouvert / En cours / Résolu)."
+    },
+    {
+      "id": 33,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "temps",
+        "réponse",
+        "durée",
+        "response time"
+      ],
+      "questions": [
+        "Combien de temps pour une réponse ?",
+        "How long until I get a response?",
+        "كم من الوقت حتى أحصل على رد؟",
+        "9adeh wa9t bach njib response?",
+        "قداش نستنى باش يجيني رد؟"
+      ],
+      "answer": "Standard: ~48–72 h. Urgent: 24 h. Crédit RH: 5 jours ouvrés. Cas complexes: jusqu'à 7 jours."
+    },
+    {
+      "id": 34,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "IT",
+        "problème technique",
+        "support",
+        "technical"
+      ],
+      "questions": [
+        "Comment signaler un problème IT ?",
+        "How do I report a technical issue?",
+        "كيف أبلغ عن مشكلة تقنية؟",
+        "kifech nsignali problem IT?",
+        "كيفاش نبلّغ على مشكل تقني؟"
+      ],
+      "answer": "Ouvrir <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>, catégorie IT, décrire le problème (WiFi, VPN, matériel, logiciel), envoyer."
+    },
+    {
+      "id": 35,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "RH",
+        "ressources humaines",
+        "crédit",
+        "human resources"
+      ],
+      "questions": [
+        "Comment soumettre une demande RH ?",
+        "How do I submit an HR request?",
+        "كيف أقدم طلب موارد بشرية؟",
+        "kifech nqaddim request RH?",
+        "كيفاش نبعث طلب للموارد البشرية؟"
+      ],
+      "answer": "Ouvrir <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>, catégorie RH, sujet (justificatif, crédit, absences), fournir détails."
+    },
+    {
+      "id": 36,
+      "category": "CREDITS",
+      "keywords": [
+        "crédit",
+        "demande crédit",
+        "prêt",
+        "loan",
+        "credit"
+      ],
+      "questions": [
+        "Comment faire une demande de crédit ?",
+        "How do I apply for a credit/loan?",
+        "كيف أطلب قرضاً؟",
+        "kifech nqaddim talab credit?",
+        "How do I apply for credit?",
+        "كيفاش نطلب قرض؟"
+      ],
+      "answer": "Ouvrir <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>, catégorie RH, sujet 'Demande de crédit', préciser montant + motif + échéances. RH répond sous 5 jours."
+    },
+    {
+      "id": 37,
+      "category": "CREDITS",
+      "keywords": [
+        "risque",
+        "acceptation",
+        "probabilité",
+        "refus",
+        "risk"
+      ],
+      "questions": [
+        "Quel est mon risque de refus pour une demande de crédit ?",
+        "What is the approval probability for my credit request?",
+        "ما احتمالية رفض طلب الائتمان الخاص بي؟",
+        "9adeh risk refus talab credit mte3i?",
+        "Ai-je un risque élevé de refus pour mes prochaines demandes ?",
+        "Ma demande de crédit est-elle en cours d'analyse ?",
+        "Quels critères influencent l'acceptation d'un crédit ?",
+        "Quel est mon niveau de risque pour une demande de crédit ?",
+        "Do I have a high refusal risk?",
+        "Is my credit request being reviewed?",
+        "What are the credit approval criteria?",
+        "What is my credit risk level?",
+        "هل لدي خطر رفض مرتفع؟",
+        "هل يتم مراجعة طلب قرضي؟",
+        "ما معايير الموافقة على القرض؟",
+        "9adeh risk talab mte3i ytkhalaa?",
+        "talab credit mte3i f analysis?",
+        "chnou criteria bach yqabla credit?",
+        "9adeh risk credit mte3i?",
+        "طلب القرض متاعي مازال قيد المراجعة؟",
+        "شنية شروط الموافقة على القرض؟",
+        "شنية مستوى المخاطر متاع القرض متاعي؟"
+      ],
+      "answer": "Consultez HR INSIGHTS: risque est <strong>{refusal_risk}</strong> (low / medium / high). Basé sur solde, retards, absences, ancienneté."
+    },
+    {
+      "id": 38,
+      "category": "CREDITS",
+      "keywords": [
+        "montant",
+        "maximum",
+        "limité",
+        "maximum amount"
+      ],
+      "questions": [
+        "Quel est le montant maximum que je peux emprunter ?",
+        "What is the maximum credit amount?",
+        "ما أقصى مبلغ أستطيع اقتراضه؟",
+        "9adeh max amount credit nqadra nakhod?",
+        "Combien de crédits puis-je demander selon mon salaire ?",
+        "How much credit can I request?",
+        "كم يمكنني أن أستقرض؟",
+        "ما أقصى مبلغ يمكنني استقراضه؟",
+        "9adeh max credit nqadra nkhod?",
+        "9adeh max mount credit?",
+        "قداش نجم نطلب قرض؟",
+        "قداش هو أقصى مبلغ قرض نجم نطلبو؟"
+      ],
+      "answer": "Dépend de votre profil. Généralement: 3–6 mois de salaire brut max. Demandez une simulation RH."
+    },
+    {
+      "id": 39,
+      "category": "HOLIDAYS",
+      "keywords": [
+        "jours fériés",
+        "public holidays",
+        "فواصل",
+        "holidays"
+      ],
+      "questions": [
+        "Quels sont les prochains jours fériés ?",
+        "When are the next public holidays?",
+        "ما هي العطلات الرسمية القادمة؟",
+        "chnou nharat lfichta el jayya?"
+      ],
+      "answer": "<strong>Prochains jours fériés:</strong> 1 janvier, 14 janvier, 20 mars, 9 avril, 1 mai, 25 juillet, 13 août (Aïd al-Adha ~), 31 août, 15 octobre, 7 novembre, 25 décembre."
+    },
+    {
+      "id": 40,
+      "category": "COMPANY_INFO",
+      "keywords": [
+        "bondin",
+        "entreprise",
+        "company",
+        "histoire",
+        "about"
+      ],
+      "questions": [
+        "Qui est Maison Bondin ?",
+        "Tell me about the company",
+        "من هي شركة بوندين؟",
+        "chnou Maison Bondin?",
+        "احكيلي على Bondin."
+      ],
+      "answer": "Maison Bondin est une entreprise tunisienne (héritage depuis 1910) spécialisée dans le café de qualité. Nous employons une centaine de collaborateurs."
+    },
+    {
+      "id": 41,
+      "category": "COMPANY_INFO",
+      "keywords": [
+        "contact",
+        "RH",
+        "téléphone",
+        "email",
+        "HR"
+      ],
+      "questions": [
+        "Comment contacter le service RH ?",
+        "What is the HR contact?",
+        "ما هو التواصل مع قسم الموارد البشرية؟",
+        "kifech nconnecti m3a RH?",
+        "شكون جهة الاتصال متاع الموارد البشرية؟"
+      ],
+      "answer": "Email: <strong>rh@bondin.com</strong> | Téléphone: <strong>+216 71 XXX XXX</strong> | Ou via <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> (réponse sous 5 jours)."
+    },
+    {
+      "id": 42,
+      "category": "COMPANY_INFO",
+      "keywords": [
+        "politique",
+        "règles",
+        "policies",
+        "rules"
+      ],
+      "questions": [
+        "Où puis-je consulter les politiques internes ?",
+        "Where can I find company policies?",
+        "أين يمكنني العثور على السياسات الداخلية؟",
+        "wech nshuf policies Bondin?",
+        "وين نلقى سياسات الشركة؟"
+      ],
+      "answer": "Consultez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> catégorie 'Politiques', ou demandez le document 'Politique générale Bondin' à RH."
+    },
+    {
+      "id": 43,
+      "category": "BENEFITS",
+      "keywords": [
+        "avantages",
+        "benefits",
+        "droits",
+        "rights",
+        "avantage"
+      ],
+      "questions": [
+        "Quels avantages suis-je éligible pour mon poste ?",
+        "What benefits am I entitled to?",
+        "ما المزايا التي أستحقها لمنصبي؟",
+        "9adeh avantage mte3i?",
+        "ما المزايا التي أستحقها؟",
+        "شنية الامتيازات اللي عندي؟"
+      ],
+      "answer": "Consultez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> catégorie 'Avantages', ou contactez RH pour détails complets."
+    },
+    {
+      "id": 44,
+      "category": "DASHBOARD",
+      "keywords": [
+        "tableau de bord",
+        "dashboard",
+        "vue d'ensemble",
+        "overview"
+      ],
+      "questions": [
+        "Où puis-je voir un résumé de ma situation ?",
+        "Where is the dashboard?",
+        "أين لوحة المعلومات الخاصة بي؟",
+        "wech dashboard mte3i?",
+        "وين نلقى لوحة التحكم (Dashboard)؟"
+      ],
+      "answer": "Allez à <a href=\"/#/dashboard\" class=\"bot-link\">Tableau de bord</a> pour un résumé complet de vos congés, absences, retards."
+    },
+    {
+      "id": 45,
+      "category": "REGISTRATION",
+      "keywords": [
+        "inscrire",
+        "créer compte",
+        "sign up",
+        "register"
+      ],
+      "questions": [
+        "Comment s'inscrire ?",
+        "How do I create an account?",
+        "كيف أنشئ حساباً؟",
+        "kifech ninscriii?",
+        "كيفاش نسجّل؟"
+      ],
+      "answer": "Allez à <a href=\"/#/register\" class=\"bot-link\">S'inscrire</a>, remplissez le formulaire avec nom, email, mot de passe, soumettez."
+    },
+    {
+      "id": 46,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "suffisant",
+        "enough",
+        "possible",
+        "balance",
+        "possible?"
+      ],
+      "questions": [
+        "Est-ce que mon solde me permet de prendre un congé maintenant ?",
+        "Do I have enough leave days?",
+        "هل لدي أيام إجازة كافية؟",
+        "3andi solde kafi bach nqadra nkhodh conge?"
+      ],
+      "answer": "Solde actuel: <strong>{leave_balance}</strong> jours. Si > 0, oui (pour au moins 1 jour). Consultez HR INSIGHTS pour durée recommandée."
+    },
+    {
+      "id": 47,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "probabilité",
+        "acceptation",
+        "acceptance",
+        "chances"
+      ],
+      "questions": [
+        "Quelle est la probabilité que ma demande soit acceptée ?",
+        "What are my chances of approval?",
+        "ما احتمالية الموافقة على طلبي؟",
+        "9adeh probability talab conge mte3i tqabla?",
+        "عندي خطر كبير باش يترفض طلبي؟"
+      ],
+      "answer": "Probabilité: <strong>{acceptance_probability}%</strong>. Basée sur solde, retards, absences, période, charge du département."
+    },
+    {
+      "id": 48,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "améliorer",
+        "chances",
+        "improve",
+        "increase"
+      ],
+      "questions": [
+        "Comment améliorer mes chances d'acceptation ?",
+        "How can I improve my approval chances?",
+        "كيف يمكنني تحسين فرصي في الموافقة؟",
+        "kifech nhassni chances talab conge?"
+      ],
+      "answer": "3 conseils: 1) Anticiper ≥15 jours, 2) Éviter juin-août (pic), 3) Justifier toute absence sous 48h et réduire les retards."
+    },
+    {
+      "id": 49,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "busiest",
+        "department",
+        "charge",
+        "charrge",
+        "loaded",
+        "workload",
+        "anehou",
+        "akther",
+        "dep",
+        "fih"
+      ],
+      "questions": [
+        "Quel département est le plus chargé ?",
+        "Which department is the busiest?",
+        "Which department is the most loaded?",
+        "anehou akther department charrge?",
+        "anehou akther dep fih charge",
+        "department workload",
+        "le département le plus chargé"
+      ],
+      "answer": "Le département le plus chargé est <strong>{busiest_department}</strong>."
+    },
+    {
+      "id": 50,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "unresolved",
+        "open",
+        "pending",
+        "tickets",
+        "mazelet",
+        "majawboch",
+        "non",
+        "resolus",
+        "en",
+        "attente"
+      ],
+      "questions": [
+        "Combien de tickets ne sont pas résolus ?",
+        "How many tickets are unresolved?",
+        "How many open tickets?",
+        "9adeh mn ticket mazelet?",
+        "9adeh ticket majawboch aleha?",
+        "combien de tickets en attente",
+        "combien de tickets non résolus"
+      ],
+      "answer": "Il y a <strong>{unresolved_tickets}</strong> tickets non résolus dans le système."
+    },
+    {
+      "id": 51,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "IT",
+        "RH",
+        "tickets",
+        "lit",
+        "lrh",
+        "9adeh",
+        "category",
+        "categorie"
+      ],
+      "questions": [
+        "Combien de tickets IT et RH ?",
+        "How many IT and RH tickets?",
+        "9adeh ticket IT w RH?",
+        "lit w lrh",
+        "tickets IT",
+        "tickets RH",
+        "combien de tickets IT",
+        "combien de tickets RH"
+      ],
+      "answer": "Nous avons <strong>{it_tickets}</strong> tickets IT et <strong>{rh_tickets}</strong> tickets RH."
+    },
+    {
+      "id": 52,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "total",
+        "system",
+        "tickets",
+        "kam",
+        "fel",
+        "systeme"
+      ],
+      "questions": [
+        "Combien de tickets au total dans le système ?",
+        "What is the total number of tickets?",
+        "kam ticket fel system?",
+        "total tickets",
+        "system tickets",
+        "total de tickets"
+      ],
+      "answer": "Le système compte un total de <strong>{total_tickets}</strong> tickets."
+    },
+    {
+      "id": 53,
+      "category": "DELAY_AND_SANCTIONS",
+      "keywords": [
+        "retard",
+        "retards",
+        "absences",
+        "offender",
+        "delays",
+        "chkoun",
+        "aktherhom",
+        "most"
+      ],
+      "questions": [
+        "Qui a le plus de retards ?",
+        "Who has the most delays?",
+        "chkoun aktherhom retard?",
+        "who has the most unjustified absences?",
+        "chkoun aktherhom absence?",
+        "qui a le plus d'absences non justifiées"
+      ],
+      "answer": "Retards: <strong>{top_retards_response}</strong>. Absences: <strong>{top_absences_response}</strong>."
+    },
+    {
+      "id": 54,
+      "category": "ACCOUNT",
+      "keywords": [
+        "mot de passe",
+        "mdp",
+        "password",
+        "changer",
+        "change"
+      ],
+      "questions": [
+        "Comment modifier mon mot de passe ?",
+        "How do I change my password?",
+        "كيف أغير كلمة المرور الخاصة بي؟",
+        "kifech nbaddel mdp mte3i?"
+      ],
+      "answer": "Allez à <a href=\"/#/change-password\" class=\"bot-link\">Changer mot de passe</a> et suivez les instructions de sécurité."
+    },
+    {
+      "id": 55,
+      "category": "ACCOUNT",
+      "keywords": [
+        "profil",
+        "profile",
+        "informations personnelles",
+        "personal info"
+      ],
+      "questions": [
+        "Comment consulter mes informations personnelles ?",
+        "How do I view my profile?",
+        "كيف أعرض ملفي الشخصي؟",
+        "kifech nshuf profil mte3i?"
+      ],
+      "answer": "Ouvrez <a href=\"/#/afficherprofil\" class=\"bot-link\">Mon profil</a> pour voir vos données personnelles et département."
+    },
+    {
+      "id": 56,
+      "category": "ACCOUNT",
+      "keywords": [
+        "oublié",
+        "forgot",
+        "mot de passe",
+        "password"
+      ],
+      "questions": [
+        "J'ai oublié mon mot de passe",
+        "I forgot my password",
+        "نسيت كلمة المرور الخاصة بي",
+        "nsit mdp mte3i"
+      ],
+      "answer": "Utilisez <a href=\"/#/forgot-password\" class=\"bot-link\">Mot de passe oublié</a> pour réinitialiser votre compte par email."
+    },
+    {
+      "id": 57,
+      "category": "ACCOUNT",
+      "keywords": [
+        "connexion",
+        "login",
+        "signin",
+        "se connecter"
+      ],
+      "questions": [
+        "Comment me connecter ?",
+        "How do I log in?",
+        "كيف أسجل الدخول؟",
+        "kifech nconnecti?"
+      ],
+      "answer": "Rendez-vous sur <a href=\"/#/login\" class=\"bot-link\">Connexion</a>, entrez email et mot de passe, puis validez."
+    },
+    {
+      "id": 58,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "soumettre",
+        "requête",
+        "request",
+        "ticket",
+        "demande"
+      ],
+      "questions": [
+        "Comment soumettre une requête ?",
+        "How do I submit a request?",
+        "كيف أقدم طلباً؟",
+        "kifech nqaddim request?",
+        "kifech nqaddim talab?"
+      ],
+      "answer": "Allez à <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>, cliquez sur Nouveau et remplissez le formulaire."
+    },
+    {
+      "id": 59,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "statut",
+        "status",
+        "request status",
+        "ticket status"
+      ],
+      "questions": [
+        "Quel est le statut de ma requête ?",
+        "Can I check my request status?",
+        "ما هي حالة طلبي؟",
+        "nqadra nshuf status request?"
+      ],
+      "answer": "Consultez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> et regardez la colonne Statut de votre ticket."
+    },
+    {
+      "id": 60,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "temps",
+        "délai",
+        "response time",
+        "réponse"
+      ],
+      "questions": [
+        "Combien de temps pour une réponse ?",
+        "How long for a response?",
+        "كم من الوقت للحصول على رد؟",
+        "9adeh time bach njib response?",
+        "9adeh time bach njustifii absence?"
+      ],
+      "answer": "Le délai standard est 48–72 heures. Pour crédit RH, comptez ~5 jours ouvrés. En cas d'urgence, contactez RH."
+    },
+    {
+      "id": 61,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "IT",
+        "technique",
+        "problem",
+        "issue",
+        "ticket IT"
+      ],
+      "questions": [
+        "Comment signaler un problème IT ?",
+        "How do I report an IT issue?",
+        "كيف أبلغ عن مشكلة تقنية؟",
+        "kifech nsignali problem IT?"
+      ],
+      "answer": "Ouvrez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>, choisissez catégorie IT et décrivez la panne pour support."
+    },
+    {
+      "id": 62,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "RH",
+        "resources humaines",
+        "HR",
+        "demande RH"
+      ],
+      "questions": [
+        "Comment soumettre une demande RH ?",
+        "How do I submit an HR request?",
+        "كيف أقدم طلب الموارد البشرية؟",
+        "kifech nqaddim request RH?"
+      ],
+      "answer": "Allez à <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a>, sélectionnez catégorie RH et envoyez votre demande."
+    },
+    {
+      "id": 63,
+      "category": "TECHNICAL_ISSUE",
+      "keywords": [
+        "technique",
+        "technical",
+        "problème",
+        "problem",
+        "portal"
+      ],
+      "questions": [
+        "J'ai un problème technique avec le portail",
+        "I'm having technical issues",
+        "أواجه مشاكل تقنية",
+        "3andi problem technique"
+      ],
+      "answer": "Pour un problème technique, utilisez <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> catégorie IT ou contactez le support via le portail."
+    },
+    {
+      "id": 64,
+      "category": "COMPANY_INFO",
+      "keywords": [
+        "Maison Bondin",
+        "Bondin",
+        "company",
+        "entreprise"
+      ],
+      "questions": [
+        "Qui est Maison Bondin ?",
+        "Tell me about Bondin",
+        "أخبرني عن شركة بوندين",
+        "chnou Maison Bondin?"
+      ],
+      "answer": "Maison Bondin est une entreprise tunisienne de café et services RH interne. Le chatbot aide les employés avec RH, IT et congés."
+    },
+    {
+      "id": 65,
+      "category": "COMPANY_INFO",
+      "keywords": [
+        "RH",
+        "contact",
+        "contact RH",
+        "contacts"
+      ],
+      "questions": [
+        "Comment contacter le service RH ?",
+        "What is the HR contact?",
+        "ما هو اتصال الموارد البشرية؟",
+        "kifech nconnecti m3a RH?"
+      ],
+      "answer": "Contactez RH via <a href=\"/#/requests\" class=\"bot-link\">Requêtes</a> catégorie RH, ou utilisez les coordonnées RH du portail."
+    },
+    {
+      "id": 66,
+      "category": "COMPANY_INFO",
+      "keywords": [
+        "politiques",
+        "policies",
+        "internes",
+        "rules",
+        "Règles"
+      ],
+      "questions": [
+        "Où puis-je consulter les politiques internes ?",
+        "Where are company policies?",
+        "أين سياسات الشركة؟",
+        "wech nshuf policies Bondin?"
+      ],
+      "answer": "Les politiques internes sont disponibles dans le portail RH ou via <a href=\"/#/dashboard\" class=\"bot-link\">Tableau de bord</a> selon votre accès."
+    },
+    {
+      "id": 67,
+      "category": "HOLIDAYS",
+      "keywords": [
+        "jours fériés",
+        "holidays",
+        "feriés",
+        "العطل"
+      ],
+      "questions": [
+        "Quels sont les prochains jours fériés ?",
+        "When are the next holidays?",
+        "ما هي العطلات القادمة؟",
+        "chnou nharat lfichta el jayya?"
+      ],
+      "answer": "Consultez la section jours fériés du portail ou demandez-moi directement pour la liste officielle des prochaines dates."
+    },
+    {
+      "id": 68,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "corriger",
+        "erreur",
+        "modifier",
+        "submitted request",
+        "fix",
+        "correct"
+      ],
+      "questions": [
+        "Puis-je corriger une erreur dans une demande envoyée ?",
+        "Can I fix a submitted request?",
+        "هل يمكنني إصلاح طلب مُرسل؟",
+        "nqadra nisahlih error f talab mte3i?",
+        "نجم نصلّح طلب بعد ما بعثتو؟"
+      ],
+      "answer": "Vous pouvez corriger une demande avant approbation via le portail Requêtes ou contacter RH/manager si elle a déjà été envoyée. La modification dépend du statut de la demande."
+    },
+    {
+      "id": 69,
+      "category": "PROFILE_AND_ACCOUNT",
+      "keywords": [
+        "attestation",
+        "travail",
+        "certificate",
+        "download",
+        "attestation travail",
+        "work certificate"
+      ],
+      "questions": [
+        "Comment télécharger mon attestation de travail ?",
+        "How do I download my work certificate?",
+        "كيف أحمل شهادة عملي؟",
+        "kifech nhotz attestation travail?",
+        "كيفاش نهبط شهادة العمل؟"
+      ],
+      "answer": "Téléchargez votre attestation de travail depuis Mon profil ou la section Documents du portail. Si elle n'est pas disponible, contactez RH."
+    },
+    {
+      "id": 70,
+      "category": "PROFILE_AND_ACCOUNT",
+      "keywords": [
+        "dossier",
+        "RH",
+        "status",
+        "file status",
+        "HR file"
+      ],
+      "questions": [
+        "Quel est l'état actuel de mon dossier RH ?",
+        "What is the status of my HR file?",
+        "ما حالة ملفي الشخصي؟",
+        "chnou status file mte3i?",
+        "شنية حالة الملف الإداري متاعي؟"
+      ],
+      "answer": "Consultez Mon profil ou contactez le service RH via Requêtes pour obtenir le statut de votre dossier RH."
+    },
+    {
+      "id": 71,
+      "category": "REQUESTS_AND_TICKETS",
+      "keywords": [
+        "urgent",
+        "urgence",
+        "urgent request",
+        "demande urgente",
+        "طلب طارئ"
+      ],
+      "questions": [
+        "Puis-je faire une demande urgente ?",
+        "Can I make an urgent request?",
+        "هل يمكنني تقديم طلب طارئ؟",
+        "nqadra nqaddim talab urgent?",
+        "نجم نقدّم طلب استعجالي؟"
+      ],
+      "answer": "Oui, vous pouvez soumettre une demande urgente via Requêtes. Les demandes urgentes sont traitées en priorité, généralement dans les 24 h selon la disponibilité RH."
+    },
+    {
+      "id": 72,
+      "category": "CREDITS",
+      "keywords": [
+        "crédit",
+        "rejeté",
+        "refus",
+        "rejected",
+        "rejected credit"
+      ],
+      "questions": [
+        "Pourquoi ma demande de crédit a-t-elle été rejetée ?",
+        "Why was my credit rejected?",
+        "لماذا تم رفض طلب قرضي؟",
+        "3lash talab credit mte3i tkhalaa?",
+        "علاش ترفض طلب القرض متاعي؟"
+      ],
+      "answer": "Un refus de crédit peut résulter d'un salaire insuffisant, d'un dossier incomplet, d'un risque élevé ou d'un historique de retards/absences. Contactez RH pour plus de détails."
+    },
+    {
+      "id": 73,
+      "category": "CREDITS",
+      "keywords": [
+        "rembourser",
+        "anticipation",
+        "repay early",
+        "early repayment",
+        "سداد مبكر"
+      ],
+      "questions": [
+        "Puis-je rembourser mon crédit par anticipation ?",
+        "Can I repay my credit early?",
+        "هل يمكنني سداد قرضي مبكراً؟",
+        "nqadra nsadda credit ba3dain?",
+        "نجم نخلّص القرض قبل الوقت؟"
+      ],
+      "answer": "Oui, le remboursement anticipé est généralement possible. Contactez RH pour recalculer les échéances et mettre à jour votre plan de paiement."
+    },
+    {
+      "id": 74,
+      "category": "CREDITS",
+      "keywords": [
+        "mensualités",
+        "payments",
+        "installments",
+        "remaining payments",
+        "أقساط"
+      ],
+      "questions": [
+        "Combien de mensualités me restent-il ?",
+        "How many payments do I have left?",
+        "كم عدد الأقساط المتبقية؟",
+        "9adeh mensualite ba9ia te3i?",
+        "قداش بقاتلي دفعات؟"
+      ],
+      "answer": "Consultez votre échéancier de crédit via le portail RH ou Requêtes. Il reste <strong>{remaining_installments}</strong> paiements."
+    },
+    {
+      "id": 75,
+      "category": "LEAVE_AND_BALANCE",
+      "keywords": [
+        "expirent",
+        "expire",
+        "unused holidays",
+        "congés non utilisés",
+        "expire"
+      ],
+      "questions": [
+        "Les congés non utilisés expirent-ils ?",
+        "Do unused holidays expire?",
+        "هل تنتهي صلاحية الإجازات غير المستخدمة؟",
+        "conge ma sttaamatch ytnsa7?",
+        "أيّام الكونجي اللي ما استعملتهمش يطيحوا؟"
+      ],
+      "answer": "Oui, certains congés non utilisés peuvent expirer à la fin de l'année civile selon la politique RH. Vérifiez les règles dans votre espace RH."
+    }
+  ]
+}

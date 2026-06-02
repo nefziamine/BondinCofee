@@ -1,6 +1,7 @@
 {
   "NAV": {
     "ART_DU_CAFE": "The Art of Coffee",
+    "HOME": "Home",
     "LOGIN": "Login",
     "REGISTER": "Register",
     "DASHBOARD": "Dashboard",
@@ -25,9 +26,25 @@
     "COPYRIGHT": "© Cafés BONDIN · 2025"
   },
   "CHATBOT": {
-    "ONLINE": "Online",
-    "WELCOME": "Welcome to Maison Bondin. I am your dedicated assistant.",
-    "PLACEHOLDER": "Type your message..."
+    "TITLE": "Bondin Assistant",
+    "STATUS_LINE": "Online • AI",
+    "STATUS_VISITOR": "Public • Guest",
+    "WELCOME_FULL": "Hello! I'm your Bondin internal assistant. How can I help you today?",
+    "WELCOME_VISITOR": "Welcome to Maison Bondin. Sign in to access your personal data (leave, requests…).",
+    "PLACEHOLDER": "Type your message…",
+    "EDIT_PLACEHOLDER": "Edit your message…",
+    "SEND": "Send",
+    "SAVE": "Save",
+    "ATTACH_IMAGE": "Attach image",
+    "REPLY": "Reply",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "REPLYING_TO": "Replying to:",
+    "EDITING": "Editing...",
+    "EDITED": "edited",
+    "CLOSE": "Close",
+    "NEW_CHAT": "New chat",
+    "ERROR_GENERIC": "Sorry, something went wrong. Please try again shortly."
   },
   "DASHBOARD": {
     "SPACE": "Management Cabinet — Space",
@@ -110,7 +127,7 @@
   },
   "AUTH": {
     "LOGIN_CABINET": "Management Cabinet",
-    "LOGIN_TITLE": "Internal Access",
+    "LOGIN_TITLE": "Login",
     "LOGIN_SUB": "Operational Excellence since 1910",
     "LOGIN_ID": "Identifier (Email)",
     "LOGIN_ID_PLACEHOLDER": "your.name@cafesbondin.tn",
@@ -206,6 +223,37 @@
     "SEND": "Send link",
     "SENDING": "Sending...",
     "BACK": "Back to login"
+  },
+  "HUB": {
+    "NAVIGATION": "Navigation",
+    "OVERVIEW": "Dashboard",
+    "CALENDAR": "Calendar",
+    "POINTAGE": "Attendance",
+    "LEAVE": "Leave & Absence",
+    "DOC_REQUESTS": "Document requests",
+    "RECEIVED_DOCS": "Received documents",
+    "MESSAGES": "Messages",
+    "LEAVE_BALANCE": "Leave balance",
+    "RH_SPACE": "HR space",
+    "TICKETS_RH": "Requests & Questions",
+    "RH_DOCS": "HR documentation",
+    "RH_POINTAGE": "Attendance validation",
+    "RH_LEAVE": "Leave management",
+    "RH_DOC_REQUESTS": "Incoming document requests",
+    "ADMIN_SPACE": "Administration",
+    "ADMIN_USERS": "Manage users",
+    "IT_SPACE": "IT space",
+    "TICKETS_IT": "IT tickets"
+  },
+  "SEC": {
+    "CHANGE_PASSWORD": "Change password",
+    "CHANGE_PASSWORD_INSTR": "Enter your current password, then choose a new one.",
+    "OLD_PASSWORD": "Current password",
+    "NEW_PASSWORD": "New password",
+    "CONFIRM_PASSWORD": "Confirm new password",
+    "SAVE": "Save",
+    "SAVING": "Saving...",
+    "BACK_DASHBOARD": "Back to dashboard"
   },
   "CHAT": {
     "ONLINE": "Online",

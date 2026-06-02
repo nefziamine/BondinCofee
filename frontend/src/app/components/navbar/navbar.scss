@@ -5,19 +5,46 @@
   left: 0;
   width: 100%;
   z-index: 1000;
-  
-  &.rtl {
-    direction: rtl;
-    .nav-links { margin-right: auto; margin-left: 0; }
-    .nav-actions { border-left: none; border-right: 1px solid rgba(255, 255, 255, 0.2); padding-left: 0; padding-right: 1.5rem; }
-    .dropdown-panel { right: auto; left: 0; }
-  }
+}
+
+/* RTL is applied on the <nav class="navbar rtl"> element (not on :host). */
+.navbar.rtl {
+  direction: rtl;
+}
+
+.navbar.rtl .nav-links {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+.navbar.rtl .nav-actions {
+  border-left: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding-left: 0;
+  padding-right: 2rem;
+}
+
+/* Align dropdown panels correctly in RTL. */
+.navbar.rtl .dropdown-panel {
+  right: auto;
+  left: 0;
+}
+
+/* Badge and unread dot need to flip in RTL. */
+.navbar.rtl .nav-icon-container .badge {
+  right: auto;
+  left: -8px;
+}
+
+.navbar.rtl .notifications-panel .notif-item.unread .unread-dot {
+  right: auto;
+  left: 1rem;
 }
 
 .navbar {
   background: transparent;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 1rem 2rem;
+  padding: 1.5rem 3rem;
 }
 
 body.light-mode .navbar {
@@ -33,20 +60,20 @@ body.light-mode .navbar {
 }
 
 .brand-logo {
-  height: 40px;
+  height: 50px;
   cursor: pointer;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   
   a {
     font-family: var(--font-ui);
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: 0.8rem;
+    font-size: 0.95rem;
     color: var(--text);
     opacity: 0.7;
     transition: 0.3s;
@@ -66,8 +93,8 @@ body.light-mode .navbar {
   .cta-join {
     background: var(--red);
     color: #fff !important;
-    padding: 0.5rem 1.2rem;
-    border-radius: 4px;
+    padding: 0.65rem 1.5rem;
+    border-radius: 6px;
     opacity: 1 !important;
   }
 }
@@ -75,9 +102,13 @@ body.light-mode .navbar {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding-left: 1.5rem;
+  gap: 2rem;
+  padding-left: 2rem;
   border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.light-mode .nav-actions {
+  border-left-color: rgba(45, 36, 30, 0.12);
 }
 
 .nav-icon-container {
@@ -85,13 +116,13 @@ body.light-mode .navbar {
   cursor: pointer;
   
   .icon {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     transition: 0.2s;
   }
 
   .icon-img {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
     display: block;
     transition: 0.2s;
@@ -101,9 +132,17 @@ body.light-mode .navbar {
     filter: invert(1) brightness(1.15);
   }
 
-  /* In light mode, keep icons dark (no invert) */
+  /* Bell & profile — always black for readability on light backgrounds */
+  .icon-dark {
+    filter: brightness(0) saturate(100%);
+  }
+
   body.light-mode & .icon-light {
-    filter: none;
+    filter: brightness(0) saturate(100%);
+  }
+
+  body.light-mode & .icon-dark {
+    filter: brightness(0) saturate(100%);
   }
   
   &:hover .icon,
@@ -126,7 +165,7 @@ body.light-mode .navbar {
 
 .dropdown-panel {
   position: absolute;
-  top: 2.5rem;
+  top: 3.2rem;
   right: 0;
   width: 320px;
   background: var(--surface);
@@ -198,11 +237,11 @@ body.light-mode .navbar {
 }
 
 .lang-panel {
-  width: 160px;
+  width: 180px;
   .lang-item {
     padding: 0.8rem 1.2rem;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     font-family: var(--font-ui);
     text-transform: uppercase;
     letter-spacing: 0.05em;

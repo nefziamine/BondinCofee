@@ -20,53 +20,55 @@
       <span class="leave-icon">🏖️</span>
       <div class="leave-text">
         <span class="leave-days">{{ leaveBalance() }} / 30</span>
-        <span class="leave-label">Solde congé</span>
+        <span class="leave-label">{{ 'HUB.LEAVE_BALANCE' | translate }}</span>
       </div>
     </div>
 
     <nav class="sidebar-nav">
-      <div class="sidebar-label">Navigation</div>
-      <div class="sidebar-item" [class.active]="activeView() === 'overview'" (click)="setView('overview')">
-        <span>📊</span> <span>Tableau de bord</span>
+      <div class="sidebar-label">{{ 'HUB.NAVIGATION' | translate }}</div>
+      <div class="sidebar-item return-btn" (click)="setView('overview')" [class.active]="activeView() === 'overview'">
+        <span>🏠</span> <span>{{ 'HUB.OVERVIEW' | translate }}</span>
       </div>
+      <div class="sidebar-divider"></div>
+      
       <div class="sidebar-item" [class.active]="activeView() === 'calendar'" (click)="setView('calendar')">
-        <span>📅</span> <span>Calendrier</span>
+        <span>📅</span> <span>{{ 'HUB.CALENDAR' | translate }}</span>
       </div>
       <div class="sidebar-item" [class.active]="activeView() === 'pointage'" (click)="setView('pointage')">
-        <span>⏱️</span> <span>Pointage</span>
+        <span>⏱️</span> <span>{{ 'HUB.POINTAGE' | translate }}</span>
       </div>
       <div class="sidebar-item" [class.active]="activeView() === 'leave'" (click)="setView('leave')">
-        <span>🏖️</span> <span>Congés & Absences</span>
+        <span>🏖️</span> <span>{{ 'HUB.LEAVE' | translate }}</span>
       </div>
       <div class="sidebar-item" [class.active]="activeView() === 'documents'" (click)="setView('documents')">
-        <span>📄</span> <span>Demande Documents</span>
+        <span>📄</span> <span>{{ 'HUB.DOC_REQUESTS' | translate }}</span>
       </div>
       <div class="sidebar-item" [class.active]="activeView() === 'received-docs'" (click)="setView('received-docs')">
-        <span>📥</span> <span>Documents Reçus</span>
+        <span>📥</span> <span>{{ 'HUB.RECEIVED_DOCS' | translate }}</span>
         <span class="success-badge" *ngIf="receivedDocs().length > 0">{{ receivedDocs().length }}</span>
       </div>
 
       <!-- RH only -->
       <ng-container *ngIf="role === 'RH'">
         <div class="sidebar-divider"></div>
-        <div class="sidebar-label">Espace RH</div>
+        <div class="sidebar-label">{{ 'HUB.RH_SPACE' | translate }}</div>
         <div class="sidebar-item" [class.active]="activeView() === 'tickets'" (click)="setView('tickets')">
-          <span>🎫</span> <span>Requêtes & Questions</span>
+          <span>🎫</span> <span>{{ 'HUB.TICKETS_RH' | translate }}</span>
           <span class="alert-badge" *ngIf="ticketAlerts() > 0">{{ ticketAlerts() }}</span>
         </div>
         <div class="sidebar-item" [class.active]="activeView() === 'rh-docs'" (click)="setView('rh-docs')">
-          <span>📚</span> <span>Documentation RH</span>
+          <span>📚</span> <span>{{ 'HUB.RH_DOCS' | translate }}</span>
         </div>
         <div class="sidebar-item" [class.active]="activeView() === 'rh-pointage'" (click)="setView('rh-pointage')">
-          <span>✅</span> <span>Validation Pointage</span>
+          <span>✅</span> <span>{{ 'HUB.RH_POINTAGE' | translate }}</span>
           <span class="alert-badge" *ngIf="pointageAlerts() > 0">{{ pointageAlerts() }}</span>
         </div>
         <div class="sidebar-item" [class.active]="activeView() === 'rh-leave'" (click)="setView('rh-leave')">
-          <span>📋</span> <span>Gestion Congés</span>
+          <span>📋</span> <span>{{ 'HUB.RH_LEAVE' | translate }}</span>
           <span class="alert-badge" *ngIf="leaveAlerts() > 0">{{ leaveAlerts() }}</span>
         </div>
         <div class="sidebar-item" [class.active]="activeView() === 'rh-doc-requests'" (click)="setView('rh-doc-requests')">
-          <span>📨</span> <span>Demandes Reçues</span>
+          <span>📨</span> <span>{{ 'HUB.RH_DOC_REQUESTS' | translate }}</span>
           <span class="alert-badge" *ngIf="rhDocAlerts() > 0">{{ rhDocAlerts() }}</span>
         </div>
       </ng-container>
@@ -74,25 +76,25 @@
       <!-- ADMIN only -->
       <ng-container *ngIf="role === 'ADMIN'">
         <div class="sidebar-divider"></div>
-        <div class="sidebar-label">Administration</div>
+        <div class="sidebar-label">{{ 'HUB.ADMIN_SPACE' | translate }}</div>
         <div class="sidebar-item" [class.active]="activeView() === 'admin-users'" (click)="setView('admin-users')">
-          <span>👥</span> <span>Gérer les utilisateurs</span>
+          <span>👥</span> <span>{{ 'HUB.ADMIN_USERS' | translate }}</span>
         </div>
       </ng-container>
 
       <!-- IT only -->
       <ng-container *ngIf="role === 'IT'">
         <div class="sidebar-divider"></div>
-        <div class="sidebar-label">Espace IT</div>
+        <div class="sidebar-label">{{ 'HUB.IT_SPACE' | translate }}</div>
         <div class="sidebar-item" [class.active]="activeView() === 'tickets'" (click)="setView('tickets')">
-          <span>🎫</span> <span>Tickets IT</span>
+          <span>🎫</span> <span>{{ 'HUB.TICKETS_IT' | translate }}</span>
           <span class="alert-badge" *ngIf="ticketAlerts() > 0">{{ ticketAlerts() }}</span>
         </div>
       </ng-container>
 
       <div class="sidebar-divider"></div>
       <div class="sidebar-item" [class.active]="activeView() === 'messages'" (click)="setView('messages')">
-        <span>💬</span> <span>Messagerie</span>
+        <span>💬</span> <span>{{ 'HUB.MESSAGES' | translate }}</span>
         <span class="alert-badge" *ngIf="messageAlerts() > 0">{{ messageAlerts() }}</span>
       </div>
     </nav>
@@ -106,14 +108,12 @@
       <header class="admin-cover">
         <img class="cover-image" [src]="coverImage()" alt="Admin cover">
         <div class="cover-overlay"></div>
-        <div class="cover-profile" *ngIf="auth.userProfile()">
-          <div class="profile-photo">
-            <img [src]="auth.userProfile().imageurl || 'assets/default-avatar.png'" alt="Profile">
-          </div>
-          <div class="profile-info">
-            <span class="user-name">{{ auth.userProfile().nomComplet || 'Utilisateur Bondin' }}</span>
-            <span class="dept">{{ auth.userProfile().department || 'Bondin Heritage' }} ({{ role }})</span>
-          </div>
+        <div class="cover-hero-content" *ngIf="auth.userProfile()">
+          <span class="cover-label">BIENVENUE SUR</span>
+          <h1 class="cover-title">The Coffee Bondin</h1>
+          <span class="cover-divider"></span>
+          <p class="cover-tagline">Good coffee. Better connections.</p>
+          <span class="cover-greeting-pill">☕ Belle journée, {{ auth.userProfile().nomComplet || 'Utilisateur' }} !</span>
         </div>
       </header>
 
@@ -127,10 +127,45 @@
           <div class="shortcut-card" (click)="setView('messages')"><span>💬</span> Messagerie</div>
         </div>
         <div class="shortcut-grid" *ngIf="role === 'ADMIN'">
-          <div class="shortcut-card" (click)="setView('overview')"><span>👥</span> Comptes Actifs</div>
+          <div class="shortcut-card" (click)="setView('admin-users')"><span>👥</span> Comptes Actifs</div>
           <div class="shortcut-card" (click)="setView('tickets')"><span>🎫</span> Tickets ouverts</div>
           <div class="shortcut-card" (click)="setView('messages')"><span>💬</span> Messagerie</div>
-          <div class="shortcut-card" (click)="setView('overview')"><span>⏱️</span> AvG Response time</div>
+          <div class="shortcut-card" (click)="showResponseStats()">
+            <span>⏱️</span> Avg response time
+          </div>
+        </div>
+      </div>
+
+      <!-- Avg response time: right below control panel, shown only when its button is clicked -->
+      <div *ngIf="role === 'ADMIN' && showAvgResponseSection()" class="stats-panel animate-in" style="margin-top: 1.5rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;">
+          <h3 style="margin:0;">⏱️ Response time</h3>
+          <button class="btn-bondin-sm" (click)="showAvgResponseDetails.update(v => !v)">
+            {{ showAvgResponseDetails() ? 'Hide details' : 'Show details' }}
+          </button>
+        </div>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem;">
+          <div style="flex:1;min-width:220px;padding:1rem;border:1px solid var(--border);border-radius:12px;background:var(--surface);">
+            <div style="font-size:0.8rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.08em;">Avg response</div>
+            <div style="font-size:1.6rem;font-weight:800;color:var(--gold);margin-top:0.25rem;">
+              {{ stats()?.avgResponseTime || '—' }}
+            </div>
+          </div>
+          <div style="flex:1;min-width:220px;padding:1rem;border:1px solid var(--border);border-radius:12px;background:var(--surface);">
+            <div style="font-size:0.8rem;opacity:0.7;text-transform:uppercase;letter-spacing:0.08em;">Total handled</div>
+            <div style="font-size:1.6rem;font-weight:800;color:var(--red);margin-top:0.25rem;">
+              {{ stats()?.totalReclamations || 0 }}
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="showAvgResponseDetails()" style="margin-top:1rem;padding:1rem;border:1px dashed var(--border);border-radius:12px;background:rgba(255,255,255,0.02);">
+          <div style="font-weight:700;margin-bottom:0.5rem;">Details</div>
+          <ul style="margin:0;padding-left:1.2rem;opacity:0.85;">
+            <li>Avg response time is computed from the last 30 days of requests.</li>
+            <li>Includes complaints, questions, and internal tickets.</li>
+          </ul>
         </div>
       </div>
 
@@ -203,6 +238,8 @@
           </div>
         </div>
 
+
+
         <!-- Inline FAQ Detail -->
         <div class="faq-detail-box animate-in" *ngIf="selectedFaq()">
            <div class="detail-header-premium">
@@ -210,13 +247,35 @@
               <button (click)="selectedFaq.set(null)" class="close-detail">×</button>
            </div>
            <div class="detail-body">
-              <p>{{ getFaqInfo(selectedFaq()!) }}</p>
-              <button class="btn-bondin-sm" (click)="setView('tickets'); selectedFaq.set(null)">Consulter les tickets liés</button>
+              <div class="faq-description-box" style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.05); border-radius: 8px;">
+                <p>{{ getFaqInfo(selectedFaq()!) }}</p>
+              </div>
+              
+              <h5 style="margin-bottom: 1rem; color: var(--gold); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Dernières requêtes liées :</h5>
+              <div class="faq-tickets-list" style="max-height: 300px; overflow-y: auto;">
+                <div *ngFor="let t of selectedFaqTickets()" class="faq-ticket-item" style="padding: 1rem; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 1rem; background: white;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <span style="font-weight: 700; color: var(--red);">{{ t.userEmail }}</span>
+                    <span style="font-size: 0.8rem; opacity: 0.6;">{{ t.dateCreation | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">{{ t.description }}</p>
+                  <div style="text-align: right;">
+                    <span class="status-badge" [class]="t.status.toLowerCase()">{{ t.status }}</span>
+                  </div>
+                </div>
+                <div *ngIf="selectedFaqTickets().length === 0" style="text-align: center; opacity: 0.5; padding: 2rem;">
+                  Aucune requête détaillée disponible.
+                </div>
+              </div>
+
+              <div style="margin-top: 1.5rem; text-align: center;">
+                <button class="btn-bondin-sm" (click)="setView('tickets'); selectedFaq.set(null)">Voir dans la gestion des tickets</button>
+              </div>
            </div>
         </div>
       </ng-container>
 
-      <!-- Logic for Others: Stats then Charts -->
+      <!-- Logic for Others: Stats only (chart hidden) -->
       <ng-container *ngIf="role !== 'ADMIN'">
         <div class="stats-cards">
           <div class="stat-card">
@@ -237,31 +296,16 @@
             </div>
           </div>
         </div>
-
-        <div class="chart-container">
-          <h3>Activité Hebdomadaire</h3>
-          <svg class="chart-svg" viewBox="0 0 700 200" preserveAspectRatio="none">
-            <line *ngFor="let y of [0,50,100,150]" x1="40" [attr.y1]="y+20" x2="680" [attr.y2]="y+20" class="chart-grid-line"/>
-            <text *ngFor="let d of chartLabels; let i = index" [attr.x]="55 + i * 95" y="195" text-anchor="middle" class="chart-label">{{ d }}</text>
-            <polygon [attr.points]="chartAreaPoints()" class="chart-area" fill="var(--gold)"/>
-            <polyline [attr.points]="chartLinePoints()" class="chart-line" stroke="var(--gold)"/>
-            <circle *ngFor="let pt of chartPoints(); let i = index" [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" fill="var(--gold)" class="chart-dot"/>
-            <polygon [attr.points]="chartArea2Points()" class="chart-area" fill="var(--red)"/>
-            <polyline [attr.points]="chartLine2Points()" class="chart-line" stroke="var(--red)"/>
-            <circle *ngFor="let pt of chartPoints2(); let i = index" [attr.cx]="pt.x" [attr.cy]="pt.y" r="4" fill="var(--red)" class="chart-dot"/>
-          </svg>
-          <div class="chart-legend">
-            <div class="legend-item"><span class="legend-dot" style="background:var(--gold)"></span> Présences</div>
-            <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span> Absences / Retards</div>
-          </div>
-        </div>
       </ng-container>
     </div>
 
     <!-- ══ CALENDAR ══ -->
     <div *ngIf="activeView() === 'calendar'" class="animate-in">
       <div class="view-header">
-        <h2>Calendrier</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Calendrier</h2>
+          <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
+        </div>
         <p>Jours fériés, congés et jours non travaillés.</p>
       </div>
       <div class="calendar-container">
@@ -296,14 +340,27 @@
     <!-- ══ POINTAGE ══ -->
     <div *ngIf="activeView() === 'pointage'" class="animate-in">
       <div class="view-header">
-        <h2>Pointage</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Pointage</h2>
+          <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
+        </div>
         <p>Enregistrez votre arrivée et départ quotidiens.</p>
       </div>
       <div class="pointage-section">
         <div class="pointage-clock">{{ currentTime() }}</div>
         <div class="pointage-date">{{ currentDateStr() }}</div>
-        <button *ngIf="!todayPointage()?.clockIn" class="pointage-btn clock-in" (click)="clockIn()">🕐 Pointer l'arrivée</button>
-        <button *ngIf="todayPointage()?.clockIn && !todayPointage()?.clockOut" class="pointage-btn clock-out" (click)="clockOut()">🕐 Pointer le départ</button>
+        <div class="pointage-window-hint" [class.closed]="!pointageOpen()">
+          <span *ngIf="pointageOpen()">🟢 Plage de pointage ouverte (08:00 – 20:00)</span>
+          <span *ngIf="!pointageOpen()">🔒 {{ pointageClosedMessage() }}</span>
+        </div>
+        <button *ngIf="!todayPointage()?.clockIn"
+                class="pointage-btn clock-in"
+                [disabled]="!pointageOpen()"
+                (click)="clockIn()">🕐 Pointer l'arrivée</button>
+        <button *ngIf="todayPointage()?.clockIn && !todayPointage()?.clockOut"
+                class="pointage-btn clock-out"
+                [disabled]="!pointageOpen()"
+                (click)="clockOut()">🕐 Pointer le départ</button>
         <div *ngIf="todayPointage()?.clockIn && todayPointage()?.clockOut" class="pointage-status">
           Journée complète <span class="status-badge present">✓ Pointé</span>
         </div>
@@ -337,7 +394,10 @@
     <!-- ══ LEAVE MANAGEMENT ══ -->
     <div *ngIf="activeView() === 'leave'" class="animate-in">
       <div class="view-header">
-        <h2>Congés & Absences</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Congés & Absences</h2>
+          <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
+        </div>
         <p>Gérez vos demandes de congé et suivez votre solde.</p>
       </div>
 
@@ -431,7 +491,10 @@
     <!-- ══ DOCUMENT REQUESTS ══ -->
     <div *ngIf="activeView() === 'documents'" class="animate-in">
       <div class="view-header">
-        <h2>Demande de Documents</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2>Demande de Documents</h2>
+          <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
+        </div>
         <p>Demandez un document officiel au service RH.</p>
       </div>
       <div class="doc-request-section">
@@ -467,6 +530,9 @@
             <div>
               <div class="doc-type">{{ docTypeLabel(d.type) }}</div>
               <div class="doc-date">{{ d.date }}</div>
+              <div class="doc-date" *ngIf="d.status === 'approved' && d.receiverName" style="margin-top:0.25rem;font-size:0.8rem">
+                Remis à : <strong>{{ d.receiverName }}</strong>
+              </div>
             </div>
             <span class="leave-status" [class]="d.status">{{ d.status === 'pending' ? 'En cours' : (d.status === 'approved' ? 'Terminé' : 'Refusé') }}</span>
           </div>
@@ -486,11 +552,14 @@
           <div class="doc-item" *ngFor="let d of receivedDocs()">
             <div>
               <div class="doc-type">{{ docTypeLabel(d.type) }}</div>
-              <div class="doc-date">Approuvé le : {{ d.date }}</div>
+              <div class="doc-date">
+                Validé le {{ d.approvedAt || d.date }}
+                <span *ngIf="d.receiverName"> · Remis à : <strong>{{ d.receiverName }}</strong></span>
+              </div>
             </div>
             <div class="rh-actions" style="display:flex;align-items:center;gap:1rem">
               <span class="leave-status approved">Terminé</span>
-              <button class="btn-approve" (click)="exportRhDoc({title: docTypeLabel(d.type), content: 'Document généré par RH.', icon: '📄', summary: ''})">📥 Télécharger</button>
+              <button class="btn-approve" (click)="printApprovedDoc(d)">📥 Télécharger / Imprimer</button>
             </div>
           </div>
           <div class="empty-state" *ngIf="receivedDocs().length === 0">
@@ -515,12 +584,49 @@
               <div class="doc-date">{{ d.date }} | {{ d.note }}</div>
             </div>
             <div *ngIf="d.status === 'pending'" class="rh-actions">
-              <button class="btn-approve" (click)="approveDoc(d)">Traité</button>
+              <button class="btn-approve" (click)="openDocCompletion(d)">Traité (signer)</button>
               <button class="btn-reject" (click)="rejectDoc(d)">Refuser</button>
             </div>
             <span *ngIf="d.status !== 'pending'" class="leave-status" [class]="d.status">{{ d.status === 'approved' ? 'Traité' : 'Refusé' }}</span>
           </div>
           <p *ngIf="allDocRequests().length === 0" style="color:var(--text-muted);font-style:italic">Aucune demande reçue.</p>
+        </div>
+
+        <div class="doc-completion-backdrop" *ngIf="docCompletionOpen()" (click)="closeDocCompletion()">
+          <div class="doc-completion-modal" (click)="$event.stopPropagation()">
+            <h3>Finaliser et envoyer le document</h3>
+            <p class="doc-completion-sub" *ngIf="docBeingCompleted() as doc">
+              <strong>{{ doc.userName }}</strong> — {{ docTypeLabel(doc.type) }}
+            </p>
+            <div class="doc-completion-field">
+              <label for="docReceiverName">Nom du destinataire (remise du document)</label>
+              <input id="docReceiverName" type="text" [(ngModel)]="completionReceiverName" placeholder="Nom complet du destinataire">
+            </div>
+            <div class="doc-completion-field">
+              <label>Signature du responsable RH</label>
+              <p class="doc-completion-hint">Signez dans le cadre ci-dessous avant validation.</p>
+              <div class="doc-sig-wrap">
+                <canvas
+                  #docSigCanvas
+                  width="440"
+                  height="160"
+                  class="doc-sig-canvas"
+                  (mousedown)="sigStart($event)"
+                  (mousemove)="sigMove($event)"
+                  (mouseup)="sigEnd()"
+                  (mouseleave)="sigEnd()"
+                  (touchstart)="sigStart($event)"
+                  (touchmove)="sigMove($event)"
+                  (touchend)="sigEnd()"
+                  (touchcancel)="sigEnd()"></canvas>
+              </div>
+              <button type="button" class="btn-clear-sig" (click)="resetSigCanvas()">Effacer la signature</button>
+            </div>
+            <div class="doc-completion-actions">
+              <button type="button" class="btn-cancel-edit" (click)="closeDocCompletion()">Annuler</button>
+              <button type="button" class="btn-save-user" (click)="confirmDocCompletion()">Valider et envoyer</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -585,8 +691,9 @@
 
     <!-- ══ TICKETS (inline) - no messages tab for IT tickets ══ -->
     <div *ngIf="activeView() === 'tickets'" class="animate-in">
-      <div class="view-header">
+      <div class="view-header" style="display: flex; justify-content: space-between; align-items: center;">
         <h2>Gestion des Requêtes</h2>
+        <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
       </div>
       <div class="compact-requests full-width">
         <app-requests [initialTab]="'QUESTION'" [hiddenTabs]="(role === 'IT' || role === 'RH') ? ['MESSAGES'] : []"></app-requests>
@@ -595,8 +702,9 @@
 
     <!-- ══ MESSAGERIE (standalone, no requests) ══ -->
     <div *ngIf="activeView() === 'messages'" class="animate-in">
-      <div class="view-header">
+      <div class="view-header" style="display: flex; justify-content: space-between; align-items: center;">
         <h2>Messagerie Interne</h2>
+        <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
       </div>
       <div class="compact-requests full-width">
         <app-requests [initialTab]="'MESSAGES'" [hiddenTabs]="(role === 'IT' || role === 'RH') ? ['QUESTION', 'RECLAMATION'] : []"></app-requests>
@@ -619,14 +727,17 @@
         </div>
       </header>
 
-      <div class="view-header user-mgmt-header">
+      <div class="view-header user-mgmt-header" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <h2>Gestion des Utilisateurs</h2>
           <p>Gérez les accès et les rôles de vos collaborateurs.</p>
         </div>
-        <button class="btn-add-doc" (click)="showForm.set(!showForm())">
-          {{ showForm() ? 'Fermer' : '+ Nouvel Utilisateur' }}
-        </button>
+        <div class="user-mgmt-actions">
+          <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
+          <button class="btn-add-doc" (click)="showForm.set(!showForm())">
+            {{ showForm() ? 'Fermer' : '+ Nouvel Utilisateur' }}
+          </button>
+        </div>
       </div>
 
       <!-- Creation Drawer -->
@@ -667,7 +778,49 @@
               </div>
             </div>
           </div>
-          <button (click)="addUser()" class="btn-bondin-red-lg" style="width:100%">Créer le compte</button>
+          <button type="button" (click)="addUser()" class="btn-create-account">Créer le compte</button>
+        </div>
+      </div>
+
+      <!-- Modifier un utilisateur -->
+      <div class="creation-drawer edit-user-drawer animate-in" *ngIf="showEditForm()">
+        <div class="form-wrapper">
+          <div class="edit-drawer-header">
+            <h3>Modifier le collaborateur</h3>
+            <button type="button" class="btn-close-edit" (click)="closeEditUserForm()" aria-label="Fermer">×</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nom complet</label>
+              <div class="input-with-icon">
+                <span class="icon">👤</span>
+                <input type="text" [(ngModel)]="editUserDraft.nomUtilisateur" placeholder="Nom complet">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Email professionnel</label>
+              <div class="input-with-icon">
+                <span class="icon">✉️</span>
+                <input type="email" [(ngModel)]="editUserDraft.email" placeholder="email@cafesbondin.tn">
+              </div>
+            </div>
+            <div class="form-group form-group-full">
+              <label>Rôle</label>
+              <div class="input-with-icon">
+                <span class="icon">🛡️</span>
+                <select [(ngModel)]="editUserDraft.role" class="bondin-select-minimal">
+                  <option value="EMPLOYE">Employé</option>
+                  <option value="RH">Ressources Humaines</option>
+                  <option value="IT">Service IT</option>
+                  <option value="ADMIN">Administrateur</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="edit-drawer-actions">
+            <button type="button" class="btn-cancel-edit" (click)="closeEditUserForm()">Annuler</button>
+            <button type="button" (click)="saveEditedUser()" class="btn-save-user">Enregistrer</button>
+          </div>
         </div>
       </div>
 
@@ -721,7 +874,7 @@
               </td>
               <td><span class="text-muted">{{ user.createdAt | date:'dd/MM/yyyy' }}</span></td>
               <td class="text-right">
-                <button (click)="editUser(user)" class="btn-receipt" style="margin-right:0.5rem">✎</button>
+                <button type="button" (click)="openEditUser(user)" class="btn-edit-user">Modifier</button>
                 <button *ngIf="user.status === 'ACTIVE'" (click)="revokeUser(user)" class="btn-revoke">✕</button>
                 <button *ngIf="user.status === 'REVOKED'" (click)="reactivateUser(user)" class="btn-reactivate">Réactiver</button>
               </td>

@@ -10,14 +10,12 @@
       <!-- TABS -->
       <div class="tabs">
         <!-- Ticket Tabs for Employees (submit) and RH/IT (respond) -->
-        <ng-container *ngIf="auth.userRole() !== 'ADMIN'">
-          <button *ngIf="!hiddenTabs.includes('QUESTION')" [class.active]="currentTab() === 'QUESTION'" (click)="setTab('QUESTION')">
-            {{ 'REQ.QUESTIONS' | translate }}
-          </button>
-          <button *ngIf="!hiddenTabs.includes('RECLAMATION')" [class.active]="currentTab() === 'RECLAMATION'" (click)="setTab('RECLAMATION')">
-            {{ 'REQ.RECLAMATIONS' | translate }}
-          </button>
-        </ng-container>
+        <button *ngIf="!hiddenTabs.includes('QUESTION')" [class.active]="currentTab() === 'QUESTION'" (click)="setTab('QUESTION')">
+          {{ 'REQ.QUESTIONS' | translate }}
+        </button>
+        <button *ngIf="!hiddenTabs.includes('RECLAMATION')" [class.active]="currentTab() === 'RECLAMATION'" (click)="setTab('RECLAMATION')">
+          {{ 'REQ.RECLAMATIONS' | translate }}
+        </button>
         
         <!-- Messaging Tab for Everyone -->
         <button *ngIf="!hiddenTabs.includes('MESSAGES')" [class.active]="currentTab() === 'MESSAGES'" (click)="setTab('MESSAGES')">
@@ -87,7 +85,7 @@
           </div>
 
           <!-- ACTIONS PER ROLE -->
-          <div *ngIf="auth.userRole() !== 'EMPLOYE' && r.status !== 'Resolved'" class="card-actions">
+          <div *ngIf="auth.userRole() !== 'EMPLOYE' && auth.userRole() !== 'ADMIN' && r.status !== 'Resolved'" class="card-actions">
             <button *ngIf="showAnswerForm() !== r.id" class="btn-answer" (click)="showAnswerForm.set(r.id || null)">
               <span class="icon">✍️</span> {{ 'REQ.ANSWER' | translate }}
             </button>
@@ -157,7 +155,6 @@
                 </div>
                 
                 <div class="attachment-preview" *ngIf="m.attachmentUrl">
-                  <!-- Show as image if type is image OR if we have a URL and it's not a PDF -->
                   <img *ngIf="m.attachmentType?.startsWith('image/') || (!m.attachmentType?.includes('pdf') && m.attachmentUrl.startsWith('data:image'))" 
                        [src]="m.attachmentUrl" 
                        class="chat-img" 
@@ -168,7 +165,8 @@
                   </div>
                 </div>
 
-                <div class="text" *ngIf="m.content">{{ m.content }}</div>
+                <!-- Only show text if it's not the redundant [Fichier:...] placeholder when we have an image -->
+                <div class="text" *ngIf="m.content && !(m.attachmentUrl && m.content.startsWith('[Fichier:'))">{{ m.content }}</div>
               </div>
             </div>
           </div>

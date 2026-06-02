@@ -1,10 +1,11 @@
-import { Component, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, computed, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateModule } from '@ngx-translate/core';
 import { Auth } from '../../services/auth';
+import { NotificationService } from '../../services/notification-service';
 import { RequestsComponent } from '../requests/requests';
 
 interface PointageRecord {
@@ -18,6 +19,12 @@ interface LeaveRequest {
 interface DocRequest {
   id: number; userId: number; userName: string; type: string; note: string;
   destinataire: string; date: string; status: 'pending' | 'approved' | 'rejected';
+  /** Nom du destinataire de la remise (saisi par le RH à la validation) */
+  receiverName?: string;
+  /** Signature RH (data URL PNG) */
+  rhSignatureDataUrl?: string;
+  /** Date de validation RH */
+  approvedAt?: string;
 }
 interface RhDoc {
   icon: string; title: string; summary: string; content: string;
@@ -52,6 +59,13 @@ export class DashboardHub implements OnInit, OnDestroy {
   // Pointage
   currentTime = signal('00:00:00');
   currentDateStr = signal('');
+  /** True only inside the daily pointage window (08:00 → 20:00 local). */
+  pointageOpen = signal(false);
+  /** Human-readable banner when the window is closed. */
+  pointageClosedMessage = signal('');
+  /** Working-hours window — single source of truth. */
+  static readonly POINTAGE_START_HOUR = 8;
+  static readonly POINTAGE_END_HOUR   = 20;
   private clockInterval: any;
 
   // Leave
@@ -66,6 +80,15 @@ export class DashboardHub implements OnInit, OnDestroy {
   private _allDocRequests = signal<DocRequest[]>([]);
   private _allUsers = signal<any[]>([]);
 
+  // RH — validation document (signature + destinataire)
+  docCompletionOpen = signal(false);
+  docBeingCompleted = signal<DocRequest | null>(null);
+  completionReceiverName = '';
+  signatureTouched = false;
+  private sigDrawing = false;
+  private sigLast = { x: 0, y: 0 };
+  @ViewChild('docSigCanvas') docSigCanvas?: ElementRef<HTMLCanvasElement>;
+
   // Pointage data
   private _pointageHistory = signal<PointageRecord[]>([]);
   private _allPointages = signal<PointageRecord[]>([]);
@@ -76,14 +99,19 @@ export class DashboardHub implements OnInit, OnDestroy {
   // Stats for Admin (moved from ManageUsers)
   stats = signal<any>({});
   selectedFaq = signal<string | null>(null);
+  selectedFaqTickets = signal<any[]>([]);
   coverImage = signal('assets/cover.jpg');
+  showAvgResponseDetails = signal(false);
+  showAvgResponseSection = signal(false);
 
   // User Management (Integrated from ManageUsers)
   users = signal<any[]>([]);
   roleFilter = signal('ALL');
   adminSearchQuery = signal('');
   showForm = signal(false);
+  showEditForm = signal(false);
   newUser = { nomUtilisateur: '', email: '', password: '', role: 'EMPLOYE' };
+  editUserDraft = { id: 0, nomUtilisateur: '', email: '', role: 'EMPLOYE' };
 
   filteredUsers = computed(() => {
     let list = this.users();
@@ -171,7 +199,13 @@ export class DashboardHub implements OnInit, OnDestroy {
     { month: 10, day: 1, name: 'Anniversaire de la Révolution' }
   ];
 
-  constructor(public auth: Auth, private router: Router, private http: HttpClient) {}
+  constructor(
+    public auth: Auth, 
+    private router: Router, 
+    private activatedRoute: ActivatedRoute,
+    private http: HttpClient,
+    private notifService: NotificationService
+  ) {}
 
   get role() { return this.auth.getRole() || 'EMPLOYE'; }
 
@@ -185,12 +219,12 @@ export class DashboardHub implements OnInit, OnDestroy {
   });
 
   ticketAlerts = computed(() => {
-    // For RH/IT, this could be pending reclamations. 
-    // Since we don't load them here yet, let's use a meaningful placeholder or load them.
-    return 2; 
+    const pendingReqs = this._allLeaves().filter(l => l.status === 'pending').length 
+                      + this._allDocRequests().filter(d => d.status === 'pending').length;
+    return pendingReqs;
   });
 
-  messageAlerts = computed(() => 4); // Placeholder for unread messages
+  messageAlerts = computed(() => this.notifService.unreadCount());
 
   rhDocAlerts = computed(() => {
     return this._allDocRequests().filter(r => r.status === 'pending').length;
@@ -208,12 +242,47 @@ export class DashboardHub implements OnInit, OnDestroy {
     this.updateClock();
     this.clockInterval = setInterval(() => this.updateClock(), 1000);
     this.loadFromStorage();
+    this.syncPointageStateWithBackend();
+
+    // Deep linking via query params (e.g. /dashboard?view=leave)
+    this.activatedRoute.queryParams.subscribe(params => {
+      const v = params['view'];
+      if (v) {
+        // Simple validation to ensure it's a valid ViewType
+        const validViews: ViewType[] = ['overview', 'calendar', 'pointage', 'leave', 'documents', 'received-docs', 'messages', 'tickets', 'rh-docs', 'rh-pointage', 'rh-leave', 'rh-doc-requests', 'admin-users'];
+        if (validViews.includes(v as ViewType)) {
+          this.setView(v as ViewType);
+        }
+      }
+    });
+
     if (this.role === 'ADMIN' || this.role === 'RH') {
       this.loadStats();
     }
+    this.loadLeaves();
+    this.loadCoverImage();
     if (this.role === 'ADMIN') {
       this.loadUsers();
-      this.loadCoverImage();
+    }
+  }
+
+  loadLeaves() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+
+    // My leaves
+    this.http.get<LeaveRequest[]>('http://localhost:8080/api/leave/my', { headers }).subscribe({
+      next: (data) => this._myLeaves.set(data),
+      error: (err) => console.error('Error loading my leaves', err)
+    });
+
+    // All leaves (for RH/ADMIN)
+    if (this.role === 'RH' || this.role === 'ADMIN') {
+      this.http.get<LeaveRequest[]>('http://localhost:8080/api/leave/all', { headers }).subscribe({
+        next: (data) => this._allLeaves.set(data),
+        error: (err) => console.error('Error loading all leaves', err)
+      });
     }
   }
 
@@ -239,21 +308,37 @@ export class DashboardHub implements OnInit, OnDestroy {
     });
   }
 
-  editUser(user: any) {
-    const nom = prompt('Nom complet', user.nomUtilisateur || '');
-    if (!nom) return;
-    const email = prompt('Email', user.email || '');
-    if (!email) return;
-    const role = prompt('Role (ADMIN, RH, IT, EMPLOYE)', user.role || 'EMPLOYE');
-    if (!role) return;
+  openEditUser(user: any) {
+    this.showForm.set(false);
+    this.editUserDraft = {
+      id: user.id,
+      nomUtilisateur: user.nomUtilisateur || '',
+      email: user.email || '',
+      role: (user.role || 'EMPLOYE').toString().toUpperCase()
+    };
+    this.showEditForm.set(true);
+  }
 
-    this.http.put<any>(`http://localhost:8080/api/admin/users/${user.id}`, {
-      nomUtilisateur: nom.trim(),
-      email: email.trim(),
-      role: role.trim().toUpperCase()
+  closeEditUserForm() {
+    this.showEditForm.set(false);
+  }
+
+  saveEditedUser() {
+    const d = this.editUserDraft;
+    if (!d.nomUtilisateur?.trim() || !d.email?.trim()) {
+      alert('Veuillez renseigner le nom et l’email.');
+      return;
+    }
+    this.http.put<any>(`http://localhost:8080/api/admin/users/${d.id}`, {
+      nomUtilisateur: d.nomUtilisateur.trim(),
+      email: d.email.trim(),
+      role: d.role.trim().toUpperCase()
     }).subscribe({
-      next: (updated) => this.users.update(list => list.map(u => (u.id === user.id ? { ...u, ...updated } : u))),
-      error: (err) => alert('Erreur modification.')
+      next: (updated) => {
+        this.users.update(list => list.map(u => (u.id === d.id ? { ...u, ...updated } : u)));
+        this.closeEditUserForm();
+      },
+      error: () => alert('Erreur lors de la modification.')
     });
   }
 
@@ -306,7 +391,11 @@ export class DashboardHub implements OnInit, OnDestroy {
 
   private loadCoverImage() {
     const saved = localStorage.getItem(`bondin.hub.cover.${this.auth.userProfile()?.id}`);
-    if (saved) this.coverImage.set(saved);
+    if (saved) {
+      this.coverImage.set(saved);
+    } else {
+      this.coverImage.set('assets/images/admin-cover.png');
+    }
   }
 
   loadStats() {
@@ -318,6 +407,20 @@ export class DashboardHub implements OnInit, OnDestroy {
 
   showFaqDetail(key: string) {
     this.selectedFaq.set(key);
+    const stats = this.stats();
+    if (stats) {
+      const tickets = [
+        ...(stats.openTicketList || []),
+        ...(stats.resolvedTicketList || [])
+      ].filter(t => t.sujet === key);
+      this.selectedFaqTickets.set(tickets);
+    }
+  }
+
+  showResponseStats() {
+    this.showAvgResponseSection.update(v => !v);
+    // Reset inner details when section is toggled
+    this.showAvgResponseDetails.set(false);
   }
 
   getFaqInfo(key: string): string {
@@ -329,7 +432,18 @@ export class DashboardHub implements OnInit, OnDestroy {
       'matériel': 'Les demandes de renouvellement de matériel (PC, Ecran) sont soumises à validation du N+1 et du département IT.',
       'formation': 'Le plan de formation annuel est discuté lors des entretiens annuels en Janvier.'
     };
-    return infoMap[key.toLowerCase()] || 'Informations détaillées en cours de synchronisation avec le manuel de procédures Bondin.';
+    const v = infoMap[key.toLowerCase()];
+    if (v) return v;
+
+    // Better fallback (no “syncing…” message)
+    const lang = this.auth.currentLang();
+    if (lang === 'ar') {
+      return 'لا توجد معلومة جاهزة لهذا الموضوع. جرّب كلمات مثل: إجازة، راتب، VPN، Wi‑Fi، كلمة المرور.';
+    }
+    if (lang === 'en') {
+      return 'No quick entry for this topic yet. Try keywords like: leave, payroll, VPN, Wi‑Fi, password.';
+    }
+    return 'Aucune fiche rapide pour ce sujet. Essayez : congé, paie, VPN, Wi‑Fi, mot de passe.';
   }
 
   ngOnDestroy() {
@@ -338,8 +452,35 @@ export class DashboardHub implements OnInit, OnDestroy {
 
   private updateClock() {
     const now = new Date();
-    this.currentTime.set(now.toLocaleTimeString('fr-FR'));
-    this.currentDateStr.set(now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+    const lang = this.auth.currentLang();
+    const locale = lang === 'ar' ? 'ar-DZ' : (lang === 'en' ? 'en-GB' : 'fr-FR');
+    this.currentTime.set(now.toLocaleTimeString(locale));
+    this.currentDateStr.set(
+      now.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+    );
+
+    // Refresh the pointage window state on every tick.
+    const open = this.isWithinPointageWindow(now);
+    this.pointageOpen.set(open);
+    if (!open) {
+      const hour = now.getHours();
+      const before = hour < DashboardHub.POINTAGE_START_HOUR;
+      const start = `${DashboardHub.POINTAGE_START_HOUR.toString().padStart(2, '0')}:00`;
+      const end   = `${DashboardHub.POINTAGE_END_HOUR.toString().padStart(2, '0')}:00`;
+      this.pointageClosedMessage.set(
+        before
+          ? `Le pointage ouvrira à ${start}. Plage horaire autorisée : ${start} – ${end}.`
+          : `Le pointage est fermé depuis ${end}. Réouverture demain à ${start}.`
+      );
+    } else {
+      this.pointageClosedMessage.set('');
+    }
+  }
+
+  /** Returns true iff the supplied moment falls inside the pointage window. */
+  private isWithinPointageWindow(d: Date): boolean {
+    const h = d.getHours();
+    return h >= DashboardHub.POINTAGE_START_HOUR && h < DashboardHub.POINTAGE_END_HOUR;
   }
 
   // ═══ STORAGE ═══
@@ -442,8 +583,12 @@ export class DashboardHub implements OnInit, OnDestroy {
 
   clockIn() {
     const now = new Date();
+    if (!this.isWithinPointageWindow(now)) {
+      alert(this.pointageClosedMessage());
+      return;
+    }
     const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    const isRetard = now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() > 15);
+    const isRetard = now.getHours() > 8 || (now.getHours() === 8 && now.getMinutes() > 30);
     const record: PointageRecord = {
       id: Date.now(), date: now.toISOString().split('T')[0], clockIn: time, clockOut: null,
       status: isRetard ? 'retard' : 'present',
@@ -452,14 +597,129 @@ export class DashboardHub implements OnInit, OnDestroy {
     };
     this._pointageHistory.update(list => [record, ...list]);
     this.saveToStorage('pointages', this._pointageHistory());
-    // Also add to global for RH review
     this._allPointages.update(list => [record, ...list]);
     this.saveToStorage('allPointages', this._allPointages(), true);
+
+    this.syncClockInWithBackend(record);
+  }
+
+  /**
+   * Persists the clock-in on the server and reflects the authoritative counters
+   * (retards + leave balance) returned by the backend. The server is the source
+   * of truth for the sanction policy: retards > 08:30 are flagged automatically,
+   * and every 5 retards = -1 day of leave balance.
+   */
+  private syncClockInWithBackend(record: PointageRecord) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+
+    this.http.post<{
+      status: 'present' | 'retard';
+      time: string;
+      late: boolean;
+      nbRetards: number;
+      congeRestant: number;
+      leaveDeducted: boolean;
+      retardsUntilDeduction: number;
+      retardsPerDeduction: number;
+      windowOpen: boolean;
+    }>('http://localhost:8080/api/pointage/clock-in', {}, { headers }).subscribe({
+      next: (res) => {
+        if (res.status === 'retard' && record.status !== 'retard') {
+          this._pointageHistory.update(list => list.map(p => p.id === record.id ? { ...p, status: 'retard' } : p));
+          this._allPointages.update(list => list.map(p => p.id === record.id ? { ...p, status: 'retard' } : p));
+          this.saveToStorage('pointages', this._pointageHistory());
+          this.saveToStorage('allPointages', this._allPointages(), true);
+        }
+
+        this.leaveBalance.set(res.congeRestant);
+        this.saveToStorage('leaveBalance', res.congeRestant);
+
+        if (res.leaveDeducted) {
+          this.notifService.addNotification(
+            `5 retards atteints — 1 jour de congé déduit. Solde : ${res.congeRestant} j.`,
+            '⚠️'
+          );
+        } else if (res.late) {
+          this.notifService.addNotification(
+            `Retard enregistré (${res.time}). ${res.retardsUntilDeduction} retard(s) avant la prochaine déduction.`,
+            '⏰'
+          );
+        } else {
+          this.notifService.addNotification(`Arrivée pointée à ${res.time}.`, '🕐');
+        }
+      },
+      error: (err) => {
+        console.error('Pointage backend sync failed', err);
+        this.notifService.addNotification(
+          'Pointage enregistré localement (synchronisation serveur échouée).',
+          '⚠️'
+        );
+      }
+    });
+  }
+
+  /**
+   * Aligns the sidebar leave balance with the DB on dashboard load, and
+   * backfills any retards captured before the server-side flow existed (so
+   * historical localStorage retards still trigger their pending −1-day
+   * deduction the first time the user lands on the new build).
+   */
+  private syncPointageStateWithBackend() {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+
+    this.http.get<{
+      nbRetards: number;
+      congeRestant: number;
+      retardsBeforeNextDeduction: number;
+      retardsPerDeduction: number;
+      leaveDaysAlreadyDeducted: number;
+    }>('http://localhost:8080/api/pointage/state', { headers }).subscribe({
+      next: (state) => {
+        this.leaveBalance.set(state.congeRestant);
+        this.saveToStorage('leaveBalance', state.congeRestant);
+
+        const localRetards = this._pointageHistory().filter(p => p.status === 'retard').length;
+        if (localRetards > state.nbRetards) {
+          this.http.post<{
+            nbRetards: number;
+            congeRestant: number;
+            leaveDaysDeducted: number;
+            retardsBeforeNextDeduction: number;
+            retardsPerDeduction: number;
+          }>('http://localhost:8080/api/pointage/reconcile',
+            { totalRetards: localRetards },
+            { headers }
+          ).subscribe({
+            next: (rec) => {
+              this.leaveBalance.set(rec.congeRestant);
+              this.saveToStorage('leaveBalance', rec.congeRestant);
+              if (rec.leaveDaysDeducted > 0) {
+                this.notifService.addNotification(
+                  `Régularisation: ${rec.leaveDaysDeducted} jour(s) de congé déduit(s) pour retards. Solde : ${rec.congeRestant} j.`,
+                  '⚠️'
+                );
+              }
+            },
+            error: (err) => console.error('Pointage reconcile failed', err)
+          });
+        }
+      },
+      error: (err) => console.error('Pointage state fetch failed', err)
+    });
   }
 
   clockOut() {
-    const today = new Date().toISOString().split('T')[0];
-    const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const now = new Date();
+    if (!this.isWithinPointageWindow(now)) {
+      alert(this.pointageClosedMessage());
+      return;
+    }
+    const today = now.toISOString().split('T')[0];
+    const time = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     this._pointageHistory.update(list => list.map(p => p.date === today ? { ...p, clockOut: time } : p));
     this.saveToStorage('pointages', this._pointageHistory());
     this._allPointages.update(list => list.map(p => p.date === today && p.userId === Number(localStorage.getItem('userId')) ? { ...p, clockOut: time } : p));
@@ -488,62 +748,218 @@ export class DashboardHub implements OnInit, OnDestroy {
 
   submitLeave() {
     if (!this.newLeave.startDate || !this.newLeave.endDate) { alert('Remplissez les dates.'); return; }
-    const leave: LeaveRequest = {
-      id: Date.now(),
-      userId: Number(localStorage.getItem('userId') || 0),
-      userName: this.auth.userProfile()?.nomComplet || 'Utilisateur',
-      startDate: this.newLeave.startDate, endDate: this.newLeave.endDate,
-      type: this.newLeave.type, reason: this.newLeave.reason, status: 'pending'
-    };
-    this._myLeaves.update(list => [leave, ...list]);
-    this._allLeaves.update(list => [leave, ...list]);
-    this.saveToStorage('leaves', this._myLeaves());
-    this.saveToStorage('allLeaves', this._allLeaves(), true);
-    this.newLeave = { startDate: '', endDate: '', type: 'annual', reason: '' };
+    
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+
+    this.http.post<LeaveRequest>('http://localhost:8080/api/leave/request', this.newLeave, { headers }).subscribe({
+      next: (res) => {
+        this._myLeaves.update(list => [res, ...list]);
+        this.newLeave = { startDate: '', endDate: '', type: 'annual', reason: '' };
+        this.notifService.addNotification('Demande de congé envoyée.', '🏖️');
+      },
+      error: (err) => alert('Erreur lors de la soumission de la demande.')
+    });
   }
 
   myLeaves = computed(() => this._myLeaves());
   allLeaves = computed(() => this._allLeaves());
 
+  createLeaveDocRequest(l: LeaveRequest) {
+    const leaveDoc: DocRequest = {
+      id: Date.now(),
+      userId: l.userId,
+      userName: l.userName,
+      type: 'recu_conge',
+      note: `Congé du ${l.startDate} au ${l.endDate} - Type: ${l.type} - Motif: ${l.reason}`,
+      destinataire: '',
+      date: new Date().toISOString().split('T')[0],
+      status: 'approved',
+      receiverName: l.userName,
+      approvedAt: new Date().toISOString().split('T')[0]
+    };
+    this._allDocRequests.update(list => [leaveDoc, ...list]);
+    this.saveToStorage('allDocRequests', this._allDocRequests(), true);
+    
+    // Also save to the employee's personal storage
+    const key = `bondin.hub.docRequests.${l.userId}`;
+    const employeeDocs: DocRequest[] = JSON.parse(localStorage.getItem(key) || '[]');
+    employeeDocs.unshift(leaveDoc);
+    localStorage.setItem(key, JSON.stringify(employeeDocs));
+    
+    // If the current user is the employee, update their view
+    const myId = Number(localStorage.getItem('userId') || 0);
+    if (myId === l.userId) {
+      this._myDocRequests.set(employeeDocs);
+    }
+  }
+
   approveLeave(l: LeaveRequest) {
-    this._allLeaves.update(list => list.map(x => x.id === l.id ? { ...x, status: 'approved' } : x));
-    this.saveToStorage('allLeaves', this._allLeaves(), true);
-    // Deduct balance
-    const start = new Date(l.startDate), end = new Date(l.endDate);
-    const days = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / 86400000) + 1);
-    this.leaveBalance.update(b => Math.max(0, b - days));
-    this.saveToStorage('leaveBalance', this.leaveBalance());
-    // Auto-generate receipt
-    this.generateLeaveReceipt(l);
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+
+    this.http.post<any>(`http://localhost:8080/api/leave/approve/${l.id}`, {}, { headers }).subscribe({
+      next: (res) => {
+        this._allLeaves.update(list => list.map(x => x.id === l.id ? { ...x, status: 'approved' } : x));
+        this.notifService.addNotification(`Congé approuvé pour ${l.userName}`, '✅');
+        this.createLeaveDocRequest(l);
+        // Refresh my balance if I approved my own (though rare)
+        this.syncPointageStateWithBackend();
+      },
+      error: (err) => alert('Erreur lors de la validation.')
+    });
   }
 
   generateLeaveReceipt(l: LeaveRequest) {
-    const docContent = `
-      ==================================================
-                 REÇU DE CONGÉ - MAISON BONDIN
-      ==================================================
-      Date: ${new Date().toLocaleDateString()}
-      Collaborateur: ${l.userName}
-      Type de congé: ${l.type}
-      Période: Du ${l.startDate} Au ${l.endDate}
-      Motif: ${l.reason}
-      
-      Statut: APPROUVÉ PAR LE SERVICE RH
-      
-      Ce document fait office de justificatif officiel.
-      ==================================================
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Reçu de Congé - ${l.userName}</title>
+        <style>
+          body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem;
+            margin: 0;
+          }
+          .receipt-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 2px solid #8B1538;
+          }
+          .header {
+            text-align: center;
+            border-bottom: 3px solid #8B1538;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+          }
+          .header h1 {
+            color: #8B1538;
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: bold;
+          }
+          .header .subtitle {
+            color: #666;
+            font-style: italic;
+            font-size: 1.1rem;
+          }
+          .content {
+            line-height: 1.8;
+            color: #333;
+          }
+          .field {
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background: #f9f9f9;
+            border-left: 4px solid #8B1538;
+            border-radius: 4px;
+          }
+          .field-label {
+            font-weight: bold;
+            color: #8B1538;
+            display: block;
+            margin-bottom: 0.25rem;
+          }
+          .field-value {
+            font-size: 1.1rem;
+          }
+          .status {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+          }
+          .footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+          }
+          .logo {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="receipt-container">
+          <div class="logo">☕</div>
+          <div class="header">
+            <h1>REÇU DE CONGÉ</h1>
+            <div class="subtitle">Maison Bondin Heritage</div>
+          </div>
+          <div class="content">
+            <div class="field">
+              <span class="field-label">Date d'émission</span>
+              <span class="field-value">${new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Collaborateur</span>
+              <span class="field-value">${l.userName}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Type de congé</span>
+              <span class="field-value">${l.type}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Période</span>
+              <span class="field-value">Du ${l.startDate} Au ${l.endDate}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Motif</span>
+              <span class="field-value">${l.reason || 'Non spécifié'}</span>
+            </div>
+            <div class="status">
+              ✓ APPROUVÉ PAR LE SERVICE RH
+            </div>
+          </div>
+          <div class="footer">
+            <p>Ce document fait office de justificatif officiel.</p>
+            <p>Document émis depuis le portail Bondin RH.</p>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
     const win = window.open('', '_blank');
     if (win) {
-      win.document.write('<pre>' + docContent + '</pre>');
-      win.document.title = 'Reçu de Congé - ' + l.userName;
+      win.document.write(html);
+      win.document.close();
+      win.focus();
       win.print();
     }
   }
 
   rejectLeave(l: LeaveRequest) {
-    this._allLeaves.update(list => list.map(x => x.id === l.id ? { ...x, status: 'rejected' } : x));
-    this.saveToStorage('allLeaves', this._allLeaves(), true);
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    const headers = { Authorization: `Bearer ${token}` };
+
+    this.http.post<any>(`http://localhost:8080/api/leave/reject/${l.id}`, {}, { headers }).subscribe({
+      next: () => {
+        this._allLeaves.update(list => list.map(x => x.id === l.id ? { ...x, status: 'rejected' } : x));
+        this.notifService.addNotification(`Congé refusé pour ${l.userName}`, '❌');
+      },
+      error: (err) => alert('Erreur lors du refus.')
+    });
   }
 
   // ═══ DOCUMENT REQUESTS ═══
@@ -570,20 +986,276 @@ export class DashboardHub implements OnInit, OnDestroy {
     return this._allDocRequests().filter(r => r.userId === myId && r.status === 'approved');
   });
 
-  approveDoc(d: DocRequest) {
-    this._allDocRequests.update(list => list.map(x => x.id === d.id ? { ...x, status: 'approved' } : x));
+  /** Met à jour une demande doc côté global et dans le coffre du collaborateur */
+  private persistDocRequest(updated: DocRequest) {
+    this._allDocRequests.update(list => list.map(x => x.id === updated.id ? { ...x, ...updated } : x));
     this.saveToStorage('allDocRequests', this._allDocRequests(), true);
+    const key = `bondin.hub.docRequests.${updated.userId}`;
+    const list: DocRequest[] = JSON.parse(localStorage.getItem(key) || '[]');
+    const idx = list.findIndex(x => x.id === updated.id);
+    const next = idx >= 0
+      ? list.map(x => (x.id === updated.id ? { ...x, ...updated } : x))
+      : [...list, { ...updated }];
+    localStorage.setItem(key, JSON.stringify(next));
+    const myId = Number(localStorage.getItem('userId') || 0);
+    if (myId === updated.userId) {
+      this._myDocRequests.set(next);
+    }
   }
+
+  openDocCompletion(d: DocRequest) {
+    this.docBeingCompleted.set(d);
+    this.completionReceiverName = (d.userName || '').trim();
+    this.signatureTouched = false;
+    this.docCompletionOpen.set(true);
+    setTimeout(() => this.resetSigCanvas(), 50);
+  }
+
+  closeDocCompletion() {
+    this.docCompletionOpen.set(false);
+    this.docBeingCompleted.set(null);
+    this.completionReceiverName = '';
+    this.signatureTouched = false;
+    this.sigDrawing = false;
+  }
+
+  resetSigCanvas() {
+    const c = this.docSigCanvas?.nativeElement;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, c.width, c.height);
+    this.signatureTouched = false;
+  }
+
+  private canvasCoords(e: MouseEvent | TouchEvent): { x: number; y: number } {
+    const c = this.docSigCanvas!.nativeElement;
+    const r = c.getBoundingClientRect();
+    let clientX: number;
+    let clientY: number;
+    if ('touches' in e && e.touches.length) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if ('clientX' in e) {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    } else {
+      return { x: 0, y: 0 };
+    }
+    const scaleX = c.width / r.width;
+    const scaleY = c.height / r.height;
+    return { x: (clientX - r.left) * scaleX, y: (clientY - r.top) * scaleY };
+  }
+
+  sigStart(e: MouseEvent | TouchEvent) {
+    e.preventDefault();
+    this.sigDrawing = true;
+    this.sigLast = this.canvasCoords(e);
+  }
+
+  sigMove(e: MouseEvent | TouchEvent) {
+    if (!this.sigDrawing) return;
+    e.preventDefault();
+    const c = this.docSigCanvas?.nativeElement;
+    const ctx = c?.getContext('2d');
+    if (!ctx) return;
+    const p = this.canvasCoords(e);
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(this.sigLast.x, this.sigLast.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    this.sigLast = p;
+    this.signatureTouched = true;
+  }
+
+  sigEnd() {
+    this.sigDrawing = false;
+  }
+
+  confirmDocCompletion() {
+    const d = this.docBeingCompleted();
+    if (!d) return;
+    const receiverName = this.completionReceiverName.trim();
+    if (!receiverName) {
+      alert('Veuillez indiquer le nom du destinataire (remise du document).');
+      return;
+    }
+    const canvas = this.docSigCanvas?.nativeElement;
+    if (!canvas || !this.signatureTouched) {
+      alert('Veuillez signer dans la zone prévue avant d’envoyer le document.');
+      return;
+    }
+    const rhSignatureDataUrl = canvas.toDataURL('image/png');
+    const approvedAt = new Date().toISOString().split('T')[0];
+    this.persistDocRequest({
+      ...d,
+      status: 'approved',
+      receiverName,
+      rhSignatureDataUrl,
+      approvedAt
+    });
+    this.closeDocCompletion();
+  }
+
   rejectDoc(d: DocRequest) {
-    this._allDocRequests.update(list => list.map(x => x.id === d.id ? { ...x, status: 'rejected' } : x));
-    this.saveToStorage('allDocRequests', this._allDocRequests(), true);
+    if (!confirm('Refuser cette demande de document ?')) return;
+    this.persistDocRequest({ ...d, status: 'rejected' });
+  }
+
+  printApprovedDoc(d: DocRequest) {
+    const title = this.docTypeLabel(d.type);
+    const receiver = d.receiverName || d.userName;
+    const sigBlock = d.rhSignatureDataUrl
+      ? `<div class="signature-block">
+          <strong>Signature du service RH</strong><br>
+          <img src="${d.rhSignatureDataUrl}" alt="Signature" class="signature-image"/>
+        </div>`
+      : '';
+    const html = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${title}</title>
+        <style>
+          body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 2rem;
+            margin: 0;
+          }
+          .doc-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 2px solid #8B1538;
+          }
+          .header {
+            text-align: center;
+            border-bottom: 3px solid #8B1538;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+          }
+          .header h1 {
+            color: #8B1538;
+            font-size: 2rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: bold;
+          }
+          .header .subtitle {
+            color: #666;
+            font-style: italic;
+            font-size: 1.1rem;
+          }
+          .content {
+            line-height: 1.8;
+            color: #333;
+          }
+          .field {
+            margin: 1rem 0;
+            padding: 0.75rem;
+            background: #f9f9f9;
+            border-left: 4px solid #8B1538;
+            border-radius: 4px;
+          }
+          .field-label {
+            font-weight: bold;
+            color: #8B1538;
+            display: block;
+            margin-bottom: 0.25rem;
+          }
+          .field-value {
+            font-size: 1.1rem;
+          }
+          .signature-block {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+          }
+          .signature-block strong {
+            color: #8B1538;
+            display: block;
+            margin-bottom: 0.5rem;
+          }
+          .signature-image {
+            max-width: 320px;
+            border: 1px solid #ccc;
+            margin-top: 0.5rem;
+            border-radius: 4px;
+          }
+          .footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+          }
+          .logo {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="doc-container">
+          <div class="logo">☕</div>
+          <div class="header">
+            <h1>${title}</h1>
+            <div class="subtitle">Maison Bondin Heritage</div>
+          </div>
+          <div class="content">
+            <div class="field">
+              <span class="field-label">Demandeur</span>
+              <span class="field-value">${d.userName}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Destinataire (remise)</span>
+              <span class="field-value">${receiver}</span>
+            </div>
+            <div class="field">
+              <span class="field-label">Date de validation RH</span>
+              <span class="field-value">${d.approvedAt || d.date}</span>
+            </div>
+            ${d.note ? `<div class="field">
+              <span class="field-label">Remarque</span>
+              <span class="field-value">${d.note}</span>
+            </div>` : ''}
+            ${sigBlock}
+          </div>
+          <div class="footer">
+            <p>Document émis depuis le portail Bondin RH.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      win.print();
+    }
   }
 
   docTypeLabel(type: string): string {
     const map: Record<string, string> = {
       'attestation_travail': 'Attestation de travail', 'attestation_salaire': 'Attestation de salaire',
       'fiche_paie': 'Fiche de paie', 'certificat_travail': 'Certificat de travail',
-      'ordre_mission': 'Ordre de mission', 'autre': 'Autre'
+      'ordre_mission': 'Ordre de mission', 'autre': 'Autre', 'recu_conge': 'Reçu de congé'
     };
     return map[type] || type;
   }

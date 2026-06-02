@@ -18,6 +18,11 @@ public class Message {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(columnDefinition = "TEXT")
+    private String attachmentUrl;
+    private String attachmentName;
+    private String attachmentType;
+
     private LocalDateTime timestamp = LocalDateTime.now();
 
     @Transient
@@ -43,4 +48,13 @@ public class Message {
 
     public String getSenderName() { return senderName; }
     public void setSenderName(String senderName) { this.senderName = senderName; }
+
+    public String getAttachmentUrl() { return attachmentUrl; }
+    public void setAttachmentUrl(String attachmentUrl) { this.attachmentUrl = attachmentUrl; }
+
+    public String getAttachmentName() { return attachmentName; }
+    public void setAttachmentName(String attachmentName) { this.attachmentName = attachmentName; }
+
+    public String getAttachmentType() { return attachmentType; }
+    public void setAttachmentType(String attachmentType) { this.attachmentType = attachmentType; }
 }

@@ -12,6 +12,8 @@ export class Auth {
   
   // App State Signals
   userRole = signal<string | null>(null);
+  /** When non-null, user is logged in; chatbot uses this to isolate visitor vs employee transcripts. */
+  sessionUserId = signal<string | null>(null);
   userProfile = signal<any>(null);
   isDarkMode = signal<boolean>(true);
   currentLang = signal<string>('fr');
@@ -35,7 +37,10 @@ export class Auth {
       if (!localStorage.getItem('userId') && decoded.userId) {
         localStorage.setItem('userId', decoded.userId);
       }
+      this.sessionUserId.set(localStorage.getItem('userId'));
       this.fetchUserProfile();
+    } else {
+      this.sessionUserId.set(null);
     }
 
     // Theme init
@@ -65,6 +70,7 @@ export class Auth {
           this.fetchUserProfile();
           const decoded = this.decodeToken(res.token);
           this.userRole.set(decoded.role);
+          this.sessionUserId.set(localStorage.getItem('userId'));
           
           // All roles now go to the unified dashboard hub
           this.router.navigate(['/dashboard']);
@@ -81,6 +87,7 @@ export class Auth {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     this.userRole.set(null);
+    this.sessionUserId.set(null);
     this.userProfile.set(null);
   }
 
@@ -100,6 +107,10 @@ export class Auth {
 
   resetPassword(data: any): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/reset-password`, data);
+  }
+
+  changePassword(data: { oldPassword: string; newPassword: string }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/change-password`, data);
   }
 
   private decodeToken(token: string): { role: string | null, userId: string | null } {
@@ -125,6 +136,10 @@ export class Auth {
         role = role.replace('ROLE_', ''); 
     }
     return role?.trim().toUpperCase() || null;
+  }
+
+  getUserId() {
+    return localStorage.getItem('userId');
   }
 
   setDarkMode(isDark: boolean) {

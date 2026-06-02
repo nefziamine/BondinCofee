@@ -6,6 +6,7 @@ import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { ChatbotComponent } from './components/chatbot/chatbot';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,
