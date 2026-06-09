@@ -33,6 +33,8 @@ target/
 Thumbs.db
 
 # Local H2 DB and dev logs (do not push)
+bondindb.*
+backend/bondindb.*
 backend/*.mv.db
 backend/crash.log
 backend/startup_logs.txt
