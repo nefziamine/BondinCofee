@@ -94,7 +94,7 @@
 
       <div class="sidebar-divider"></div>
       <div class="sidebar-item" [class.active]="activeView() === 'messages'" (click)="setView('messages')">
-        <span>💬</span> <span>{{ 'HUB.MESSAGES' | translate }}</span>
+        <span>💬</span> <span>{{ (role === 'EMPLOYE' ? 'HUB.TICKETS' : 'HUB.MESSAGES') | translate }}</span>
         <span class="alert-badge" *ngIf="messageAlerts() > 0">{{ messageAlerts() }}</span>
       </div>
     </nav>
@@ -124,7 +124,7 @@
           <div class="shortcut-card" (click)="setView('pointage')"><span>⏱️</span> Pointage</div>
           <div class="shortcut-card" (click)="setView('leave')"><span>🏖️</span> Congés</div>
           <div class="shortcut-card" (click)="setView('documents')"><span>📄</span> Documents</div>
-          <div class="shortcut-card" (click)="setView('messages')"><span>💬</span> Messagerie</div>
+          <div class="shortcut-card" (click)="setView('messages')"><span>💬</span> {{ role === 'EMPLOYE' ? ('HUB.TICKETS' | translate) : ('HUB.MESSAGES' | translate) }}</div>
         </div>
         <div class="shortcut-grid" *ngIf="role === 'ADMIN'">
           <div class="shortcut-card" (click)="setView('admin-users')"><span>👥</span> Comptes Actifs</div>
@@ -703,7 +703,7 @@
     <!-- ══ MESSAGERIE (standalone, no requests) ══ -->
     <div *ngIf="activeView() === 'messages'" class="animate-in">
       <div class="view-header" style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>Messagerie Interne</h2>
+        <h2>{{ role === 'EMPLOYE' ? ('HUB.TICKETS' | translate) : 'Messagerie Interne' }}</h2>
         <button class="btn-bondin-sm" (click)="setView('overview')">← Retour au Dashboard</button>
       </div>
       <div class="compact-requests full-width">

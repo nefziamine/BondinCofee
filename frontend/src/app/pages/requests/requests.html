@@ -30,7 +30,6 @@
         <div class="form-group full-width">
           <label>Destinataire</label>
           <select class="bondin-input" [(ngModel)]="newRequest.category">
-            <option value="">Choisir un service</option>
             <option value="RH">Ressources Humaines (RH)</option>
             <option value="IT">Support IT</option>
           </select>
@@ -118,7 +117,7 @@
           <div class="header-info">
             <span class="status-indicator"></span>
             <div>
-              <h3>Messagerie Interne</h3>
+              <h3>{{ auth.userRole() === 'EMPLOYE' ? 'Tickets' : 'Messagerie Interne' }}</h3>
               <p>{{ messages().length }} messages dans la discussion</p>
             </div>
           </div>

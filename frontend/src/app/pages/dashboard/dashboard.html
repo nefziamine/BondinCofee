@@ -32,8 +32,8 @@
 
     <section class="inline-view" *ngIf="activeView()">
        <div class="view-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h2 style="margin: 0;"><span class="ui-label" style="margin-right: 10px;">Bondin</span> {{ activeView() === 'MESSAGES' ? 'Messagerie Interne' : 'Gestion des Requêtes' }}</h2>
-          <button (click)="closeView()" class="btn-close" style="background: var(--red); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Retour au Panneau</button>
+         <h2 style="margin: 0;"><span class="ui-label" style="margin-right: 10px;">{{ role === 'EMPLOYE' ? 'Bondin Employé' : 'Bondin' }}</span> {{ activeView() === 'MESSAGES' ? (role === 'EMPLOYE' ? 'Tickets' : 'Messagerie Interne') : 'Gestion des Requêtes' }}</h2>
+         <button (click)="closeView()" class="btn-close" style="background: var(--red); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer;">Retour au Panneau</button>
        </div>
        <app-requests [initialTab]="activeView()!"></app-requests>
     </section>

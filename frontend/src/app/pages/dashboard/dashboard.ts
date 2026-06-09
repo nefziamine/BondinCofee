@@ -70,7 +70,7 @@ export class Dashboard {
       ];
     }
     return [
-      { icon: '💬', label: 'Messagerie', action: () => this.openView('MESSAGES') },
+      { icon: '💬', label: 'Tickets', action: () => this.openView('MESSAGES') },
       { icon: '🤖', label: 'Assistant interne', route: '/requests' }
     ];
   }

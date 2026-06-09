@@ -31,7 +31,7 @@ export class EmpDashboard {
 
   get roleCards(): DashboardCard[] {
     return [
-      { icon: '💬', label: 'Messagerie', action: () => this.openView('MESSAGES') },
+      { icon: '💬', label: 'Tickets', action: () => this.openView('MESSAGES') },
       { icon: '🤖', label: 'Assistant interne', route: '/requests' }
     ];
   }
