@@ -117,12 +117,24 @@ export class Auth {
     try {
       const payload = token.split('.')[1];
       const decoded = JSON.parse(atob(payload));
-      let role = decoded.role as string;
-      if (role && role.startsWith('ROLE_')) { 
-          role = role.replace('ROLE_', ''); 
+      let role: string | null = decoded.role ? String(decoded.role) : null;
+      if (role && role.startsWith('ROLE_')) {
+        role = role.replace('ROLE_', '');
       }
+      // Normalize common role name variations (backend may return English or French labels)
+      role = role ? role.trim().toUpperCase() : null;
+      const roleMap: Record<string,string> = {
+        'EMPLOYEE': 'EMPLOYE',
+        'EMPLOYE': 'EMPLOYE',
+        'COLLABORATOR': 'EMPLOYE',
+        'RH': 'RH',
+        'IT': 'IT',
+        'ADMIN': 'ADMIN'
+      };
+      const normalized = role ? (roleMap[role] || role) : null;
+
       return {
-        role: role?.trim().toUpperCase() || null,
+        role: normalized,
         userId: decoded.userId ? String(decoded.userId) : null
       };
     } catch {
@@ -132,10 +144,20 @@ export class Auth {
 
   getRole() { 
     let role = this.userRole();
-    if (role && role.startsWith('ROLE_')) { 
-        role = role.replace('ROLE_', ''); 
+    if (role && role.startsWith('ROLE_')) {
+      role = role.replace('ROLE_', '');
     }
-    return role?.trim().toUpperCase() || null;
+    role = role ? role.trim().toUpperCase() : null;
+    // Ensure same normalization at runtime (in case role was stored differently)
+    const roleMap: Record<string,string> = {
+      'EMPLOYEE': 'EMPLOYE',
+      'EMPLOYE': 'EMPLOYE',
+      'COLLABORATOR': 'EMPLOYE',
+      'RH': 'RH',
+      'IT': 'IT',
+      'ADMIN': 'ADMIN'
+    };
+    return role ? (roleMap[role] || role) : null;
   }
 
   getUserId() {

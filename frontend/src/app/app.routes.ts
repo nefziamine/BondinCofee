@@ -9,6 +9,7 @@ import { ChangePassword } from './pages/change-password/change-password';
 import { RequestsComponent } from './pages/requests/requests';
 import { DashboardHub } from './pages/dashboard-hub/dashboard-hub';
 import { authGuard } from './guards/auth-guard';
+import { NotePage } from './pages/note/note';
 
 export const routes: Routes = [
   { path: '', component: LandingPage },
@@ -22,6 +23,7 @@ export const routes: Routes = [
   
   { path: 'requests', component: RequestsComponent, canActivate: [authGuard] },
   { path: 'afficherprofil', component: ProfileViewComponent, canActivate: [authGuard] },
+  { path: 'note', component: NotePage, canActivate: [authGuard] },
   
 
 

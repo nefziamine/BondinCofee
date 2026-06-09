@@ -214,7 +214,7 @@ export class DashboardHub implements OnInit, OnDestroy {
       case 'ADMIN': return 'Bondin Admin';
       case 'RH': return 'Bondin RH';
       case 'IT': return 'Bondin IT';
-      default: return 'Bondin HR';
+      default: return 'Bondin Employee';
     }
   });
 
